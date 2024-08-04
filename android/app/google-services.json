@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "641647769517",
+    "project_id": "new-chat-box-social-app",
+    "storage_bucket": "new-chat-box-social-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:641647769517:android:65fcb8c943eb88ff705324",
+        "android_client_info": {
+          "package_name": "com.officialchatbox.chatboxapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8CWmruGdefuxcppoC1kjQ2VPX1iQ_4Vc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
