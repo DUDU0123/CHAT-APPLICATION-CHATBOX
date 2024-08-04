@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+
 import 'package:official_chatbox_application/core/enums/enums.dart';
 
 class UploadedStatusEntity extends Equatable {
@@ -10,6 +11,7 @@ class UploadedStatusEntity extends Equatable {
   final String? statusUploadedTime;
   final String? statusDuration;
   final bool? isViewedStatus;
+  final List<String>? viewers;
   final Color? textStatusBgColor;
   const UploadedStatusEntity({
     this.uploadedStatusId,
@@ -18,8 +20,9 @@ class UploadedStatusEntity extends Equatable {
     this.statusContent,
     this.statusUploadedTime,
     this.statusDuration,
-    this.textStatusBgColor,
     this.isViewedStatus,
+    this.viewers,
+    this.textStatusBgColor,
   });
 
   @override
@@ -32,5 +35,6 @@ class UploadedStatusEntity extends Equatable {
         statusDuration,
         isViewedStatus,
         textStatusBgColor,
+        viewers,
       ];
 }

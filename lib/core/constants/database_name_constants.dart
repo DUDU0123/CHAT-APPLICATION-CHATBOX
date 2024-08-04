@@ -97,7 +97,7 @@ const dbStatusDuration = 'status_duration';
 const dbisStatusViewed= 'is_viewed';
 const dbStatusModelTimeStamp = 'timestamp';
 const dbTextStatusBgColor = 'text_status_bg_color';
-
+const dbStatusViewersList = 'status_viewers_list';
 
 // contacts db field name
 const dbChatBoxUserId = 'chatBoxUserId';

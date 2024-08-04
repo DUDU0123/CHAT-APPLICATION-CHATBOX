@@ -10,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/image_picker_method.dart';
 import 'package:official_chatbox_application/features/data/models/status_model/status_model.dart';
+import 'package:official_chatbox_application/features/data/models/status_model/uploaded_status_model.dart';
 import 'package:official_chatbox_application/features/domain/repositories/status_repo/status_repository.dart';
 
 import '../../widgets/common_widgets/file_show_page.dart';
@@ -29,6 +30,7 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
     on<PickStatusEvent>(pickStatusEvent);
     on<FileResetEvent>(fileResetEvent);
     on<PickTextStatusBgColor>(pickTextStatusBgColor);
+    on<UpdateStatusViewersList>(updateStatusViewersList);
   }
 
   FutureOr<void> statusLoadEvent(
@@ -37,6 +39,9 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
     try {
       final Stream<List<StatusModel>>? statusList =
           statusRepository.getAllStatusFromDB();
+          statusList?.listen(
+            (data)=>log(data.length.toString())
+          );
       emit(StatusState(
         statusList: statusList,
       ));
@@ -57,6 +62,7 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
         message: isUploaded ? "Status sent" : "Unable to sent",
       ));
       print(isUploaded.toString());
+      add(StatusLoadEvent());
     } catch (e) {
       log("Error on upload status bloc: ${e.toString()}");
       emit(StatusErrorState(errorMessage: e.toString()));
@@ -153,6 +159,19 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
       } else {
         emit(StatusErrorState(errorMessage: "Current index null"));
       }
+    } catch (e) {
+      emit(StatusErrorState(errorMessage: e.toString()));
+    }
+  }
+
+  Future<FutureOr<void>> updateStatusViewersList(
+      UpdateStatusViewersList event, Emitter<StatusState> emit) async {
+    try {
+      await statusRepository.updateStatusViewersListInDB(
+        statusModel: event.statusModel,
+        uploadedStatusModel: event.uploadedStatusModel,
+        viewerId: event.viewerId,
+      );
     } catch (e) {
       emit(StatusErrorState(errorMessage: e.toString()));
     }

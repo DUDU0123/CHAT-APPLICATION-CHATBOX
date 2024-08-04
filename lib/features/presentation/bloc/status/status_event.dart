@@ -64,4 +64,19 @@ class PickTextStatusBgColor extends StatusEvent {
   const PickTextStatusBgColor({
     required this.availableColors,
   });
+  @override
+  List<Object> get props => [availableColors];
+}
+
+class UpdateStatusViewersList extends StatusEvent {
+  final StatusModel statusModel;
+  final UploadedStatusModel uploadedStatusModel;
+  final String viewerId;
+  const UpdateStatusViewersList({
+    required this.statusModel,
+    required this.uploadedStatusModel,
+    required this.viewerId,
+  });
+  @override
+  List<Object> get props => [statusModel, uploadedStatusModel, viewerId];
 }

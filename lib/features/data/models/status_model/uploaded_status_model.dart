@@ -13,6 +13,7 @@ class UploadedStatusModel extends UploadedStatusEntity {
     super.textStatusBgColor,
     super.statusDuration,
     super.uploadedStatusId,
+    super.viewers,
   });
   factory UploadedStatusModel.fromJson(Map<String, dynamic> map) {
     return UploadedStatusModel(
@@ -26,6 +27,7 @@ class UploadedStatusModel extends UploadedStatusEntity {
       textStatusBgColor: map[dbTextStatusBgColor] != null
           ? Color(int.parse(map[dbTextStatusBgColor]))
           : null,
+          viewers: List<String>.from(map[dbStatusViewersList]??[])
     );
   }
   Map<String, dynamic> toJson() {
@@ -37,8 +39,9 @@ class UploadedStatusModel extends UploadedStatusEntity {
       dbStatusUploadedTime: statusUploadedTime,
       dbStatusDuration: statusDuration,
       dbisStatusViewed: isViewedStatus,
-      // dbTextStatusBgColor: textStatusBgColor,
+      dbStatusViewersList: viewers,
       dbTextStatusBgColor: textStatusBgColor?.value.toString(),
+
     };
   }
   UploadedStatusModel copyWith({
@@ -50,6 +53,7 @@ class UploadedStatusModel extends UploadedStatusEntity {
     bool? isViewedStatus,
     Color? textStatusBgColor,
     String? uploadedStatusId,
+    List<String>? viewers
   }) {
     return UploadedStatusModel(
       statusType: statusType ?? this.statusType,
@@ -60,6 +64,7 @@ class UploadedStatusModel extends UploadedStatusEntity {
       isViewedStatus: isViewedStatus ?? this.isViewedStatus,
       textStatusBgColor: textStatusBgColor ?? this.textStatusBgColor,
       uploadedStatusId: uploadedStatusId ?? this.uploadedStatusId,
+      viewers: viewers ?? this.viewers,
     );
   }
 }

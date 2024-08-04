@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -5,6 +7,7 @@ import 'package:official_chatbox_application/config/bloc_providers/all_bloc_prov
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
+import 'package:official_chatbox_application/core/utils/date_provider.dart';
 import 'package:official_chatbox_application/features/data/models/status_model/status_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/status/status_bloc.dart';
@@ -24,7 +27,7 @@ Widget statusTileWidget({
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => StatusShowPage(statusModel: statusModel),
+            builder: (context) => StatusShowPage(statusModel: statusModel, isCurrentUser: isCurrentUser,),
           ),
         );
       }
@@ -38,7 +41,7 @@ Widget statusTileWidget({
                         ? isCurrentUser
                             ? firebaseAuth.currentUser!.uid
                             : statusModel != null
-                                ? statusModel.statusId ?? ''
+                                ? statusModel.statusUploaderId ?? ''
                                 : firebaseAuth.currentUser!.uid
                         : ''),
 
@@ -120,7 +123,8 @@ Widget statusTileWidget({
           )
       ],
     ),
-    title: StreamBuilder<UserModel?>(
+    title: 
+    StreamBuilder<UserModel?>(
         stream: statusModel != null
             ? statusModel.statusUploaderId != null
                 ? CommonDBFunctions.getOneUserDataFromDataBaseAsStream(
@@ -131,15 +135,15 @@ Widget statusTileWidget({
           return TextWidgetCommon(
             text: isCurrentUser
                 ? "My status"
-                : snapshot.data?.contactName ??
-                    snapshot.data?.userName ??
+                : snapshot.data?.userName ??
+                    snapshot.data?.contactName ??
                     'My Status',
             fontSize: 16.sp,
           );
         }),
     trailing: TextWidgetCommon(
       text: !isCurrentUser
-          ? statusModel?.statusList?.last.statusUploadedTime ?? ''
+          ? TimeProvider.getRelativeTime(statusModel!.statusList!.last.statusUploadedTime!)
           : "",
       textColor: iconGreyColor,
       fontWeight: FontWeight.normal,

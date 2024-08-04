@@ -1,6 +1,4 @@
-
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -34,6 +32,7 @@ class _StatusHomePageState extends State<StatusHomePage> {
               contentText: state.errorMessage,
             );
           }
+          
         },
         builder: (context, state) {
           if (state is StatusLoadingState) {
@@ -46,8 +45,6 @@ class _StatusHomePageState extends State<StatusHomePage> {
               StreamBuilder<StatusModel?>(
                   stream: CommonDBFunctions.getCurrentUserStatus(),
                   builder: (context, snapshot) {
-                    // log("Error fetching current status: ${snapshot.error}");
-                    // log("Current status of current user: ${snapshot.data}");
                     return statusTileWidget(
                       isCurrentUser: true,
                       statusModel: snapshot.data,
@@ -57,13 +54,13 @@ class _StatusHomePageState extends State<StatusHomePage> {
               kHeight15,
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: smallGreyMediumBoldTextWidget(text: "Recent updates"),
+                child: smallGreyMediumBoldTextWidget(text: "Updates"),
               ),
               kHeight15,
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: smallGreyMediumBoldTextWidget(text: "Viewed updates"),
-              ),
+              // Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: 20.w),
+              //   child: smallGreyMediumBoldTextWidget(text: "Viewed updates"),
+              // ),
               Expanded(
                 child: StreamBuilder<List<StatusModel>?>(
                     stream: state.statusList,
@@ -72,7 +69,7 @@ class _StatusHomePageState extends State<StatusHomePage> {
                       if (snapshot.data == null || snapshot.hasError) {
                         return commonErrorWidget(
                             message:
-                                "No data ${snapshot.error} ${snapshot.stackTrace}");
+                               "No status");
                       }
                       if (snapshot.data!.isEmpty) {
                         return emptyShowWidget(

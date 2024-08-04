@@ -13,6 +13,7 @@ Widget statusAppBar(
     required String? statusUploaderImage,
     required BuildContext context,
     void Function()? shareMethod,
+    required bool isCurrentUser,
     void Function()? deleteMethod}) {
   return Padding(
     padding: EdgeInsets.only(top: 35.h, left: 10.w),
@@ -30,10 +31,13 @@ Widget statusAppBar(
         children: [
           Row(
             children: [
-             statusUploaderImage!=null? CircleAvatar(
-                radius: 24.sp,
-                backgroundImage: NetworkImage(statusUploaderImage),
-              ):nullImageReplaceWidget(containerRadius: 30, context: context),
+              statusUploaderImage != null
+                  ? CircleAvatar(
+                      radius: 24.sp,
+                      backgroundImage: NetworkImage(statusUploaderImage),
+                    )
+                  : nullImageReplaceWidget(
+                      containerRadius: 30, context: context),
               kWidth10,
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -54,34 +58,37 @@ Widget statusAppBar(
               ),
             ],
           ),
-          PopupMenuButton(
-            iconColor: iconGreyColor,
-            itemBuilder: (context) => [
-              commonPopUpMenuItem(
-                context: context,
-                menuText: "Share",
-                onTap: shareMethod,
-              ),
-              commonPopUpMenuItem(
-                context: context,
-                menuText: "Delete",
-                onTap: deleteMethod,
-              ),
-            ],
-          )
+          isCurrentUser
+              ? PopupMenuButton(
+                  iconColor: iconGreyColor,
+                  itemBuilder: (context) => [
+                    commonPopUpMenuItem(
+                      context: context,
+                      menuText: "Share",
+                      onTap: shareMethod,
+                    ),
+                    commonPopUpMenuItem(
+                      context: context,
+                      menuText: "Delete",
+                      onTap: deleteMethod,
+                    ),
+                  ],
+                )
+              : zeroMeasureWidget,
         ],
       ),
     ),
   );
 }
+
 SvgPicture sendIconWidget() {
-    return SvgPicture.asset(
-      sendIcon,
-      width: 30.w,
-      height: 30.h,
-      colorFilter: ColorFilter.mode(
-        buttonSmallTextColor,
-        BlendMode.srcIn,
-      ),
-    );
-  }
+  return SvgPicture.asset(
+    sendIcon,
+    width: 30.w,
+    height: 30.h,
+    colorFilter: ColorFilter.mode(
+      buttonSmallTextColor,
+      BlendMode.srcIn,
+    ),
+  );
+}

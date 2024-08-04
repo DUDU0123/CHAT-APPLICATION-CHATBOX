@@ -9,6 +9,7 @@ import 'package:official_chatbox_application/core/utils/network_status_methods.d
 import 'package:official_chatbox_application/features/presentation/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/group/group_bloc.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/status/status_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/calls/call_home_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chat/chat_home_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/group/group_home_page.dart';
@@ -63,7 +64,7 @@ class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
 
   @override
   Widget build(BuildContext context) {
-    NetworkStatusMethods.initialize();
+    // NetworkStatusMethods.initialize();
     final bottomNavBloc = BlocProvider.of<BottomNavBloc>(context);
     return Scaffold(
       body: NestedScrollView(
@@ -101,6 +102,8 @@ class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
                   context.read<ChatBloc>().add(GetAllChatsEvent());
                 }else if(index==1){
                   context.read<GroupBloc>().add(GetAllGroupsEvent());
+                }else if(index==2){
+                  context.read<StatusBloc>().add(StatusLoadEvent());
                 }
                 bottomNavBloc.add(
                   BottomNavIconClickedEvent(

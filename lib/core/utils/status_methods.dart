@@ -27,7 +27,7 @@ class StatusMethods {
     String statusContentUrl = '';
     if (fileToShow != null && fileToShow != File('')) {
       statusContentUrl = await CommonDBFunctions.saveUserFileToDataBaseStorage(
-        ref: "users_statuses/${firebaseAuth.currentUser?.uid}",
+        ref: "users_statuses/${firebaseAuth.currentUser?.uid}${DateTime.now().millisecondsSinceEpoch}",
         file: fileToShow,
       );
     }

@@ -6,6 +6,7 @@ import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/group/group_bloc.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/status/status_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/bottom_nav/bottom_nav_widget.dart';
 
 class BottomNavBar extends StatelessWidget {
@@ -30,6 +31,8 @@ class BottomNavBar extends StatelessWidget {
               context.read<ChatBloc>().add(GetAllChatsEvent());
             }else if(currentIndex==1){
               context.read<GroupBloc>().add(GetAllGroupsEvent());
+            }else if(currentIndex==2){
+              context.read<StatusBloc>().add(StatusLoadEvent());
             }
             bottomNavBloc.add(
               BottomNavIconClickedEvent(
