@@ -1,11 +1,13 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
+
 class ChatData {
   final FirebaseFirestore firestore;
   final FirebaseAuth firebaseAuth;
@@ -20,7 +22,7 @@ class ChatData {
     try {
       String chatId = CommonDBFunctions.generateChatId(
           currentUserId: currentUserId, receiverId: contactId);
-      DocumentSnapshot chatSnapshot = await firestore
+      DocumentSnapshot chatSnapshot = await fireStore
           .collection(usersCollection)
           .doc(currentUserId)
           .collection(chatsCollection)
@@ -123,7 +125,8 @@ class ChatData {
       return firestore
           .collection(usersCollection)
           .doc(currentUserId)
-          .collection(chatsCollection).orderBy(chatLastMessageTime, descending: true)
+          .collection(chatsCollection)
+          .orderBy(chatLastMessageTime, descending: true)
           .snapshots()
           .map((snapshot) => snapshot.docs
               .map((doc) => ChatModel.fromJson(doc.data()))
@@ -185,7 +188,7 @@ class ChatData {
   Future<bool> clearAllChats() async {
     try {
       final User? currentUser = firebaseAuth.currentUser;
-      if (currentUser==null) {
+      if (currentUser == null) {
         return false;
       }
       final WriteBatch batch = firestore.batch();
@@ -222,6 +225,30 @@ class ChatData {
       return false;
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
+      return false;
+    }
+  }
+
+  Future<bool> updateChatData({required ChatModel chatModel}) async {
+    try {
+      final User? currentUser = firebaseAuth.currentUser;
+      if (currentUser == null) {
+        return false;
+      }
+      await fireStore
+          .collection(usersCollection)
+          .doc(currentUser.uid)
+          .collection(chatsCollection)
+          .doc(chatModel.chatID)
+          .update(
+            chatModel.toJson(),
+          );
+      return true;
+    } on FirebaseException catch (e) {
+      log("From mute chat firebase: ${e.toString()}");
+      return false;
+    } catch (e) {
+      log("From mute chat catch: ${e.toString()}");
       return false;
     }
   }

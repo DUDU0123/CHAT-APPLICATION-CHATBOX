@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class ContactEntity extends Equatable {
   String? chatBoxUserId;
+  String? contactId;
   String? userContactName;
   String? userAbout;
   String? userProfilePhotoOnChatBox;
@@ -14,6 +15,7 @@ class ContactEntity extends Equatable {
     this.userProfilePhotoOnChatBox,
     this.userContactNumber,
     this.isChatBoxUser,
+    this.contactId,
   });
 
   @override
@@ -23,6 +25,6 @@ class ContactEntity extends Equatable {
         userAbout,
         userProfilePhotoOnChatBox,
         userContactNumber,
-        isChatBoxUser,
+        isChatBoxUser,contactId,
       ];
 }

@@ -16,10 +16,35 @@ import 'package:official_chatbox_application/features/presentation/widgets/commo
 import 'package:official_chatbox_application/features/presentation/widgets/settings/profile_image_selector_bottom_sheet.dart';
 import 'package:status_view/status_view.dart';
 
+int getSeenStatusIndex(StatusModel? statusModel, String? currentUserId) {
+  if (statusModel == null || statusModel.statusList == null || currentUserId == null) {
+    log('Invalid input: statusModel or statusList or currentUserId is null');
+    return -1;
+  }
+
+  log('currentUserId: $currentUserId');
+  log('Status List Length: ${statusModel.statusList!.length}');
+  
+  for (int i = statusModel.statusList!.length - 1; i >= 0; i--) {
+    final status = statusModel.statusList![i];
+    log('Checking status index: $i');
+    log('Viewers: ${status.viewers}');
+    if (status.viewers != null) {
+      log('Contains currentUserId: ${status.viewers!.contains(currentUserId)}');
+      if (status.viewers!.contains(currentUserId)) {
+        return i;
+      }
+    }
+  }
+  return -1;
+}
+
+
 Widget statusTileWidget({
   required BuildContext context,
   StatusModel? statusModel,
   bool? isCurrentUser = false,
+  final String? currentUserId,
 }) {
   return ListTile(
     onTap: () {
@@ -27,7 +52,11 @@ Widget statusTileWidget({
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => StatusShowPage(statusModel: statusModel, isCurrentUser: isCurrentUser,),
+            builder: (context) => StatusShowPage(
+              statusModel: statusModel,
+              isCurrentUser: isCurrentUser,
+              currentUserId: currentUserId,
+            ),
           ),
         );
       }
@@ -35,20 +64,20 @@ Widget statusTileWidget({
     leading: Stack(
       children: [
         StreamBuilder<UserModel?>(
-            stream:
-                CommonDBFunctions.getOneUserDataFromDataBaseAsStream(
-                    userId: isCurrentUser != null
-                        ? isCurrentUser
-                            ? firebaseAuth.currentUser!.uid
-                            : statusModel != null
-                                ? statusModel.statusUploaderId ?? ''
-                                : firebaseAuth.currentUser!.uid
-                        : ''),
-
+            stream: CommonDBFunctions.getOneUserDataFromDataBaseAsStream(
+                userId: isCurrentUser != null
+                    ? isCurrentUser
+                        ? firebaseAuth.currentUser!.uid
+                        : statusModel != null
+                            ? statusModel.statusUploaderId ?? ''
+                            : firebaseAuth.currentUser!.uid
+                    : ''),
             builder: (context, snapshot) {
+              log(name: "Index of seen", getSeenStatusIndex(statusModel, currentUserId).toString());
               return StatusView(
                 padding: 0,
-                indexOfSeenStatus: 2,
+                indexOfSeenStatus:
+                    getSeenStatusIndex(statusModel, currentUserId),
                 numberOfStatus: statusModel != null
                     ? statusModel.statusList != null
                         ? statusModel.statusList!.length
@@ -123,8 +152,7 @@ Widget statusTileWidget({
           )
       ],
     ),
-    title: 
-    StreamBuilder<UserModel?>(
+    title: StreamBuilder<UserModel?>(
         stream: statusModel != null
             ? statusModel.statusUploaderId != null
                 ? CommonDBFunctions.getOneUserDataFromDataBaseAsStream(
@@ -135,15 +163,16 @@ Widget statusTileWidget({
           return TextWidgetCommon(
             text: isCurrentUser
                 ? "My status"
-                : snapshot.data?.userName ??
-                    snapshot.data?.contactName ??
+                : snapshot.data?.contactName ??
+                    snapshot.data?.userName ??
                     'My Status',
             fontSize: 16.sp,
           );
         }),
     trailing: TextWidgetCommon(
       text: !isCurrentUser
-          ? TimeProvider.getRelativeTime(statusModel!.statusList!.last.statusUploadedTime!)
+          ? TimeProvider.getRelativeTime(
+              statusModel!.statusList!.last.statusUploadedTime!)
           : "",
       textColor: iconGreyColor,
       fontWeight: FontWeight.normal,

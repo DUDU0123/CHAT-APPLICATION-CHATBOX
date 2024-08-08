@@ -45,6 +45,7 @@ class ContactRepoImpl extends ContactRepository {
             userMap.containsKey(contactModel.userContactNumber)) {
           var userData = userMap[contactModel.userContactNumber]!;
           contactModel = ContactModel(
+            contactId: contactModel.contactId,
             chatBoxUserId: userData[userDbId],
             userContactName: contactModel.userContactName,
             userAbout: userData[userDbAbout],

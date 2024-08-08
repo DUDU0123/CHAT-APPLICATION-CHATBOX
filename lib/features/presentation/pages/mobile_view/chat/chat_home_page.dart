@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
@@ -16,71 +18,70 @@ class ChatHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: CustomScrollView(
-              slivers: [
-                const SliverToBoxAdapter(
-                  child: SearchBarChatHome(),
-                ),
-                BlocBuilder<ChatBloc, ChatState>(
-                  builder: (context, state) {
-                    if (state is ChatLoadingState) {
+        slivers: [
+          const SliverToBoxAdapter(
+            child: SearchBarChatHome(),
+          ),
+          BlocBuilder<ChatBloc, ChatState>(
+            builder: (context, state) {
+              if (state is ChatLoadingState) {
+                return SliverToBoxAdapter(
+                  child: commonAnimationWidget(
+                    context: context,
+                    isTextNeeded: false,
+                    lottie: settingsLottie,
+                  ),
+                );
+              }
+              if (state is ChatErrorState) {
+                return SliverToBoxAdapter(
+                    child: Center(
+                  child: TextWidgetCommon(text: state.errormessage),
+                ));
+              }
+              return StreamBuilder<List<ChatModel>>(
+                stream: state.chatList,
+                builder: (context, snapshot) {
+                  if (snapshot.data != null) {
+                    if (snapshot.data!.isEmpty) {
                       return SliverToBoxAdapter(
-                        child: commonAnimationWidget(
-                          context: context,
-                          isTextNeeded: false,
-                          lottie: settingsLottie,
+                        child: SizedBox(
+                          width: screenWidth(context: context),
+                          height: screenWidth(context: context),
+                          child: emptyShowWidget(
+                            context: context,
+                            text: noChatText,
+                          ),
                         ),
                       );
                     }
-                    if (state is ChatErrorState) {
-                      return SliverToBoxAdapter(
-                          child: Center(
-                        child: TextWidgetCommon(text: state.errormessage),
-                      ));
-                    }
-                      return StreamBuilder<List<ChatModel>>(
-                        stream: state.chatList,
-                        builder: (context, snapshot) {
-                          if (snapshot.data != null) {
-                            if (snapshot.data!.isEmpty) {
-                              return SliverToBoxAdapter(
-                                child: SizedBox(
-                                  width: screenWidth(context: context),
-                                  height: screenWidth(context: context),
-                                  child: emptyShowWidget(
-                                    context: context,
-                                    text: noChatText,
-                                  ),
-                                ),
-                              );
-                            }
-                          }
-                          return SliverList.separated(
-                            itemCount: snapshot.data?.length,
-                            itemBuilder: (context, index) {
-                              final chat = snapshot.data;
-                              if (chat == null) {
-                                return zeroMeasureWidget;
-                              }
-                              return ChatListTileWidget(
-                                isIncomingMessage: chat[index].isIncomingMessage,
-                                chatModel: chat[index],
-                                isGroup: false,
-                                isMutedChat: chat[index].isMuted,
-                                notificationCount:
-                                    chat[index].notificationCount,
-                                userName: chat[index].receiverName ?? '',
-                                userProfileImage:
-                                    chat[index].receiverProfileImage,
-                              );
-                            },
-                            separatorBuilder: (context, index) => kHeight5,
-                          );
-                        },
+                  }
+                  return SliverList.separated(
+                    itemCount: snapshot.data?.length,
+                    itemBuilder: (context, index) {
+                      final chat = snapshot.data;
+                      if (chat == null) {
+                        return zeroMeasureWidget;
+                      }
+                      return ChatListTileWidget(
+                        isIncomingMessage: chat[index].isIncomingMessage,
+                        chatModel: chat[index],
+                        isGroup: false,
+                        isMutedChat: chat[index].isMuted,
+                        notificationCount: chat[index].notificationCount,
+                        userName: chat[index].receiverName ?? '',
+                        userProfileImage: chat[index].receiverProfileImage,
                       );
-                  },
-                ),
-              ],
-            ),
+                    },
+                    separatorBuilder: (context, index) => kHeight5,
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }
+

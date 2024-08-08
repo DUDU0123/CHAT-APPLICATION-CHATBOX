@@ -228,6 +228,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         final imageUrl = await messageRepository.sendAssetMessage(
           chatID: chatID,
           groupID: event.groupModel?.groupID,
+          messageType: MessageType.photo,
           file: imageFile,
         );
         MessageModel photoMessage;
@@ -309,6 +310,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         final videoUrl = await messageRepository.sendAssetMessage(
           chatID: chatID,
           groupID: event.groupModel?.groupID,
+          messageType: MessageType.video,
           file: videoFile,
         );
         MessageModel videoMessage;
@@ -504,7 +506,9 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       for (var file in filesPicked) {
         if (file != null) {
           final fileUrl = await messageRepository.sendAssetMessage(
-            chatID: chatID,
+            messageType: event.messageType,
+           chatID: chatID,
+        groupID: event.groupModel?.groupID,
             file: file,
           );
           String fileName = file.path.split('/').last;
@@ -622,6 +626,8 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       }
       final fileUrl = await messageRepository.sendAssetMessage(
         chatID: chatID,
+        groupID: event.groupModel?.groupID,
+        messageType: MessageType.audio,
         file: event.audioFile,
       );
       MessageModel message;

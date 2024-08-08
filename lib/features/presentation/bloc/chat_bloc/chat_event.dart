@@ -78,3 +78,11 @@ class PickImageEvent extends ChatEvent {
 }
 
 class ClearAllChatsEvent extends ChatEvent {}
+class ChatUpdateEvent extends ChatEvent {
+  final ChatModel chatModel;
+  const ChatUpdateEvent({
+   required this.chatModel,
+  });
+  @override
+  List<Object> get props => [chatModel];
+}

@@ -226,7 +226,7 @@ Widget readMoreButton({
     ),
   );
 }
-listTileCommonWidget({
+Widget listTileCommonWidget({
   Widget? leading,
   Widget? trailing,
   double? fontSize,

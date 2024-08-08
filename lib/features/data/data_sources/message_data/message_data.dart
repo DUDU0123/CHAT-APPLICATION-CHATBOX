@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
@@ -153,21 +154,49 @@ class MessageData {
     }
   }
 
-  Future<String> sendAssetMessage({
+  String getMediaFolderByType({required MessageType? messageType}) {
+    switch (messageType) {
+      case MessageType.photo:
+        return photoFolder;
+      case MessageType.video:
+        return videoFolder;
+      case MessageType.audio:
+        return audioFolder;
+      case MessageType.document:
+        return docsFolder;
+      default:
+        return '';
+    }
+  }
+
+  Future<String?> sendAssetMessage({
     String? chatID,
     String? groupID,
+    MessageType? messageType,
     required File file,
   }) async {
     try {
-      final assetUrl = await CommonDBFunctions.saveUserFileToDataBaseStorage(
-          ref: "$chatAssetFolder$chatID/${DateTime.now()}", file: file);
-      return assetUrl;
+      if (chatID != null) {
+        final assetUrl = await CommonDBFunctions.saveUserFileToDataBaseStorage(
+            ref:
+                "$mediaAttachmentsFolder/$chatsMediaFolder/$chatID/${messageType == MessageType.audio ? audioFolder : messageType == MessageType.video ? videoFolder : messageType == MessageType.document ? docsFolder : photoFolder}/${DateTime.now()}",
+            file: file);
+        return assetUrl;
+      } else if (groupID != null) {
+        final assetUrl = await CommonDBFunctions.saveUserFileToDataBaseStorage(
+            ref:
+                "$mediaAttachmentsFolder/$groupsMediaFolder/$groupID/${messageType == MessageType.audio ? audioFolder : messageType == MessageType.video ? videoFolder : messageType == MessageType.document ? docsFolder : photoFolder}/${DateTime.now()}",
+            file: file);
+        return assetUrl;
+      } else {
+        return null;
+      }
     } on FirebaseException catch (e) {
       log("Photo send error chat data: ${e.message}");
-      throw Exception(e.message);
+      return null;
     } catch (e) {
       log(e.toString());
-      throw Exception(e.toString());
+      return null;
     }
   }
 
@@ -476,6 +505,63 @@ class MessageData {
     }
   }
 
+  void deleteMessageFilFromStorageForEveryone({
+    required String? memberID,
+    required bool isGroup,
+    ChatModel? chatmodel,
+    GroupModel? groupmodel,
+    required String messageID,
+  }) async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> message;
+      if (isGroup) {
+        message = await firestore
+            .collection(usersCollection)
+            .doc(memberID)
+            .collection(groupsCollection)
+            .doc(groupmodel?.groupID)
+            .collection(messagesCollection)
+            .doc(messageID)
+            .get();
+      } else {
+        message = await firestore
+            .collection(usersCollection)
+            .doc(memberID)
+            .collection(chatsCollection)
+            .doc(chatmodel?.chatID)
+            .collection(messagesCollection)
+            .doc(messageID)
+            .get();
+      }
+      if (!message.exists) {
+        log("Message with ID $messageID does not exist.");
+        return;
+      }
+
+      final data = message.data();
+      if (data == null) {
+        return;
+      }
+
+      log("Message data: $data");
+
+      final messagemodel = MessageModel.fromJson(map: data);
+
+      if (messagemodel.messageType == MessageType.audio ||
+          messagemodel.messageType == MessageType.video ||
+          messagemodel.messageType == MessageType.photo ||
+          messagemodel.messageType == MessageType.document) {
+        if (messagemodel.message != null) {
+          final mediaReference =
+              firebaseStorage.refFromURL(messagemodel.message!);
+          await mediaReference.delete();
+        }
+      }
+    } catch (e) {
+      log("Error: ${e.toString()}");
+    }
+  }
+
   Future<bool> deleteMessageForEveryOne({
     GroupModel? groupModel,
     required String messageID,
@@ -491,6 +577,12 @@ class MessageData {
     try {
       if (isGroup) {
         for (final memberID in groupModel!.groupMembers!) {
+          deleteMessageFilFromStorageForEveryone(
+              groupmodel: groupModel,
+              memberID: memberID,
+              isGroup: isGroup,
+              messageID: messageID);
+
           await firestore
               .collection(usersCollection)
               .doc(memberID)
@@ -502,6 +594,14 @@ class MessageData {
         }
         return true;
       } else {
+        final chatMembers = [chatModel?.senderID, chatModel?.receiverID];
+        for (var member in chatMembers) {
+          deleteMessageFilFromStorageForEveryone(
+              chatmodel: chatModel,
+              memberID: member,
+              isGroup: isGroup,
+              messageID: messageID);
+        }
         await firestore
             .collection(usersCollection)
             .doc(chatModel?.senderID)

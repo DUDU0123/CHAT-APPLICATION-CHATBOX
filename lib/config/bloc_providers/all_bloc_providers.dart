@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:official_chatbox_application/features/data/data_sources/broadcast_data/broadcast_data.dart';
+import 'package:official_chatbox_application/features/data/data_sources/call_data/call_data.dart';
 import 'package:official_chatbox_application/features/data/data_sources/chat_data/chat_data.dart';
 import 'package:official_chatbox_application/features/data/data_sources/contact_data/contact_data.dart';
 import 'package:official_chatbox_application/features/data/data_sources/group_data/group_data.dart';
@@ -11,6 +12,7 @@ import 'package:official_chatbox_application/features/data/data_sources/status_d
 import 'package:official_chatbox_application/features/data/data_sources/user_data/user_data.dart';
 import 'package:official_chatbox_application/features/data/repositories/auth_repo_impl/authentication_repo_impl.dart';
 import 'package:official_chatbox_application/features/data/repositories/broadcast_repo_impl/brocast_repository_impl.dart';
+import 'package:official_chatbox_application/features/data/repositories/call_repo_impl/call_repository_impl.dart';
 import 'package:official_chatbox_application/features/data/repositories/chat_repository_impl/chat_repo_impl.dart';
 import 'package:official_chatbox_application/features/data/repositories/contact_repository_impl/contact_repo_impl.dart';
 import 'package:official_chatbox_application/features/data/repositories/group_repo_impl/group_repo_impl.dart';
@@ -20,6 +22,7 @@ import 'package:official_chatbox_application/features/data/repositories/user_rep
 import 'package:official_chatbox_application/features/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/broadcast/broadcast_bloc.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/call/call_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/contact/contact_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/group/group_bloc.dart';
@@ -196,6 +199,15 @@ class AppBlocProvider {
           ),
         ),
       ),
+    ),
+    BlocProvider(
+      create: (context) => CallBloc(
+        callRepository: CallRepositoryImpl(
+          callData: CallData(
+            firebaseFirestore: fireStore,
+          ),
+        ),
+      )..add(GetAllCallLogEvent()),
     ),
   ];
 }

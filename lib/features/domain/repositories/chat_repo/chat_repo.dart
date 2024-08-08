@@ -12,4 +12,5 @@ abstract class ChatRepo {
   });
   Future<void> clearChatMethodInOneToOne({required String chatID});
   Future<bool> clearAllChatsInApp();
+  Future<bool> updateChatData({required ChatModel chatModel});
 }

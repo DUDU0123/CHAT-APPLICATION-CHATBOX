@@ -14,7 +14,8 @@ import 'package:official_chatbox_application/features/presentation/pages/mobile_
 import 'package:official_chatbox_application/features/presentation/widgets/status/status_tile_widget.dart';
 
 class StatusHomePage extends StatefulWidget {
-  const StatusHomePage({super.key});
+  const StatusHomePage({super.key, required this.currentUserId,});
+  final String? currentUserId;
 
   @override
   State<StatusHomePage> createState() => _StatusHomePageState();
@@ -46,6 +47,7 @@ class _StatusHomePageState extends State<StatusHomePage> {
                   stream: CommonDBFunctions.getCurrentUserStatus(),
                   builder: (context, snapshot) {
                     return statusTileWidget(
+                      currentUserId: widget.currentUserId,
                       isCurrentUser: true,
                       statusModel: snapshot.data,
                       context: context,
@@ -57,10 +59,6 @@ class _StatusHomePageState extends State<StatusHomePage> {
                 child: smallGreyMediumBoldTextWidget(text: "Updates"),
               ),
               kHeight15,
-              // Padding(
-              //   padding: EdgeInsets.symmetric(horizontal: 20.w),
-              //   child: smallGreyMediumBoldTextWidget(text: "Viewed updates"),
-              // ),
               Expanded(
                 child: StreamBuilder<List<StatusModel>?>(
                     stream: state.statusList,
@@ -94,6 +92,7 @@ class _StatusHomePageState extends State<StatusHomePage> {
                         itemBuilder: (context, index) {
                           final status = otherUsersStatuses[index];
                           return statusTileWidget(
+                            currentUserId: widget.currentUserId,
                             isCurrentUser: false,
                             context: context,
                             statusModel: status,

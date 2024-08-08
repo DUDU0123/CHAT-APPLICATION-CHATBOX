@@ -61,6 +61,9 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
     }
   }
 
+  String? getCurrentUserId(String? uid){
+    return firebaseAuth.currentUser?.uid;
+  }
   @override
   Future<UserCredential> verifyOtp({
     required BuildContext context,

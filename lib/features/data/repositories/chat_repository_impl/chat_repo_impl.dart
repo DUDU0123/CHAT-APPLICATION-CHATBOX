@@ -44,15 +44,19 @@ class ChatRepoImpl extends ChatRepo {
       chatModel: chatModel,
     );
   }
-  
+
   @override
-  Future<void> clearChatMethodInOneToOne({required String chatID}) async{
+  Future<void> clearChatMethodInOneToOne({required String chatID}) async {
     await chatData.clearChatInOneToOne(chatID: chatID);
   }
-  
+
   @override
-  Future<bool> clearAllChatsInApp() async{
+  Future<bool> clearAllChatsInApp() async {
     return await chatData.clearAllChats();
   }
-  
+
+  @override
+  Future<bool> updateChatData({required ChatModel chatModel}) async {
+    return await chatData.updateChatData(chatModel: chatModel);
+  }
 }

@@ -344,6 +344,48 @@ class CommonDBFunctions {
     );
   }
 
+  static Future<ChatModel?> getChatModelByChatID(
+      {required String chatModelId}) async {
+    try {
+      final chatDocRef = await fireStore
+          .collection(usersCollection)
+          .doc(firebaseAuth.currentUser?.uid)
+          .collection(chatsCollection)
+          .doc(chatModelId)
+          .get();
+      if (chatDocRef.exists) {
+        return ChatModel.fromJson(chatDocRef.data()!);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      log("Error on chatModel get");
+      return null;
+    }
+  }
+
+  static Stream<ChatModel?>? getChatModelByChatIDAsStream(
+      {required String? chatModelId}) {
+    try {
+      return fireStore
+          .collection(usersCollection)
+          .doc(firebaseAuth.currentUser?.uid)
+          .collection(chatsCollection)
+          .doc(chatModelId)
+          .snapshots()
+          .map((snapshot) {
+        if (snapshot.exists) {
+          return ChatModel.fromJson(snapshot.data()!);
+        } else {
+          return null;
+        }
+      });
+    } catch (e) {
+      log("Error on chatModel get");
+      return null;
+    }
+  }
+
   static Future<ChatModel?> getChatModel({required String receiverID}) async {
     final chatInSenderAppWithReceiver = await fireStore
         .collection(usersCollection)
@@ -377,9 +419,10 @@ class CommonDBFunctions {
     final currentUserId = firebaseAuth.currentUser?.uid;
     log("Curent : $currentUserId");
     if (currentUserId == null) return;
-    if (chatModel != null && forWhich==For.notAll) {
+    if (chatModel != null && forWhich == For.notAll) {
       final wallpaperUrl = await saveUserFileToDataBaseStorage(
-          ref: "WallPaper/$currentUserId${chatModel.chatID}", file: wallpaperFile!);
+          ref: "WallPaper/$currentUserId${chatModel.chatID}",
+          file: wallpaperFile!);
       final ChatModel updatedChatModel = chatModel.copyWith(
         chatWallpaper: wallpaperUrl,
       );
@@ -389,10 +432,11 @@ class CommonDBFunctions {
           .collection(chatsCollection)
           .doc(chatModel.chatID)
           .update(updatedChatModel.toJson());
-          log("Inside wallpaper chatmodel");
-    } else if (groupModel != null&& forWhich==For.notAll) {
+      log("Inside wallpaper chatmodel");
+    } else if (groupModel != null && forWhich == For.notAll) {
       final wallpaperUrl = await saveUserFileToDataBaseStorage(
-          ref: "WallPaper/$currentUserId${groupModel.groupID}", file: wallpaperFile!);
+          ref: "WallPaper/$currentUserId${groupModel.groupID}",
+          file: wallpaperFile!);
       final GroupModel updatedGroupModel = groupModel.copyWith(
         groupWallpaper: wallpaperUrl,
       );
@@ -402,7 +446,7 @@ class CommonDBFunctions {
           .collection(groupsCollection)
           .doc(groupModel.groupID)
           .update(updatedGroupModel.toJson());
-          log("Inside wallpaper groupmodel");
+      log("Inside wallpaper groupmodel");
     } else {
       // For all
       final wallpaperUrl = await saveUserFileToDataBaseStorage(

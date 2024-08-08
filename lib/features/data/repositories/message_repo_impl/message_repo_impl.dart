@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/features/data/data_sources/message_data/message_data.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
@@ -66,9 +67,14 @@ class MessageRepoImpl extends MessageRepo {
   }
 
   @override
-  Future<String> sendAssetMessage(
-      {String? chatID, String? groupID, required File file}) {
+  Future<String?> sendAssetMessage({
+    String? chatID,
+    String? groupID,
+    MessageType? messageType,
+    required File file,
+  }) {
     return messageData.sendAssetMessage(
+      messageType: messageType,
       chatID: chatID,
       groupID: groupID,
       file: file,

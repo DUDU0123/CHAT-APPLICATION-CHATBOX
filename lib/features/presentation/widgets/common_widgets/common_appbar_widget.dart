@@ -81,9 +81,11 @@ class CommonAppBar extends StatelessWidget {
             ),
       actions: !(pageType == PageTypeEnum.settingsPage)
           ? appBarIconListMessagingPage(
+            appBarTitle: appBarTitle,
             chatModel: chatModel,groupModel: groupModel,isGroup: isGroup??false,
               pageType: pageType,
               context: context,
+              receiverImage: userProfileImage,
             )
           : [],
     );

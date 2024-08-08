@@ -60,7 +60,7 @@ enum MediaType {
   audio,
   location,
   contact,
-  none,
+  none,video,
 }
 
 enum AssetSelected {
@@ -84,4 +84,7 @@ enum StatusType {
   video,
   image,
   text,none
+}
+enum CallType{
+  video,audio,
 }

@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/utils/get_appbar_title.dart';
 import 'package:official_chatbox_application/core/utils/network_status_methods.dart';
+import 'package:official_chatbox_application/features/data/repositories/auth_repo_impl/authentication_repo_impl.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/group/group_bloc.dart';
@@ -51,7 +53,7 @@ class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
   final pages = [
     const ChatHomePage(),
     const GroupHomePage(),
-    const StatusHomePage(),
+    StatusHomePage(currentUserId: AuthenticationRepoImpl(firebaseAuth: firebaseAuth).getCurrentUserId(firebaseAuth.currentUser?.uid),),
     const CallHomePage(),
   ];
 
@@ -64,7 +66,7 @@ class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
 
   @override
   Widget build(BuildContext context) {
-    // NetworkStatusMethods.initialize();
+    NetworkStatusMethods.initialize();
     final bottomNavBloc = BlocProvider.of<BottomNavBloc>(context);
     return Scaffold(
       body: NestedScrollView(

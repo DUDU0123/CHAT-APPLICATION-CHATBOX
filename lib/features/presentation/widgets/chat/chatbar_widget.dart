@@ -10,6 +10,7 @@ import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/emoji_select.dart';
+import 'package:official_chatbox_application/core/utils/message_methods.dart';
 import 'package:official_chatbox_application/core/utils/video_photo_from_camera_source_method.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
@@ -18,13 +19,11 @@ import 'package:official_chatbox_application/features/presentation/bloc/message/
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_field_common.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/message/reply_message_small_widgets.dart';
 
-
-
-
 class ChatBarWidget extends StatefulWidget {
   ChatBarWidget({
     super.key,
     required this.messageController,
+    required this.isChatBoxAI,
     required this.isImojiButtonClicked,
     this.chatModel,
     required this.scrollController,
@@ -38,6 +37,7 @@ class ChatBarWidget extends StatefulWidget {
   });
   final TextEditingController messageController;
   bool isImojiButtonClicked;
+  final bool isChatBoxAI;
   final ScrollController scrollController;
   final FlutterSoundRecorder recorder;
   final ChatModel? chatModel;
@@ -194,12 +194,10 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                           child: IconButton(
                             onPressed: () async {
                               if (widget.messageController.text.isNotEmpty) {
-                                
-                                  cancelReply(context: context);
-                                
-                                sendMessage(
-                                  replyToMessage:
-                                      widget.replyMessage,
+                                cancelReply(context: context);
+
+                                MessageMethods.sendMessage(
+                                  replyToMessage: widget.replyMessage,
                                   isGroup: widget.isGroup,
                                   groupModel: widget.groupModel,
                                   receiverContactName:
@@ -209,7 +207,6 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                                   messageController: widget.messageController,
                                   scrollController: widget.scrollController,
                                 );
-                                
                               } else {
                                 context.read<MessageBloc>().add(
                                       AudioRecordToggleEvent(
@@ -262,64 +259,4 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
       ),
     );
   }
-}
-
-void sendMessage({
-  required BuildContext context,
-  required ChatModel? chatModel,
-  required TextEditingController messageController,
-  required ScrollController scrollController,
-  required String? receiverContactName,
-  required bool isGroup,
-  GroupModel? groupModel,
-  MessageModel? replyToMessage,
-}) {
-  MessageModel message;
-  if (!isGroup) {
-    message = MessageModel(
-      replyToMessage: replyToMessage,
-      messageId: DateTime.now().millisecondsSinceEpoch.toString(),
-      senderID: chatModel?.senderID,
-      receiverID: chatModel?.receiverID,
-      messageTime: DateTime.now().toString(),
-      isPinnedMessage: false,
-      isStarredMessage: false,
-      isDeletedMessage: false,
-      isEditedMessage: false,
-      message: messageController.text,
-      messageType: MessageType.text,
-      messageStatus: MessageStatus.sent,
-    );
-  } else {
-    message = MessageModel(
-      replyToMessage: replyToMessage,
-      senderID: firebaseAuth.currentUser?.uid,
-      messageTime: DateTime.now().toString(),
-      isPinnedMessage: false,
-      isStarredMessage: false,
-      isDeletedMessage: false,
-      isEditedMessage: false,
-      message: messageController.text,
-      messageType: MessageType.text,
-      messageStatus: MessageStatus.sent,
-    );
-  }
-
-  scrollController.animateTo(
-    scrollController.position.maxScrollExtent,
-    duration: const Duration(milliseconds: 100),
-    curve: Curves.easeOut,
-  );
-  context.read<MessageBloc>().add(
-        MessageSentEvent(
-          isGroup: isGroup,
-          groupModel: groupModel,
-          currentUserId: firebaseAuth.currentUser?.uid ?? '',
-          receiverContactName: receiverContactName ?? '',
-          receiverID: chatModel?.receiverID ?? '',
-          chatModel: chatModel,
-          message: message,
-        ),
-      );
-  messageController.clear();
 }

@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:official_chatbox_application/core/service/locator.dart';
 import 'package:official_chatbox_application/features/presentation/root_widget_page.dart';
 import 'package:official_chatbox_application/firebase_options.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
   initializeServiceLocator();
   if (kIsWeb) {
     await Firebase.initializeApp(
@@ -22,7 +26,15 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(
-    const RootWidgetPage(),
-  );
+  ZegoUIKit().initLog().then((value) {
+    ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI(
+      [ZegoUIKitSignalingPlugin()],
+    );
+
+    runApp(
+      RootWidgetPage(
+        navigatorKey: navigatorKey,
+      ),
+    );
+  });
 }

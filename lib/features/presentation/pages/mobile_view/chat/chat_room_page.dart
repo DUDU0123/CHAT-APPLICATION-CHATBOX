@@ -9,6 +9,7 @@ import 'package:official_chatbox_application/config/common_provider/common_provi
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
+import 'package:official_chatbox_application/core/utils/call_methods.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
 import 'package:official_chatbox_application/core/utils/snackbar.dart';
@@ -57,6 +58,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   @override
   void initState() {
     super.initState();
+   CallMethods.onUserLogin(currentUser: firebaseAuth.currentUser);
     !widget.isGroup
         ? CommonDBFunctions.updateChatOpenStatus(
             widget.chatModel?.receiverID ?? '',
@@ -83,11 +85,8 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         : null;
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
-    //ChatData.listenToChatDocument(widget.chatModel?.senderID??'', widget.chatModel?.chatID??'');
-
     context.read<MessageBloc>().add(GetAllMessageEvent(
           isGroup: widget.isGroup,
           groupModel: widget.groupModel,
@@ -175,6 +174,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                   ),
                 )
               : ChatBarWidget(
+                isChatBoxAI: false,
                   replyMessage:
                       Provider.of<CommonProvider>(context).replyMessage,
                   onCancelReply: () {

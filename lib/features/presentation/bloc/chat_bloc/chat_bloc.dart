@@ -20,6 +20,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<ClearChatEvent>(clearChatEvent);
     on<PickImageEvent>(pickImageEvent);
     on<ClearAllChatsEvent>(clearAllChatsEvent);
+    on<ChatUpdateEvent>(chatUpdateEvent);
   }
 
   FutureOr<void> createANewChatEvent(
@@ -85,18 +86,37 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     }
   }
 
- Future<void> clearAllChatsEvent(ClearAllChatsEvent event, Emitter<ChatState> emit) async {
+  Future<void> clearAllChatsEvent(
+      ClearAllChatsEvent event, Emitter<ChatState> emit) async {
     emit(ClearChatsLoadingState());
     try {
       final isCleared = await chatRepo.clearAllChatsInApp();
       if (isCleared) {
-        emit(const ClearChatsSuccessState(clearChatMessage: "Cleared all chats"));
+        emit(const ClearChatsSuccessState(
+          clearChatMessage: "Cleared all chats",
+        ));
         add(GetAllChatsEvent());
       } else {
         emit(const ClearChatsErrorState(errorMessage: "Can't clear the chats"));
       }
     } catch (e) {
       emit(ClearChatsErrorState(errorMessage: e.toString()));
+    }
+  }
+
+  FutureOr<void> chatUpdateEvent(
+      ChatUpdateEvent event, Emitter<ChatState> emit) async {
+    try {
+      final isUpdated =
+          await chatRepo.updateChatData(chatModel: event.chatModel);
+      log(name: "Mute notification", isUpdated.toString());
+      if (isUpdated) {
+        add(GetAllChatsEvent());
+      } else {
+        emit(const ChatErrorState(errormessage: "Cannot update data"));
+      }
+    } catch (e) {
+      emit(ChatErrorState(errormessage: e.toString()));
     }
   }
 }

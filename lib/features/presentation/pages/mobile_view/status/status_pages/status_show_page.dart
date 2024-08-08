@@ -14,8 +14,9 @@ import 'package:story_view/widgets/story_view.dart';
 
 class StatusShowPage extends StatefulWidget {
   const StatusShowPage(
-      {super.key, required this.statusModel, required this.isCurrentUser});
+      {super.key, required this.statusModel, required this.isCurrentUser, this.currentUserId});
   final StatusModel statusModel;
+  final String? currentUserId;
   final bool isCurrentUser;
 
   @override
@@ -49,13 +50,13 @@ class _StatusShowPageState extends State<StatusShowPage> {
               },
               onStoryShow: (s, i) {
                 currentIndexNotifier.value = i;
-                context.read<StatusBloc>().add(
+             widget.currentUserId!=null?   context.read<StatusBloc>().add(
                       UpdateStatusViewersList(
                         statusModel: widget.statusModel,
                         uploadedStatusModel: widget.statusModel.statusList![i],
-                        viewerId: FirebaseAuth.instance.currentUser!.uid,
+                        viewerId: widget.currentUserId!,
                       ),
-                    );
+                    ):null;
                 log(widget.statusModel.statusList![currentIndexNotifier.value]
                     .viewers!.length
                     .toString());

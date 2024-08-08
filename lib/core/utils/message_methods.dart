@@ -1,13 +1,16 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
+import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/message_model/message_model.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/message/message_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/message/message_action_bottom_sheet_show_widget.dart';
 
 class MessageMethods {
@@ -104,4 +107,66 @@ class MessageMethods {
       return Stream.value(null);
     }
   }
+
+
+ static void sendMessage({
+  required BuildContext context,
+  required ChatModel? chatModel,
+  required TextEditingController messageController,
+  required ScrollController scrollController,
+  required String? receiverContactName,
+  required bool isGroup,
+  GroupModel? groupModel,
+  MessageModel? replyToMessage,
+}) {
+  MessageModel message;
+  if (!isGroup) {
+    message = MessageModel(
+      replyToMessage: replyToMessage,
+      messageId: DateTime.now().millisecondsSinceEpoch.toString(),
+      senderID: chatModel?.senderID,
+      receiverID: chatModel?.receiverID,
+      messageTime: DateTime.now().toString(),
+      isPinnedMessage: false,
+      isStarredMessage: false,
+      isDeletedMessage: false,
+      isEditedMessage: false,
+      message: messageController.text,
+      messageType: MessageType.text,
+      messageStatus: MessageStatus.sent,
+    );
+  } else {
+    message = MessageModel(
+      replyToMessage: replyToMessage,
+      senderID: firebaseAuth.currentUser?.uid,
+      messageTime: DateTime.now().toString(),
+      isPinnedMessage: false,
+      isStarredMessage: false,
+      isDeletedMessage: false,
+      isEditedMessage: false,
+      message: messageController.text,
+      messageType: MessageType.text,
+      messageStatus: MessageStatus.sent,
+    );
+  }
+
+  scrollController.animateTo(
+    scrollController.position.maxScrollExtent,
+    duration: const Duration(milliseconds: 100),
+    curve: Curves.easeOut,
+  );
+  context.read<MessageBloc>().add(
+        MessageSentEvent(
+          isGroup: isGroup,
+          groupModel: groupModel,
+          currentUserId: firebaseAuth.currentUser?.uid ?? '',
+          receiverContactName: receiverContactName ?? '',
+          receiverID: chatModel?.receiverID ?? '',
+          chatModel: chatModel,
+          message: message,
+        ),
+      );
+  messageController.clear();
+}
+
 }

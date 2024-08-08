@@ -93,7 +93,6 @@ class StatusData {
         // Get the list of contact IDs
         return contactsSnapshot.docs.map((doc) => doc.id).toList();
       });
-      
       // Combine the contacts stream with status streams
       return contactsStream.switchMap((contactIds) {
         // Create a stream for each contact's status

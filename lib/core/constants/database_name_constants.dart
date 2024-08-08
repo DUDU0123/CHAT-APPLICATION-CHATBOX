@@ -2,7 +2,7 @@ const userDbId = 'id';
 const userDbName = 'username';
 const userDbEmail = 'user_email';
 const userDbPhoneNumber = 'phone_number';
-const userDbAbout ='user_about';
+const userDbAbout = 'user_about';
 const userDbProfileImage = 'user_profile_image';
 const userDbNetworkStatus = 'user_network_status';
 const userDbCreatedAt = 'created_at';
@@ -20,10 +20,9 @@ const chatsCollection = 'chats';
 const groupsCollection = 'groups';
 const messagesCollection = 'messages';
 const statusCollection = 'statuses';
+const callsCollection = 'calls';
 const attachmentsCollection = 'attachments';
 const starredMessagesCollection = 'starred_collection';
-
-
 
 // messageDb fields name
 const dbMessageID = 'message_id';
@@ -58,7 +57,6 @@ const isUserChatOpen = 'isChatOpen';
 const isGroupChat = 'is_group';
 const dbchatWallpaper = 'chat_wallpaper';
 
-
 // group db fields name
 const dbGroupId = 'group_id';
 const dbGroupName = 'group_name';
@@ -82,7 +80,6 @@ const dbIsGroupOpen = 'is_group_open';
 const dbGroupCreatedBy = 'group_created_by';
 const dbGroupWallpaper = 'group_wallpaper';
 
-
 // status db field name
 const dbStatusId = 'status_id';
 const dbUploadedStatusId = 'uploaded_status_id';
@@ -94,7 +91,7 @@ const dbStatusCaption = 'statusCaption';
 const dbStatusContent = 'status_content';
 const dbStatusUploadedTime = 'status_uploaded_time';
 const dbStatusDuration = 'status_duration';
-const dbisStatusViewed= 'is_viewed';
+const dbisStatusViewed = 'is_viewed';
 const dbStatusModelTimeStamp = 'timestamp';
 const dbTextStatusBgColor = 'text_status_bg_color';
 const dbStatusViewersList = 'status_viewers_list';
@@ -106,6 +103,7 @@ const dbUserAbout = 'userAbout';
 const dbUserProfilePhotoOnChatBox = 'userProfilePhotoOnChatBox';
 const dbUserContactNumber = 'userContactNumber';
 const dbIsChatBoxUser = 'isChatBoxUser';
+const dbContactId = 'contact_id';
 
 // broadcast db field name
 const broadcastId = 'broadcast_id';
@@ -114,6 +112,29 @@ const broadcastName = 'broadcast_name';
 const broadcastProfilePhoto = 'broadcast_profile_photo';
 const broadcastMembersId = 'broadcast_members_id';
 
+// call db field name
+const dbCallId = 'call_id';
+const dbCallerId = 'caller_id';
+const dbCallRecieversId = 'call_receivers_id';
+const dbCallDuration = 'call_duration';
+const dbCallType = 'call_type';
+const dbIsMissedCall = 'is_missed_call';
+const dbIsIncomingCall = 'is_incoming_call';
+const dbIsGroupCall = 'is_group_call';
+const dbCallChatModelId = 'chat_model_id';
+const dbCallGroupModelId = 'group_model_id';
+const dbCallStartTime = 'call_start_time';
+const dbCallEndTime = 'call_end_time';
+const dbCallStatus = 'call_status';
+const dbCallReceiverName = 'call_receiver_name';
+const dbReceiverImage = 'call_receiver_image';
+
 // database storage folder name or file name
 const usersProfileImageFolder = "profile_images/";
-const chatAssetFolder = "chatsAsset/";
+const mediaAttachmentsFolder = "media_attachments_folder";
+const chatsMediaFolder = "chats_media_folder";
+const groupsMediaFolder = "groups_media_folder";
+const audioFolder = 'audio_files';
+const photoFolder = 'photo_files';
+const videoFolder = 'video_files';
+const docsFolder = 'document_files';

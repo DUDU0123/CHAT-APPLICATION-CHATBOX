@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/config/theme/theme_manager.dart';
@@ -7,6 +6,7 @@ import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/contact/contact_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chat/contact_list_page.dart';
+import 'package:official_chatbox_application/features/presentation/pages/mobile_view/payments/payments_home_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/select_contacts/select_contact_page.dart';
 import 'package:provider/provider.dart';
 
@@ -74,8 +74,11 @@ List<Widget> appBarIconsHome(
                     ));
               },
             ),
-            commonPopUpMenuItem(context: context, menuText: "New broadcast", onTap: () {
-              Navigator.push(
+            commonPopUpMenuItem(
+              context: context,
+              menuText: "New broadcast",
+              onTap: () {
+                Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => const SelectContactPage(
@@ -83,10 +86,22 @@ List<Widget> appBarIconsHome(
                         pageType: PageTypeEnum.broadcastMembersSelectPage,
                       ),
                     ));
-            },),
+              },
+            ),
             commonPopUpMenuItem(context: context, menuText: "Linked devices"),
             // commonPopUpMenuItem(context: context, menuText: "Starred messages"),
-            commonPopUpMenuItem(context: context, menuText: "Payments"),
+            commonPopUpMenuItem(
+              context: context,
+              menuText: "Payments",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PaymentsHomePage(),
+                  ),
+                );
+              },
+            ),
             settingsNavigatorMenu(context),
           ];
         }

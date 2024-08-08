@@ -15,7 +15,8 @@ import 'package:official_chatbox_application/features/presentation/pages/mobile_
 import 'package:provider/provider.dart';
 
 class RootWidgetPage extends StatelessWidget {
-  const RootWidgetPage({super.key});
+  const RootWidgetPage({super.key, required this.navigatorKey,});
+  final GlobalKey<NavigatorState> navigatorKey;
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +37,7 @@ class RootWidgetPage extends StatelessWidget {
         return MultiBlocProvider(
           providers: AppBlocProvider.allBlocProviders,
           child: MaterialApp(
+            navigatorKey: navigatorKey,
             debugShowCheckedModeBanner: false,
             themeMode: themeManager.themeMode,
             theme: ThemeConstants.lightTheme,
