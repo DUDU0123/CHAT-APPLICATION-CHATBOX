@@ -4,6 +4,11 @@ import 'package:official_chatbox_application/features/data/models/message_model/
 class CommonProvider extends ChangeNotifier {
   bool isExpanded = false;
   bool isEmptyList = false;
+  String appStorage = '';
+  void setStorage({required int storage}) {
+    appStorage = (storage ~/ (1024 * 1024)).toString();
+    notifyListeners();
+  }
   MessageModel? replyMessage;
   Set<String> expandedMessages = {};
   void setReplyMessage({required MessageModel replyMsg}){

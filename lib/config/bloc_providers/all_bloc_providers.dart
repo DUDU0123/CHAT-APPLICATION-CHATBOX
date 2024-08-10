@@ -26,6 +26,7 @@ import 'package:official_chatbox_application/features/presentation/bloc/call/cal
 import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/contact/contact_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/group/group_bloc.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/media/media_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/message/message_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/status/status_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
@@ -208,6 +209,9 @@ class AppBlocProvider {
           ),
         ),
       )..add(GetAllCallLogEvent()),
+    ),
+    BlocProvider(
+      create: (context) => MediaBloc()..add(GetAllMediaFiles()),
     ),
   ];
 }

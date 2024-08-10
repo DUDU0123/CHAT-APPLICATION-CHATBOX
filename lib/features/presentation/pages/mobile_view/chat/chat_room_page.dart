@@ -58,7 +58,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   @override
   void initState() {
     super.initState();
-   CallMethods.onUserLogin(currentUser: firebaseAuth.currentUser);
+    CallMethods.onUserLogin(currentUser: firebaseAuth.currentUser);
     !widget.isGroup
         ? CommonDBFunctions.updateChatOpenStatus(
             widget.chatModel?.receiverID ?? '',
@@ -85,8 +85,11 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         : null;
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) =>
+        scrollController.jumpTo(scrollController.position.maxScrollExtent));
     context.read<MessageBloc>().add(GetAllMessageEvent(
           isGroup: widget.isGroup,
           groupModel: widget.groupModel,
@@ -160,36 +163,36 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                           .contains(MembersGroupPermission.sendMessages) &&
                       !widget.groupModel!.groupAdmins!
                           .contains(firebaseAuth.currentUser?.uid)
-              ? Container(
-                  width: screenWidth(context: context),
-                  padding: EdgeInsets.symmetric(
-                    vertical: 5.h,
-                  ),
-                  color: darkSwitchColor.withOpacity(0.3),
-                  child: TextWidgetCommon(
-                    text: "Only Admins can send messages",
-                    textColor: buttonSmallTextColor,
-                    textAlign: TextAlign.center,
-                    fontSize: 14.sp,
-                  ),
-                )
-              : ChatBarWidget(
-                isChatBoxAI: false,
-                  replyMessage:
-                      Provider.of<CommonProvider>(context).replyMessage,
-                  onCancelReply: () {
-                    cancelReply(context: context);
-                  },
-                  focusNode: focusNode,
-                  isGroup: widget.isGroup,
-                  groupModel: widget.groupModel,
-                  receiverContactName: widget.userName,
-                  recorder: recorder,
-                  scrollController: scrollController,
-                  chatModel: widget.chatModel,
-                  isImojiButtonClicked: false,
-                  messageController: messageController,
-                )
+                  ? Container(
+                      width: screenWidth(context: context),
+                      padding: EdgeInsets.symmetric(
+                        vertical: 5.h,
+                      ),
+                      color: darkSwitchColor.withOpacity(0.3),
+                      child: TextWidgetCommon(
+                        text: "Only Admins can send messages",
+                        textColor: buttonSmallTextColor,
+                        textAlign: TextAlign.center,
+                        fontSize: 14.sp,
+                      ),
+                    )
+                  : ChatBarWidget(
+                      isChatBoxAI: false,
+                      replyMessage:
+                          Provider.of<CommonProvider>(context).replyMessage,
+                      onCancelReply: () {
+                        cancelReply(context: context);
+                      },
+                      focusNode: focusNode,
+                      isGroup: widget.isGroup,
+                      groupModel: widget.groupModel,
+                      receiverContactName: widget.userName,
+                      recorder: recorder,
+                      scrollController: scrollController,
+                      chatModel: widget.chatModel,
+                      isImojiButtonClicked: false,
+                      messageController: messageController,
+                    )
             ],
           ),
           Positioned(

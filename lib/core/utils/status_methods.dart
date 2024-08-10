@@ -11,8 +11,21 @@ import 'package:official_chatbox_application/features/data/models/status_model/s
 import 'package:official_chatbox_application/features/data/models/status_model/uploaded_status_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/message/message_bloc.dart';
+import 'package:video_trimmer/video_trimmer.dart';
 
 class StatusMethods {
+  final Trimmer _trimmer = Trimmer();
+
+  Future<void> trimVideo(String videoPath) async {
+    await _trimmer.saveTrimmedVideo(
+      startValue: 0.0,
+      endValue: 30.0,
+      onSave: (outputPath) {
+        log(outputPath.toString());
+      },
+    );
+  }
+
   // method for upload status
   static Future<StatusModel> newStatusUploadMethod({
     File? fileToShow,

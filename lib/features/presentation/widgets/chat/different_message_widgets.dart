@@ -21,30 +21,32 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:video_player/video_player.dart';
 
 Widget locationMessageWidget({required MessageModel message}) {
-  return Column(
-    children: [
-      SvgPicture.asset(
-        location,
-        width: 50.w,
-        height: 50.w,
-        colorFilter: ColorFilter.mode(
-          kBlack,
-          BlendMode.srcIn,
+  return Center(
+    child: Column(
+      children: [
+        SvgPicture.asset(
+          location,
+          width: 50.w,
+          height: 50.w,
+          colorFilter: ColorFilter.mode(
+            kBlack,
+            BlendMode.srcIn,
+          ),
         ),
-      ),
-      TextButton(
-        onPressed: () async {
-          await canLaunchUrlString(message.message ?? '')
-              ? await launchUrlString(message.message ?? '')
-              : null;
-        },
-        child: TextWidgetCommon(
-          text: "Open Location",
-          textColor: kWhite,
-          fontSize: 18.sp,
+        TextButton(
+          onPressed: () async {
+            await canLaunchUrlString(message.message ?? '')
+                ? await launchUrlString(message.message ?? '')
+                : null;
+          },
+          child: TextWidgetCommon(
+            text: "Open Location",
+            textColor: kWhite,
+            fontSize: 18.sp,
+          ),
         ),
-      ),
-    ],
+      ],
+    ),
   );
 }
 
@@ -135,18 +137,30 @@ Widget photoMessageShowWidget({
             );
           },
           child: Container(
-            // height: 300.h,
-            child: Center(
-              child: CachedNetworkImage(
+            height: 250.h,
+            decoration: BoxDecoration(
+              image: DecorationImage(
                 fit: BoxFit.cover,
-                placeholder: (context, url) => commonAnimationWidget(
-                  context: context,
-                  isTextNeeded: false,
+                image: CachedNetworkImageProvider(
+                  message.message ?? '',
                 ),
-                imageUrl: message.message ?? '',
               ),
             ),
           ),
+          // child: Container(
+          //   height: 250.h,
+          //   child: Center(
+          //     child: CachedNetworkImage(
+
+          //       fit: BoxFit.cover,
+          //       placeholder: (context, url) => commonAnimationWidget(
+          //         context: context,
+          //         isTextNeeded: false,
+          //       ),
+          //       imageUrl: message.message ?? '',
+          //     ),
+          //   ),
+          // ),
         ),
         message.name != null
             ? captionWidget(
@@ -237,16 +251,18 @@ Widget videoMessageShowWidget({
             ],
           ),
         ),
-        message.name != null 
-            ? message.name!.isNotEmpty? Flexible(
-                child: captionWidget(
-                  message: message.name!,
-                  commonProvider: commonProvider,
-                  context: context,
-                  messageModel: message,
-                ),
-              )
-            : zeroMeasureWidget:zeroMeasureWidget
+        message.name != null
+            ? message.name!.isNotEmpty
+                ? Flexible(
+                    child: captionWidget(
+                      message: message.name!,
+                      commonProvider: commonProvider,
+                      context: context,
+                      messageModel: message,
+                    ),
+                  )
+                : zeroMeasureWidget
+            : zeroMeasureWidget
       ],
     ),
   );
@@ -272,24 +288,27 @@ Widget captionWidget({
   required BuildContext context,
   required MessageModel messageModel,
 }) {
-  return message.isNotEmpty? Padding(
-    padding:  EdgeInsets.symmetric(vertical:message.isEmpty?0: 10, horizontal: 0),
-    child: Column(
-      children: [
-        readMoreTextWidget(
-          commonProvider: commonProvider,
-          message: message,
-          messageModel: messageModel,
-        ),
-        messageModel.name != null && messageModel.name!.length > 1000
-            ? readMoreButton(
-                context: context,
+  return message.isNotEmpty
+      ? Padding(
+          padding: EdgeInsets.symmetric(
+              vertical: message.isEmpty ? 0 : 10, horizontal: 0),
+          child: Column(
+            children: [
+              readMoreTextWidget(
                 commonProvider: commonProvider,
-                fontSize: 16,
-                isInMessageList: true,
-                messageID: messageModel.messageId)
-            : zeroMeasureWidget,
-      ],
-    ),
-  ):zeroMeasureWidget;
+                message: message,
+                messageModel: messageModel,
+              ),
+              messageModel.name != null && messageModel.name!.length > 1000
+                  ? readMoreButton(
+                      context: context,
+                      commonProvider: commonProvider,
+                      fontSize: 16,
+                      isInMessageList: true,
+                      messageID: messageModel.messageId)
+                  : zeroMeasureWidget,
+            ],
+          ),
+        )
+      : zeroMeasureWidget;
 }

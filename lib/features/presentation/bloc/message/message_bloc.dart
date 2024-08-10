@@ -59,9 +59,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     on<GetMessageDateEvent>(getMessageDateEvent);
     on<GetReplyMessageEvent>(getReplyMessageEvent);
     on<UnSelectEvent>(unSelectEvent);
-   
   }
-
 
   FutureOr<void> getMessageDateEvent(
       GetMessageDateEvent event, Emitter<MessageState> emit) {
@@ -507,8 +505,8 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         if (file != null) {
           final fileUrl = await messageRepository.sendAssetMessage(
             messageType: event.messageType,
-           chatID: chatID,
-        groupID: event.groupModel?.groupID,
+            chatID: chatID,
+            groupID: event.groupModel?.groupID,
             file: file,
           );
           String fileName = file.path.split('/').last;
@@ -731,7 +729,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   Future<FutureOr<void>> locationMessageSendEvent(
       LocationMessageSendEvent event, Emitter<MessageState> emit) async {
     try {
-      final String? chatID = event.chatModel.chatID;
+      final String? chatID = event.chatModel?.chatID;
       if (chatID == null && !event.isGroup) {
         return null;
       }
@@ -767,15 +765,17 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           isEditedMessage: false,
           isPinnedMessage: false,
           isStarredMessage: false,
-          receiverID: event.chatModel.receiverID,
-          senderID: event.chatModel.senderID,
+          receiverID: event.chatModel?.receiverID,
+          senderID: event.chatModel?.senderID,
         );
-        await messageRepository.sendMessage(
-          chatId: chatID,
-          message: message,
-          receiverContactName: event.receiverContactName,
-          receiverId: event.receiverContactName,
-        );
+        if (event.receiverContactName != null && event.receiverID != null) {
+          await messageRepository.sendMessage(
+            chatId: chatID,
+            message: message,
+            receiverContactName: event.receiverContactName!,
+            receiverId: event.receiverID!,
+          );
+        }
       }
 
       MessageData.updateChatMessageDataOfUser(
@@ -813,16 +813,18 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       if (permission == LocationPermission.always ||
           permission == LocationPermission.whileInUse) {
         Position currentPosition = await Geolocator.getCurrentPosition();
-        currentPosition.latitude;
-        currentPosition.longitude;
-        LatLng currentLocation =
-            LatLng(currentPosition.latitude, currentPosition.longitude);
+        String locationUrl =
+            'https://www.google.com/maps/search/?api=1&query=${currentPosition.latitude},${currentPosition.longitude}';
 
-        emit(CurrentLocationState(
-          currentLocation: currentLocation,
-          latitude: currentPosition.latitude,
-          longitude: currentPosition.longitude,
-        ));
+        add(
+          LocationMessageSendEvent(
+            chatModel: event.chatModel,
+            location: locationUrl,
+            receiverID: event.receiverID,
+            receiverContactName: event.receiverContactName,
+            isGroup: event.isGroup,
+          ),
+        );
       } else {
         emit(const MessageErrorState(message: "Location not found"));
       }
@@ -913,15 +915,14 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     }
   }
 
- FutureOr<void> unSelectEvent(UnSelectEvent event, Emitter<MessageState> emit) {
-  if (state.selectedMessageIds != null) {
-    final updatedSelectedIds = Set<String>.from(state.selectedMessageIds!);
-    if (updatedSelectedIds.contains(event.messageId)) {
-      updatedSelectedIds.remove(event.messageId);
-      emit(state.copyWith(selectedMessageIds: updatedSelectedIds));
+  FutureOr<void> unSelectEvent(
+      UnSelectEvent event, Emitter<MessageState> emit) {
+    if (state.selectedMessageIds != null) {
+      final updatedSelectedIds = Set<String>.from(state.selectedMessageIds!);
+      if (updatedSelectedIds.contains(event.messageId)) {
+        updatedSelectedIds.remove(event.messageId);
+        emit(state.copyWith(selectedMessageIds: updatedSelectedIds));
+      }
     }
   }
-}
-
-
 }

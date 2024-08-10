@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
+import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/chat_asset_send_methods.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/media_show_page.dart/photo_video_show_page.dart';
@@ -33,17 +36,10 @@ Widget buildMediaItem(String filePath, MediaType mediaType) {
   return FutureBuilder<String>(
     future: firebaseStorage.ref(filePath).getDownloadURL(),
     builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      } else if (snapshot.hasError) {
-        return Icon(Icons.error, color: kRed);
-      } else if (!snapshot.hasData) {
-        return Container(color: kBlack);
+      final downloadUrl = snapshot.data;
+      if (downloadUrl==null) {
+        return zeroMeasureWidget;
       }
-
-      final downloadUrl = snapshot.data!;
       switch (mediaType) {
         case MediaType.gallery:
           return mediaContainerCommon(

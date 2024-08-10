@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:official_chatbox_application/config/common_provider/common_provider.dart';
 import 'package:official_chatbox_application/core/constants/app_constants.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/invite_app_function.dart';
+import 'package:official_chatbox_application/core/utils/storage_methods.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/media/media_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/account/account_settings.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/chat/chat_settings.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/help/help_settings.dart';
@@ -14,10 +17,16 @@ import 'package:official_chatbox_application/features/presentation/pages/mobile_
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_appbar_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/divider_common.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/settings/common_blue_gradient_container_widget.dart';
+import 'package:provider/provider.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,6 +60,8 @@ class SettingsPage extends StatelessWidget {
                   final settings = settingsButtonsList[index];
                   return GestureDetector(
                     onTap: () async {
+                      final commonProvider =
+                          Provider.of<CommonProvider>(context, listen: false);
                       switch (settings.pageType) {
                         case PageTypeEnum.accountSetting:
                           Navigator.push(
@@ -86,12 +97,19 @@ class SettingsPage extends StatelessWidget {
                           );
                           break;
                         case PageTypeEnum.storageSetting:
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const StorageSettings(),
-                            ),
-                          );
+                          int usage =
+                              await StorageMethods.calculateAppStorageUsage();
+                          commonProvider.setStorage(storage: usage);
+                          if (mounted) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const StorageSettings(),
+                              ),
+                            );
+                            context.read<MediaBloc>().add(GetAllMediaFiles());
+                            context.read<MediaBloc>().add(MediaResetEvent());
+                          }
                           break;
                         case PageTypeEnum.helpSetting:
                           Navigator.push(

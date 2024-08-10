@@ -338,13 +338,34 @@ class AudioMessageSendEvent extends MessageEvent {
       ];
 }
 
-class LocationPickEvent extends MessageEvent {}
+class LocationPickEvent extends MessageEvent {
+    final ChatModel? chatModel;
+  final String? receiverID;
+  final String? receiverContactName;
+  final bool isGroup;
+  final GroupModel? groupModel;
+  const LocationPickEvent({
+    required this.chatModel,
+    required this.receiverID,
+    required this.receiverContactName,
+    required this.isGroup,
+    this.groupModel,
+  });
+  @override
+  List<Object> get props => [
+        chatModel??const ChatModel(),
+        receiverContactName??'',
+        receiverID??"",
+        isGroup,
+        groupModel ?? const GroupModel(),
+      ];
+}
 
 class LocationMessageSendEvent extends MessageEvent {
-  final ChatModel chatModel;
+  final ChatModel? chatModel;
   final String location;
-  final String receiverID;
-  final String receiverContactName;
+  final String? receiverID;
+  final String? receiverContactName;
   final bool isGroup;
   final GroupModel? groupModel;
   const LocationMessageSendEvent({
@@ -357,10 +378,10 @@ class LocationMessageSendEvent extends MessageEvent {
   });
   @override
   List<Object> get props => [
-        chatModel,
+        chatModel??const ChatModel(),
         location,
-        receiverContactName,
-        receiverID,
+        receiverContactName??'',
+        receiverID??"",
         isGroup,
         groupModel ?? const GroupModel(),
       ];

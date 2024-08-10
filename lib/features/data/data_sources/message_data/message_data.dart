@@ -10,9 +10,7 @@ import 'package:official_chatbox_application/features/data/models/chat_model/cha
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/message_model/message_model.dart';
 
-// if (userId==currentUserId) {
-//   continue;
-// }
+
 class MessageData {
   final FirebaseFirestore firestore;
   final FirebaseAuth firebaseAuth;

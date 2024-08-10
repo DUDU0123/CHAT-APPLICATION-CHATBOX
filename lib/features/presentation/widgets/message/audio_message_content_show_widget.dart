@@ -111,7 +111,7 @@ class _AudioMessageContentShowWidgetState
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10.w),
                     child: TimeProvider.formatDuration(currentPosition) !=
-                            "00.00"
+                            "00:00"
                         ? TextWidgetCommon(
                             text: TimeProvider.formatDuration(currentPosition),
                             textColor: kWhite,

@@ -1,4 +1,3 @@
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,9 +13,9 @@ import 'package:official_chatbox_application/core/utils/video_photo_from_camera_
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/message/message_bloc.dart';
-import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chat/location_pick/location_pick_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/select_contacts/select_contact_page.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/file_show_page.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/dialog_widgets/normal_dialogbox_widget.dart';
 
 class AttachmentListContainerVertical extends StatelessWidget {
   const AttachmentListContainerVertical({
@@ -24,7 +23,8 @@ class AttachmentListContainerVertical extends StatelessWidget {
     this.chatModel,
     this.receiverContactName,
     this.groupModel,
-    required this.isGroup, required this.rootContext,
+    required this.isGroup,
+    required this.rootContext,
   });
   final ChatModel? chatModel;
   final GroupModel? groupModel;
@@ -118,16 +118,21 @@ class AttachmentListContainerVertical extends StatelessWidget {
                       );
                       break;
                     case MediaType.location:
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LocationPickPage(
-                            chatModel: chatModel,
-                            groupModel: groupModel,
-                          ),
-                        ),
+                      normalDialogBoxWidget(
+                        context: context,
+                        title: "Share location",
+                        subtitle: "Do you want to share your location",
+                        onPressed: () {
+                          rootContext.read<MessageBloc>().add(LocationPickEvent(
+                              chatModel: chatModel,
+                              isGroup: isGroup,
+                              receiverContactName: receiverContactName,
+                              receiverID: chatModel?.receiverID,
+                              groupModel: groupModel,),);
+                          Navigator.pop(rootContext);
+                        },
+                        actionButtonName: "Share location",
                       );
-                      context.read<MessageBloc>().add(LocationPickEvent());
                       break;
                     case MediaType.audio:
                       context.read<MessageBloc>().add(

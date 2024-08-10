@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
@@ -59,75 +60,89 @@ class MediaMethods {
     return getMediaFiles(mediaFolderPath);
   }
 
-//   static Future<List<String>> getAllUserMediaFiles(String userID) async {
-//   try {
-//     log("Fetching media for user ID: $userID");
-//     final userMediaFolder = '$mediaAttachmentsFolder/$usersMediaFolder/$userID/';
-//     log("User media folder: $userMediaFolder");
-//     final storageRef = firebaseStorage.ref(userMediaFolder);
-//     final listResult = await storageRef.listAll();
-//     log("Items found: ${listResult.items.length}, Folders found: ${listResult.prefixes.length}");
-
-//     final List<String> filePaths = [];
-
-//     for (var item in listResult.items) {
-//       log("Found item: ${item.fullPath}");
-//       filePaths.add(item.fullPath);
-//     }
-
-//     for (var prefix in listResult.prefixes) {
-//       log("Found folder: ${prefix.fullPath}");
-//       final subfolderPaths = await getMediaFiles(prefix.fullPath);
-//       log("Subfolder files: $subfolderPaths");
-//       filePaths.addAll(subfolderPaths);
-//     }
-
-//     log("Total media files found: ${filePaths.length}");
-//     return filePaths;
-//   } catch (e) {
-//     log("Error fetching media: $e");
-//     return [];
-//   }
-// }
-static Future<List<String>> _getFilesRecursively(String folderPath) async {
+static Stream<List<String>> _getFilesRecursivelyStream(String folderPath) async* {
   final List<String> filePaths = [];
   try {
     final storageRef = firebaseStorage.ref(folderPath);
     final listResult = await storageRef.listAll();
 
-    // Add files in the current folder to the list
     for (var item in listResult.items) {
-      log("Found file: ${item.fullPath}");
-      filePaths.add(item.fullPath);
+      try {
+        log("Found file: ${item.fullPath}");
+        await item.getDownloadURL();
+        filePaths.add(item.fullPath);
+        yield [item.fullPath]; 
+      } on FirebaseException catch (e) {
+        if (e.code == 'object-not-found') {
+          log("File does not exist: ${item.fullPath}");
+        } else {
+          log("Error checking file existence: ${e.message}");
+        }
+      }
     }
 
     // Recursively get files from subfolders
     for (var prefix in listResult.prefixes) {
       log("Found subfolder: ${prefix.fullPath}");
-      final subfolderPaths = await _getFilesRecursively(prefix.fullPath);
-      filePaths.addAll(subfolderPaths);
+      await for (var subfolderPaths in _getFilesRecursivelyStream(prefix.fullPath)) {
+        yield subfolderPaths;
+      }
     }
+  } on FirebaseException catch (e) {
+    log("Firebase error: ${e.code} - ${e.message}");
   } catch (e) {
     log("Error fetching files from folder $folderPath: $e");
   }
-  return filePaths;
 }
 
-static Future<List<String>> getAllUserMediaFiles(String userID) async {
-  try {
-    log("Fetching media for user ID: $userID");
-    final userMediaFolder = '$mediaAttachmentsFolder/$usersMediaFolder/$userID/';
-    log("User media folder: $userMediaFolder");
 
-    // Use the recursive function to get all files within the user's media folder
-    final filePaths = await _getFilesRecursively(userMediaFolder);
+static Stream<List<String>> getAllUserMediaFilesStream(String userID) async* {
+    final List<String> allFilePaths = [];
+    try {
+      log("Fetching media for user ID: $userID");
+      final userMediaFolder = '$mediaAttachmentsFolder/$usersMediaFolder/$userID/';
+      log("User media folder: $userMediaFolder");
 
-    log("Total media files found: ${filePaths.length}");
-    return filePaths;
-  } catch (e) {
-    log("Error fetching media: $e");
-    return [];
+      // Use the recursive stream function to get all files within the user's media folder
+      await for (var filePaths in _getFilesRecursivelyStream(userMediaFolder)) {
+        allFilePaths.addAll(filePaths);
+        yield List<String>.from(allFilePaths); // Emit the accumulated list
+      }
+    }on FirebaseException catch (e) {
+    log("Firebase error: ${e.code} - ${e.message}");
   }
+     catch (e) {
+      log("Error fetching media: $e");
+      yield [];
+    }
 }
 
+  static MediaType getMediaTypeFromPath(String path) {
+    if (path.contains('/photo_files/')) {
+      return MediaType.gallery;
+    } else if (path.contains('/video_files/')) {
+      return MediaType.video;
+    } else if (path.contains('/audio_files/')) {
+      return MediaType.audio;
+    } else if (path.contains('/document_files/')) {
+      return MediaType.document;
+    } else {
+      return MediaType.none;
+    }
+  }
+
+  static Future<void> deleteMediaFromStorageUsingUrl(
+      {required String? downloadUrl}) async {
+    try {
+      if (downloadUrl!=null) {
+        final mediaReference = firebaseStorage.ref().child(downloadUrl);
+        await mediaReference.delete();
+        log("Successfully deleted media: $downloadUrl");
+      } else {
+        log("Invalid path: $downloadUrl");
+      }
+    } catch (e) {
+      log("Error deleting media: $e");
+    }
+  }
 }

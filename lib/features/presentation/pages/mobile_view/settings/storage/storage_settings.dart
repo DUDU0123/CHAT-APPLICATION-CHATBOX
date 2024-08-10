@@ -1,31 +1,18 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
+import 'package:official_chatbox_application/config/common_provider/common_provider.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
-
 import 'package:official_chatbox_application/core/constants/height_width.dart';
-import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/media_methods.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
-import 'package:official_chatbox_application/core/utils/storage_methods.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/media/media_bloc.dart';
+import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/storage/media_files_list_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
-import 'package:official_chatbox_application/features/presentation/widgets/media/media_widgets.dart';
-
-MediaType getMediaTypeFromPath(String path) {
-  if (path.contains('/photo_files/')) {
-    return MediaType.gallery;
-  } else if (path.contains('/video_files/')) {
-    return MediaType.video;
-  } else if (path.contains('/audio_files/')) {
-    return MediaType.audio;
-  } else if (path.contains('/document_files/')) {
-    return MediaType.document;
-  } else {
-    return MediaType.none;
-  }
-}
+import 'package:provider/provider.dart';
 
 class StorageSettings extends StatefulWidget {
   const StorageSettings({super.key});
@@ -35,26 +22,24 @@ class StorageSettings extends StatefulWidget {
 }
 
 class _StorageSettingsState extends State<StorageSettings> {
-  int? appStorageUsage;
+  // Stream<List<String>>? _mediaFilesStream;
 
-  @override
-  void initState() {
-    super.initState();
-    _fetchStorageUsage();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   fetchMediaFilesAsStream();
+  // }
 
-  void _fetchStorageUsage() async {
-    int usage = await StorageMethods.calculateAppStorageUsage();
-    setState(() {
-      appStorageUsage = usage;
-    });
-  }
+  // void fetchMediaFilesAsStream() {
+  //   if (firebaseAuth.currentUser != null) {
+  //     _mediaFilesStream = MediaMethods.getAllUserMediaFilesStream(
+  //       firebaseAuth.currentUser!.uid,
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
-    final storageUsed = appStorageUsage != null
-        ? (appStorageUsage! ~/ (1024 * 1024)).toString()
-        : '';
     return Scaffold(
       appBar: AppBar(
         title: const TextWidgetCommon(text: "Manage storage"),
@@ -71,7 +56,7 @@ class _StorageSettingsState extends State<StorageSettings> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     dataLevelTextShowWidget(
-                      data: storageUsed,
+                      data: Provider.of<CommonProvider>(context).appStorage,
                       isUsed: true,
                     ),
                     dataLevelTextShowWidget(
@@ -97,11 +82,14 @@ class _StorageSettingsState extends State<StorageSettings> {
                       height: 10.h,
                       width: 10.w,
                       decoration: BoxDecoration(
-                          color: buttonSmallTextColor, shape: BoxShape.circle),
+                        color: buttonSmallTextColor,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                     kWidth10,
                     TextWidgetCommon(
-                      text: "ChatBox ($storageUsed MB)",
+                      text:
+                          "ChatBox (${Provider.of<CommonProvider>(context).appStorage} MB)",
                       textColor: iconGreyColor,
                     )
                   ],
@@ -115,85 +103,45 @@ class _StorageSettingsState extends State<StorageSettings> {
             ),
           ),
           Expanded(
-            child: FutureBuilder<List<String>>(
-                future: firebaseAuth.currentUser != null
-                    ? MediaMethods.getAllUserMediaFiles(
-                        firebaseAuth.currentUser!.uid)
-                    : null,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return commonAnimationWidget(
-                      context: context,
-                      isTextNeeded: false,
-                    );
-                  } else if (snapshot.hasError || snapshot.data == null) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return emptyShowWidget(
-                        context: context, text: 'No media files found');
-                  }
-                  final snapData = snapshot.data;
-                  return GridView.builder(
-                    itemCount: snapData?.length,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 20.h),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 5,
-                      crossAxisSpacing: 5,
-                    ),
-                    itemBuilder: (context, index) {
-                      final downloadUrl = snapData![index];
-                      log(downloadUrl);
-                      final mediaType = getMediaTypeFromPath(downloadUrl);
-                      return buildMediaItem(
-                        downloadUrl,
-                        mediaType,
-                      );
-                    },
-                  );
-                }),
+            child: mediaFilesListWidget(),
           ),
         ],
       ),
-    );
-  }
-
-  Widget dataLevelTextShowWidget({
-    required String data,
-    required bool isUsed,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 90.w,
-          //color: buttonSmallTextColor,
-          child: Stack(
-            children: [
-              TextWidgetCommon(
-                text: data,
-                fontWeight: FontWeight.w500,
-                fontSize: 35.sp,
-              ),
-              Positioned(
-                right: 0,
-                bottom: 5.h,
-                child: TextWidgetCommon(
-                  text: "MB",
-                  fontWeight: FontWeight.normal,
-                  fontSize: 20.sp,
-                ),
-              ),
-            ],
-          ),
-        ),
-        TextWidgetCommon(
-          text: isUsed ? "Used" : "Free",
-          textColor: iconGreyColor,
-        ),
-      ],
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Provider.of<MediaBloc>(context, listen: true)
+                  .state
+                  .selectedMediaUrls !=
+              null
+          ? Provider.of<MediaBloc>(context, listen: true)
+                  .state
+                  .selectedMediaUrls!
+                  .isNotEmpty
+              ? FloatingActionButton(
+                  backgroundColor: darkLinearGradientColorTwo,
+                  isExtended: true,
+                  onPressed: () {
+                    final Set<String>? selectedUrls =
+                        Provider.of<MediaBloc>(context, listen: false)
+                            .state
+                            .selectedMediaUrls;
+                    if (selectedUrls != null) {
+                      context.read<MediaBloc>().add(
+                            MediaDeleteEvent(
+                              selectedMedias: selectedUrls,
+                            ),
+                          );
+                      Provider.of<MediaBloc>(context, listen: false)
+                          .add(GetAllMediaFiles());
+                    }
+                  },
+                  child: Icon(
+                    Icons.delete_outline,
+                    color: kRed,
+                    size: 30.sp,
+                  ),
+                )
+              : zeroMeasureWidget
+          : zeroMeasureWidget,
     );
   }
 }

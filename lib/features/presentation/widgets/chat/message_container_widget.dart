@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
@@ -15,8 +14,35 @@ import 'package:official_chatbox_application/features/presentation/widgets/chat/
 import 'package:official_chatbox_application/features/presentation/widgets/chat/different_message_widgets.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat/message_container_user_details.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat/message_status_show_widget.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/message/reply_message_small_widgets.dart';
 import 'package:video_player/video_player.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
+Future<bool> checkAssetExists(String url) async {
+  try {
+    // Extract the path from the URL
+    Uri uri = Uri.parse(url);
+    String path = uri.path;
+    // Remove the initial "/v0/b/<bucket-name>/o/" part
+    path = path.replaceFirst(RegExp(r'^/v0/b/[^/]+/o/'), '');
+    // Decode the URL-encoded path
+    path = Uri.decodeFull(path);
+
+    // Get a reference to the file
+    final ref = FirebaseStorage.instance.ref(path);
+
+    // Try to fetch the metadata
+    await ref.getMetadata();
+
+    // If we reach here, the file exists
+    return true;
+  } catch (e) {
+    // If we get here, the file doesn't exist or there was an error
+    print('Error checking asset: $e');
+    return false;
+  }
+}
 
 class MessageContainerWidget extends StatefulWidget {
   const MessageContainerWidget({
@@ -46,11 +72,55 @@ class MessageContainerWidget extends StatefulWidget {
 }
 
 class _MessageContainerWidgetState extends State<MessageContainerWidget> {
+  bool _assetExists = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // if ((widget.message.messageType == MessageType.audio ||
+    //         widget.message.messageType == MessageType.video ||
+    //         widget.message.messageType == MessageType.document ||
+    //         widget.message.messageType == MessageType.photo) &&
+    //     widget.message.message != null) {
+    //   _checkAssetExists();
+    // }
+  }
+
+  Future<void> _checkAssetExists() async {
+    bool exists = await checkAssetExists(widget.message.message!);
+    if (mounted) {
+      setState(() {
+        _assetExists = exists;
+      });
+    }
+  }
+    // if (!_assetExists &&
+    //     (widget.message.messageType == MessageType.audio ||
+    //         widget.message.messageType == MessageType.video ||
+    //         widget.message.messageType == MessageType.document ||
+    //         widget.message.messageType == MessageType.photo)) {
+    //   // Return a widget indicating that the asset is not available
+    //   return Align(
+    //     alignment: checkIsIncomingMessage(
+    //       isGroup: widget.isGroup,
+    //       message: widget.message,
+    //       groupModel: widget.groupModel,
+    //     )
+    //         ? Alignment.centerRight
+    //         : Alignment.centerLeft,
+    //     child: noMessageShowWidget(),
+    //     // child: zeroMeasureWidget,
+    //   );
+    // }
+
   @override
   Widget build(BuildContext context) {
+    
     if (widget.message.message == null) {
       return zeroMeasureWidget;
     }
+  
+
     return Align(
       alignment: checkIsIncomingMessage(
         isGroup: widget.isGroup,
@@ -217,6 +287,41 @@ class _MessageContainerWidgetState extends State<MessageContainerWidget> {
             message: widget.message,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget noMessageShowWidget() {
+    return Container(
+      width: screenWidth(context: context) / 1.4,
+      margin: EdgeInsets.symmetric(vertical: 5.h),
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.sp),
+        gradient: checkIsIncomingMessage(
+          isGroup: widget.isGroup,
+          message: widget.message,
+          groupModel: widget.groupModel,
+        )
+            ? LinearGradient(
+                colors: [
+                  darkSwitchColor,
+                  lightLinearGradientColorTwo,
+                ],
+              )
+            : LinearGradient(
+                colors: [
+                  kBlack,
+                  darkSwitchColor,
+                ],
+              ),
+      ),
+      child: TextWidgetCommon(
+        textAlign: TextAlign.center,
+        text: "This message is not available",
+        textColor: iconGreyColor,
+        fontStyle: FontStyle.italic,
+        fontWeight: FontWeight.w500,
       ),
     );
   }
