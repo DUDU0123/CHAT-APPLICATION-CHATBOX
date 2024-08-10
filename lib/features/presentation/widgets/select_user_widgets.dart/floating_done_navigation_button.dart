@@ -8,6 +8,7 @@ import 'package:official_chatbox_application/core/constants/database_name_consta
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/contact_methods.dart';
 import 'package:official_chatbox_application/core/utils/group_methods.dart';
+import 'package:official_chatbox_application/core/utils/message_methods.dart';
 import 'package:official_chatbox_application/core/utils/status_methods.dart';
 import 'package:official_chatbox_application/features/data/models/broadcast_model/broadcast_model.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
@@ -33,6 +34,9 @@ class FloatingDoneNavigateButton extends StatefulWidget {
     this.uploadedStatusModel,
     this.statusModel,
     this.uploadedStatusModelID,
+    required this.isStatus,
+    this.messageType,
+    this.messageContent,
   });
 
   final ChatModel? chatModel;
@@ -46,7 +50,10 @@ class FloatingDoneNavigateButton extends StatefulWidget {
   final bool isGroup;
   final UploadedStatusModel? uploadedStatusModel;
   final StatusModel? statusModel;
+  final bool isStatus;
   final String? uploadedStatusModelID;
+  final MessageType? messageType;
+  final String? messageContent;
 
   @override
   State<FloatingDoneNavigateButton> createState() =>
@@ -89,22 +96,33 @@ class _FloatingDoneNavigateButtonState
             break;
 
           case PageTypeEnum.toSendPage:
-            final val = await fireStore
-                .collection(usersCollection)
-                .doc(firebaseAuth.currentUser?.uid)
-                .collection(statusCollection)
-                .doc(widget.statusModel?.statusId)
-                .get();
-            final statusMOdell = StatusModel.fromJson(map: val.data()!);
-            final sendingStatus = statusMOdell.statusList?.firstWhere(
-                (status) =>
-                    status.uploadedStatusId == widget.uploadedStatusModelID);
+            if (widget.isStatus) {
+              final val = await fireStore
+                  .collection(usersCollection)
+                  .doc(firebaseAuth.currentUser?.uid)
+                  .collection(statusCollection)
+                  .doc(widget.statusModel?.statusId)
+                  .get();
+              final statusMOdell = StatusModel.fromJson(map: val.data()!);
+              final sendingStatus = statusMOdell.statusList?.firstWhere(
+                  (status) =>
+                      status.uploadedStatusId == widget.uploadedStatusModelID);
 
-            StatusMethods.shareStatusToAnyChat(
-              selectedContactList: widget.selectedContactList,
-              uploadedStatusModel: sendingStatus,
-              messageBloc: messageBloc,
-            );
+              StatusMethods.shareStatusToAnyChat(
+                selectedContactList: widget.selectedContactList,
+                uploadedStatusModel: sendingStatus,
+                messageBloc: messageBloc,
+              );
+            } else {
+              if (widget.messageContent != null && widget.messageType != null) {
+                MessageMethods.shareMessage(
+                  selectedContactList: widget.selectedContactList,
+                  messageBloc: messageBloc,
+                  messageType: widget.messageType!,
+                  messageContent: widget.messageContent!,
+                );
+              }
+            }
             if (mounted) {
               Navigator.pop(context);
             }
@@ -128,7 +146,7 @@ class _FloatingDoneNavigateButtonState
                       newBroadCastModel: newBroadCast,
                     ),
                   );
-                  Navigator.pop(context);
+              Navigator.pop(context);
             }
 
             break;

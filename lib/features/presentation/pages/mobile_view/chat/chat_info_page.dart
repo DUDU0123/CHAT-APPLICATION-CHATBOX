@@ -3,8 +3,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
+import 'package:official_chatbox_application/core/enums/enums.dart';
+import 'package:official_chatbox_application/core/utils/contact_methods.dart';
+import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
+import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
+import 'package:official_chatbox_application/features/presentation/pages/mobile_view/select_contacts/select_contact_page.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat_info/chat_info_widgets.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_list_tile.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/info_page_widgets.dart/info_page_appbar_content_widget.dart';
@@ -19,15 +24,15 @@ class ChatInfoPage extends StatelessWidget {
     this.receiverContactName,
     this.groupData,
     required this.isGroup,
+    this.chatModel,
   });
   final UserModel? receiverData;
   final String? receiverContactName;
   final GroupModel? groupData;
   final bool isGroup;
+  final ChatModel? chatModel;
   @override
   Widget build(BuildContext context) {
-    print(groupData?.groupAdmins);
-      print(groupData?.groupMembers);
     TextEditingController groupNameEditController = TextEditingController();
     List<String>? groupAdmins = groupData?.groupAdmins;
     bool isAdmin =
@@ -44,11 +49,52 @@ class ChatInfoPage extends StatelessWidget {
           receiverContactName: receiverContactName,
         ),
         actions: [
-          PopupMenuButton(
-            itemBuilder: (context) {
-              return [];
-            },
-          )
+          !isGroup
+              ? PopupMenuButton(
+                  itemBuilder: (context) {
+                    return [
+                      commonPopUpMenuItem(
+                        context: context,
+                        menuText: "Share",
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SelectContactPage(
+                                messageContent: receiverData?.phoneNumber,
+                                messageType: MessageType.contact,
+                                isStatus: false,
+                                pageType: PageTypeEnum.toSendPage,
+                                isGroup: false,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      commonPopUpMenuItem(
+                        context: context,
+                        menuText: "Edit",
+                        onTap: () {
+                          ContactMethods.openEditContactInDevice(
+                            context: context,
+                            receiverID: receiverData?.id,
+                          );
+                        },
+                      ),
+                      commonPopUpMenuItem(
+                        context: context,
+                        menuText: "View in address book",
+                        onTap: () {
+                          ContactMethods.openContactInDevice(
+                            context: context,
+                            receiverID: receiverData?.id,
+                          );
+                        },
+                      )
+                    ];
+                  },
+                )
+              : zeroMeasureWidget,
         ],
       ),
       body: Padding(
@@ -82,7 +128,8 @@ class ChatInfoPage extends StatelessWidget {
                 groupData: groupData,
               ),
               !isGroup
-                  ? chatMediaGradientContainerWidget(context: context)
+                  ? chatMediaGradientContainerWidget(
+                      context: context, chatModel: chatModel,)
                   : isAdmin
                       ? groupPermissionGraientContainerWidget(
                           context: context,
@@ -99,13 +146,17 @@ class ChatInfoPage extends StatelessWidget {
                 groupData: groupData,
               ),
               kHeight20,
-          groupData!=null? groupData!.groupMembers!.contains(firebaseAuth.currentUser?.uid)?   infoPageListTileWidget(
+              infoPageListTileWidget(
                 groupData: groupData,
                 context: context,
                 isGroup: isGroup,
                 receiverData: receiverData,
                 isFirstTile: true,
-              ): commonListTile(
+              ),
+              groupData != null
+                  ? !groupData!.groupMembers!
+                          .contains(firebaseAuth.currentUser?.uid)
+                      ? commonListTile(
                           leading: Icon(
                             Icons.delete_outline,
                             color: kRed,
@@ -116,7 +167,9 @@ class ChatInfoPage extends StatelessWidget {
                           title: "Delete Group",
                           isSmallTitle: false,
                           context: context,
-                        ):zeroMeasureWidget,
+                        )
+                      : zeroMeasureWidget
+                  : zeroMeasureWidget,
               infoPageListTileWidget(
                 groupData: groupData,
                 context: context,

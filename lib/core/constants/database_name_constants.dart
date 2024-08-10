@@ -132,6 +132,7 @@ const dbReceiverImage = 'call_receiver_image';
 // database storage folder name or file name
 const usersProfileImageFolder = "profile_images/";
 const mediaAttachmentsFolder = "media_attachments_folder";
+const usersMediaFolder = 'users_media_folder';
 const chatsMediaFolder = "chats_media_folder";
 const groupsMediaFolder = "groups_media_folder";
 const audioFolder = 'audio_files';

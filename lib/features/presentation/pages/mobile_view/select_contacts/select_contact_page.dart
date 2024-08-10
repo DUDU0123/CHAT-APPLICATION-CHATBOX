@@ -29,6 +29,9 @@ class SelectContactPage extends StatefulWidget {
     this.uploadedStatusModel,
     this.statusModel,
     this.uploadedStatusModelID,
+    this.isStatus,
+    this.messageType,
+    this.messageContent,
   });
   final ChatModel? chatModel;
   final String? receiverContactName;
@@ -38,6 +41,9 @@ class SelectContactPage extends StatefulWidget {
   final StatusModel? statusModel;
   final String? uploadedStatusModelID;
   final bool isGroup;
+  final bool? isStatus;
+  final MessageType? messageType;
+  final String? messageContent;
   @override
   State<SelectContactPage> createState() => _SelectContactPageState();
 }
@@ -82,7 +88,7 @@ class _SelectContactPageState extends State<SelectContactPage> {
                         : widget.pageType == PageTypeEnum.groupInfoPage
                             ? "Add members"
                             : widget.pageType == PageTypeEnum.toSendPage
-                                ? "Select contact to send"
+                                ? "Send to"
                                 : "New Broadcast"),
             widget.pageType == PageTypeEnum.sendContactSelectPage
                 ? BlocBuilder<ContactBloc, ContactState>(
@@ -225,8 +231,10 @@ class _SelectContactPageState extends State<SelectContactPage> {
       ),
       floatingActionButton: BlocBuilder<ContactBloc, ContactState>(
         builder: (context, state) {
-          
           return FloatingDoneNavigateButton(
+            messageType: widget.messageType,
+            messageContent: widget.messageContent,
+            isStatus: widget.isStatus ?? false,
             uploadedStatusModelID: widget.uploadedStatusModelID,
             statusModel: widget.statusModel,
             uploadedStatusModel: widget.uploadedStatusModel,

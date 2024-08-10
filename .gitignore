@@ -30,6 +30,9 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+gemini_api_key.dart
+razorpay_key.dart
+zego_fields.dart
 
 # Symbolication related
 app.*.symbols

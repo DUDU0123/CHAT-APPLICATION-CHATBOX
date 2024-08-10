@@ -40,6 +40,7 @@ Widget oneToOneChatAppBarWidget({
                 context,
                 MaterialPageRoute(
                   builder: (context) => ChatInfoPage(
+                    chatModel: chatModel,
                     isGroup: false,
                     receiverContactName: userName,
                     receiverData: snapshot.data,

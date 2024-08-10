@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:official_chatbox_application/config/service_keys/razorpay_key.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
@@ -26,9 +27,29 @@ class PaymentsHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const TextWidgetCommon(text: "Payments"),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PaymentHistoryPage(),
+                ),
+              );
+            },
+            icon: Icon(
+              Icons.history,
+              color: buttonSmallTextColor,
+              size: 28.sp,
+            ),
+          ),
+        ],
       ),
       body: BlocBuilder<ContactBloc, ContactState>(
         builder: (context, state) {
+          if (state is ContactsLoadingState) {
+            return commonAnimationWidget(context: context, isTextNeeded: false);
+          }
           if (state.contactList == null) {
             return emptyShowWidget(context: context, text: "No contacts");
           }
@@ -149,7 +170,7 @@ class _SendMoneyPageState extends State<SendMoneyPage> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           if (amountController.text.isNotEmpty) {
-             int amount = int.parse(amountController.text);
+            int amount = int.parse(amountController.text);
             if (amount <= 20000) {
               openCheckOut(
                 contactModel: widget.contact,
@@ -174,15 +195,21 @@ class _SendMoneyPageState extends State<SendMoneyPage> {
   }
 
   void handlePaymentSuccessResponse(PaymentSuccessResponse response) {
-    commonSnackBarWidget(context: context, contentText: "Payment Successful: ${response.paymentId}");
+    commonSnackBarWidget(
+        context: context,
+        contentText: "Payment Successful: ${response.paymentId}");
   }
 
   void handlePaymentErrorResponse(PaymentFailureResponse response) {
-    commonSnackBarWidget(context: context, contentText: "Payment Unsuccessful: ${response.message}");
+    commonSnackBarWidget(
+        context: context,
+        contentText: "Payment Unsuccessful: ${response.message}");
   }
 
   void handleExternalWalletSelected(ExternalWalletResponse response) {
-    commonSnackBarWidget(context: context, contentText: "Payment Wallet selected: ${response.walletName}");
+    commonSnackBarWidget(
+        context: context,
+        contentText: "Payment Wallet selected: ${response.walletName}");
   }
 }
 
@@ -193,7 +220,7 @@ void openCheckOut({
   required BuildContext context,
 }) {
   var options = {
-    'key': 'rzp_test_pA3bxMDyEvDSbu',
+    'key': RazorPayFields.razorpayKey,
     'amount': amountToSend * 100,
     'name': contactModel.userContactName,
     'description': 'Payment to ${contactModel.userContactName}',
@@ -206,5 +233,35 @@ void openCheckOut({
     razorPay.open(options);
   } catch (e) {
     commonSnackBarWidget(context: context, contentText: "Error occured: $e");
+  }
+}
+
+class PaymentHistoryPage extends StatelessWidget {
+  const PaymentHistoryPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const TextWidgetCommon(text: "Payment History"),
+      ),
+      body: ListView.separated(
+        padding: EdgeInsets.symmetric(vertical: 10.h),
+        itemCount: 10,
+        separatorBuilder: (context, index) => kHeight10,
+        itemBuilder: (context, index) {
+          return ListTile(
+            leading: buildProfileImage(
+              userProfileImage: null,
+              context: context,
+            ),
+            title: TextWidgetCommon(
+              text: "Name",
+            ),
+            trailing: TextWidgetCommon(text: "\u20B9100", textColor: iconGreyColor, fontSize: 16.sp,),
+          );
+        },
+      ),
+    );
   }
 }

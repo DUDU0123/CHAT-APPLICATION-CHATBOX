@@ -66,7 +66,8 @@ Widget commonContainerChip(
 Widget infoPageCommonGroupList({
   required UserModel? receiverData,
 }) {
-  return ListView.separated(
+  return
+   ListView.separated(
     physics: const NeverScrollableScrollPhysics(),
     shrinkWrap: true,
     itemBuilder: (context, index) {

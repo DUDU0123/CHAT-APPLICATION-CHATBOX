@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/media_methods.dart';
@@ -83,14 +84,18 @@ class MediaShowPage extends StatelessWidget {
     required MediaType mediaType,
     required PageTypeEnum pageTypeEnum,
   }) {
+
+    final currentUserId = firebaseAuth.currentUser?.uid;
     return FutureBuilder<List<String>>(
       future: pageTypeEnum == PageTypeEnum.groupMessageInsidePage
           ? MediaMethods.getGroupMedias(
+            currentUserId: currentUserId,
               mediaType: mediaType,
               groupModel: groupModel,
             )
           : MediaMethods.getChatMediaFiles(
               mediaType: mediaType,
+              currentUserId: currentUserId,
               chatModel: chatModel,
             ),
       builder: (context, snapshot) {

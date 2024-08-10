@@ -87,16 +87,12 @@ Widget infoPageListTileWidget({
             userId: firebaseAuth.currentUser!.uid)
         : null,
     builder: (context, snapshot) {
-      if (!snapshot.hasData) {
-        return const Center(
-            child:
-                CircularProgressIndicator()); // Show a loader while fetching data
-      }
-
       return commonListTile(
         onTap: () {
           if (isGroup && groupData != null) {
-            if (isFirstTile) {
+            if (isFirstTile &&
+                groupData.groupMembers!
+                    .contains(firebaseAuth.currentUser?.uid)) {
               log("Inside first tile");
               removeOrExitFromGroupMethod(
                 context: context,
@@ -113,10 +109,10 @@ Widget infoPageListTileWidget({
         },
         title: isFirstTile
             ? !isGroup
-                ? "Block ${receiverData?.userName ?? ''}"
+                ? "Block ${receiverData?.contactName??receiverData?.userName ?? ''}"
                 : "Exit group"
             : !isGroup
-                ? "Report ${receiverData?.userName ?? ''}"
+                ? "Report ${receiverData?.contactName??receiverData?.userName ?? ''}"
                 : "Report group",
         isSmallTitle: false,
         context: context,

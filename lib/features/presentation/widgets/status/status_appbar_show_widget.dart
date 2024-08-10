@@ -56,6 +56,7 @@ StreamBuilder<UserModel?> statusAppBarShowWidget({
                     context,
                     MaterialPageRoute(
                       builder: (context) => SelectContactPage(
+                        isStatus: true,
                         isGroup: false,
                         pageType: PageTypeEnum.toSendPage,
                         uploadedStatusModel: statusList[currentIndex],

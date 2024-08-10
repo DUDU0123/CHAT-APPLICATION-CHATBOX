@@ -6,10 +6,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
+import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
+import 'package:official_chatbox_application/features/data/models/contact_model/contact_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/message_model/message_model.dart';
+import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/message/message_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/message/message_action_bottom_sheet_show_widget.dart';
 
@@ -168,5 +171,48 @@ class MessageMethods {
       );
   messageController.clear();
 }
+
+static void shareMessage({
+    required List<ContactModel>? selectedContactList,
+    required MessageBloc messageBloc,
+    required MessageType messageType,
+    required String messageContent,
+  }) async {
+    for (var contact in selectedContactList!) {
+      if (contact.chatBoxUserId != null && firebaseAuth.currentUser != null) {
+        final ChatModel? chatModel = await CommonDBFunctions.getChatModel(
+          receiverID: contact.chatBoxUserId!,
+        );
+        final UserModel? receiverModel =
+            await CommonDBFunctions.getOneUserDataFromDBFuture(
+                userId: contact.chatBoxUserId);
+
+        final MessageModel message = MessageModel(
+          messageId: DateTime.now().millisecondsSinceEpoch.toString(),
+          message: messageContent,
+          isDeletedMessage: false,
+          isEditedMessage: false,
+          isPinnedMessage: false,
+          isStarredMessage: false,
+          messageStatus: MessageStatus.sent,
+          messageTime: DateTime.now().toString(),
+          messageType: messageType,
+          receiverID: contact.chatBoxUserId,
+          senderID: firebaseAuth.currentUser?.uid,
+        );
+        messageBloc.add(MessageSentEvent(
+          chatModel: chatModel,
+          receiverID: contact.chatBoxUserId!,
+          currentUserId: firebaseAuth.currentUser!.uid,
+          receiverContactName: receiverModel?.contactName ??
+              receiverModel?.userName ??
+              receiverModel?.phoneNumber ??
+              '',
+          message: message,
+          isGroup: false,
+        ));
+      }
+    }
+  }
 
 }

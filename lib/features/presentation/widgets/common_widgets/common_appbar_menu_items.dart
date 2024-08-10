@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
+import 'package:official_chatbox_application/core/utils/contact_methods.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
@@ -31,37 +32,12 @@ PopupMenuButton<dynamic> commonAppBarMenuItemHoldWidget({
             context: context,
             menuText: "View contact",
             onTap: () async {
-              final contactBloc = context.read<ContactBloc>();
-              final userModel =
-                  await CommonDBFunctions.getOneUserDataFromDBFuture(
-                userId: chatModel?.receiverID,
+              ContactMethods.openContactInDevice(
+                context: context,
+                receiverID: chatModel?.receiverID,
               );
-              try {
-                // Find the contact where the chatBoxUserId matches the userModel's id
-                final contactList =
-                    contactBloc.state.contactList?.where((contact) {
-                  log("Phone number userModel: ${userModel?.phoneNumber}");
-                  log("Phone number contact: ${contact.userContactNumber}");
-                  return contact.chatBoxUserId == userModel?.id;
-                }).toList();
-
-                if (contactList != null && contactList.isNotEmpty) {
-                  // Check if the first contact's contactId is not null
-                  if (contactList.first.contactId != null) {
-                    await FlutterContacts.openExternalView(
-                        contactList.first.contactId!);
-                  } else {
-                    log("Contact ID is null for the matched contact.");
-                  }
-                } else {
-                  log("No contact matched the provided criteria.");
-                }
-              } catch (e) {
-                log("Error: ${e.toString()}");
-              }
             },
           ),
-
           commonPopUpMenuItem(
             context: context,
             menuText: "Media,links and docs",
@@ -69,7 +45,7 @@ PopupMenuButton<dynamic> commonAppBarMenuItemHoldWidget({
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>  MediaShowPage(
+                  builder: (context) => MediaShowPage(
                     pageTypeEnum: PageTypeEnum.oneToOneChatInsidePage,
                     chatModel: chatModel,
                   ),
@@ -137,6 +113,7 @@ PopupMenuButton<dynamic> commonAppBarMenuItemHoldWidget({
                 context,
                 MaterialPageRoute(
                   builder: (context) => ChatInfoPage(
+                    chatModel: chatModel,
                     groupData: groupModel,
                     isGroup: isGroup,
                   ),
@@ -151,7 +128,7 @@ PopupMenuButton<dynamic> commonAppBarMenuItemHoldWidget({
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>  MediaShowPage(
+                  builder: (context) => MediaShowPage(
                     pageTypeEnum: PageTypeEnum.groupMessageInsidePage,
                     groupModel: groupModel,
                   ),

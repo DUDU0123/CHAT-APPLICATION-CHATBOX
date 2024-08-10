@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
@@ -6,9 +5,11 @@ import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
+import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/group/group_pages/group_permissions_page.dart';
+import 'package:official_chatbox_application/features/presentation/pages/mobile_view/media_show_page.dart/media_show_page.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_gradient_tile_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/info_page_widgets.dart/group_member_tile_small_widgets.dart';
@@ -63,9 +64,20 @@ Widget groupPermissionGraientContainerWidget({
 
 Widget chatMediaGradientContainerWidget({
   required BuildContext context,
+  required ChatModel? chatModel,
 }) {
   return CommonGradientTileWidget(
-    onTap: () {},
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MediaShowPage(
+            pageTypeEnum: PageTypeEnum.oneToOneChatInsidePage,
+            chatModel: chatModel,
+          ),
+        ),
+      );
+    },
     rootContext: context,
     isSmallTitle: false,
     title: "Media,links and docs",
@@ -85,23 +97,26 @@ Widget membersListOrGroupListWidget({
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       StreamBuilder<GroupModel?>(
-        stream:groupData!=null? CommonDBFunctions.getOneGroupDataByStream(userID: firebaseAuth.currentUser!.uid, groupID: groupData.groupID??''):null,
-        builder: (context, snapshot) {
-          return TextWidgetCommon(
-            text: receiverData != null
-                ? "Groups in common (${receiverData.userGroupIdList?.length})"
-                : groupData!.adminsPermissions!
-                            .contains(AdminsGroupPermission.viewMembers) &&
-                        !groupData.groupAdmins!
-                            .contains(firebaseAuth.currentUser?.uid)
-                    ? ""
-                    : "${snapshot.data?.groupMembers?.length??groupData.groupMembers?.length} Members",
-            overflow: TextOverflow.ellipsis,
-            fontSize: 14.sp,
-            textColor: iconGreyColor,
-          );
-        }
-      ),
+          stream: groupData != null
+              ? CommonDBFunctions.getOneGroupDataByStream(
+                  userID: firebaseAuth.currentUser!.uid,
+                  groupID: groupData.groupID ?? '')
+              : null,
+          builder: (context, snapshot) {
+            return TextWidgetCommon(
+              text: receiverData != null
+                  ? "Groups in common (${receiverData.userGroupIdList?.length})"
+                  : groupData!.adminsPermissions!
+                              .contains(AdminsGroupPermission.viewMembers) &&
+                          !groupData.groupAdmins!
+                              .contains(firebaseAuth.currentUser?.uid)
+                      ? ""
+                      : "${snapshot.data?.groupMembers?.length ?? groupData.groupMembers?.length} Members",
+              overflow: TextOverflow.ellipsis,
+              fontSize: 14.sp,
+              textColor: iconGreyColor,
+            );
+          }),
       kHeight15,
       if (receiverData != null)
         infoPageCommonGroupList(
