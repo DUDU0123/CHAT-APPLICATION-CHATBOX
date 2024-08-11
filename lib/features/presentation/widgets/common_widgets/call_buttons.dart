@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
+import 'package:official_chatbox_application/config/service_keys/zego_fields.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
@@ -20,11 +21,11 @@ Widget callButtonsMethods({
   required String? receiverImage,
   required CallBloc callBloc,
   required ThemeData theme,
+  required BuildContext context,
 }) {
   if (chatModel != null) {
     log("Chatmodel not null");
     return ZegoSendCallInvitationButton(
-
       onPressed: (code, message, p2) {
         CallModel callModel = CallModel(
           isGroupCall: false,
@@ -71,6 +72,7 @@ Widget callButtonsMethods({
         )
         .toList();
     return ZegoSendCallInvitationButton(
+      
       onPressed: (code, message, p2) {
         CallModel callModel = CallModel(
           groupModelId: groupModel.groupID,
@@ -107,7 +109,7 @@ Widget callButtonsMethods({
           ? groupMembers
               .map((member) => ZegoUIKitUser(
                     id: member,
-                    name: groupModel.groupName??'Group',
+                    name: groupModel.groupName ?? 'Group',
                   ))
               .toList()
           : [],

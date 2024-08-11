@@ -16,18 +16,46 @@ class PickProfileImageFromDevice extends UserEvent {
   List<Object> get props => [imageSource];
 }
 
-class GetCurrentUserData extends UserEvent{}
+class GetCurrentUserData extends UserEvent {}
+
 class EditCurrentUserData extends UserEvent {
   final UserModel userModel;
-  File? userProfileImage;
-  EditCurrentUserData({
+  final File? userProfileImage;
+  const EditCurrentUserData({
     this.userProfileImage,
     required this.userModel,
   });
+  @override
+  List<Object> get props => [userModel, userProfileImage ?? File('')];
 }
+
 class DeleteUserPermenantEvent extends UserEvent {
   final String? phoneNumberWithCountryCode;
   const DeleteUserPermenantEvent({
     this.phoneNumberWithCountryCode,
   });
+  @override
+  List<Object> get props => [phoneNumberWithCountryCode ?? ''];
+}
+
+class BlockUserEvent extends UserEvent {
+  final BlockedUserModel blockedUserModel;
+  final String? chatId;
+  const BlockUserEvent({
+    required this.blockedUserModel,
+    required this.chatId,
+  });
+  @override
+  List<Object> get props => [chatId??''];
+}
+class RemoveBlockedUserEvent extends UserEvent {
+  final String blockedUserId;
+  const RemoveBlockedUserEvent({
+    required this.blockedUserId,
+  });
+  @override
+  List<Object> get props => [blockedUserId];
+}
+class GetBlockedUserEvent extends UserEvent{
+  
 }

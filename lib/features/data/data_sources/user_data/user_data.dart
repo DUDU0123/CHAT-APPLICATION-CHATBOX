@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
+import 'package:official_chatbox_application/features/data/models/blocked_user_model/blocked_user_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/domain/repositories/authentication_repo/authentication_repo.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_field_common.dart';
@@ -52,7 +53,7 @@ class UserData {
     try {
       return fireStore.collection(usersCollection).doc(userId).snapshots().map(
             (event) => UserModel.fromJson(
-              map: event.data()??{},
+              map: event.data() ?? {},
             ),
           );
     } on FirebaseAuthException catch (e) {
@@ -65,6 +66,7 @@ class UserData {
       throw Exception("Error while fetching user data: $e");
     }
   }
+
   // Method to get one user by ID
   Future<UserModel?> getOneUserDataFromDataBase(
       {required String userId}) async {
@@ -199,9 +201,6 @@ class UserData {
       throw Exception("Error while deleting user data: $e");
     }
   }
-
-
-
 
   Future<void> deleteUserFilesInDB({required String fullPathToFile}) async {
     log(name: "FilePath", fullPathToFile);
@@ -370,6 +369,119 @@ class UserData {
       log('Error while saving profile image to database: $e',
           stackTrace: stackTrace);
       throw Exception("Error while saving profile image to database: $e");
+    }
+  }
+
+  Future<bool?> blockAUser({
+    required BlockedUserModel blockedUserModel,
+    required String? chatId,
+  }) async {
+    try {
+      final currentUser = fireBaseAuth.currentUser;
+      QuerySnapshot<Map<String, dynamic>> messages = await firestore
+          .collection(usersCollection)
+          .doc(currentUser?.uid)
+          .collection(chatsCollection)
+          .doc(chatId)
+          .collection(messagesCollection)
+          .get();
+
+
+      // Delete each message document
+      for (QueryDocumentSnapshot<Map<String, dynamic>> messageDoc
+          in messages.docs) {
+        await messageDoc.reference.delete();
+      }
+
+      await firestore
+          .collection(usersCollection)
+          .doc(currentUser?.uid)
+          .collection(chatsCollection)
+          .doc(chatId)
+          .delete();
+
+      DocumentReference<Map<String, dynamic>> blockedUserDoc = await firestore
+          .collection(usersCollection)
+          .doc(currentUser?.uid)
+          .collection(blockedUsersCollection)
+          .add(blockedUserModel.toJson());
+      final blockedUserDocId = blockedUserDoc.id;
+      final updatedBlockedUser = blockedUserModel.copyWith(
+        id: blockedUserDocId,
+      );
+      await firestore
+          .collection(usersCollection)
+          .doc(currentUser?.uid)
+          .collection(blockedUsersCollection)
+          .doc(blockedUserDocId)
+          .update(
+            updatedBlockedUser.toJson(),
+          );
+
+      return true;
+    } on FirebaseException catch (e) {
+      log(
+        'Firebase exception: $e from block user',
+      );
+      return false;
+    } catch (e, stackTrace) {
+      log('Error while saving blocked user to database: $e',
+          stackTrace: stackTrace);
+      return false;
+    }
+  }
+
+  Future<bool?> removeFromBlockedUser({
+    required String blockedUserId,
+  }) async {
+    try {
+      final currentUser = fireBaseAuth.currentUser;
+
+      await firestore
+          .collection(usersCollection)
+          .doc(currentUser?.uid)
+          .collection(blockedUsersCollection)
+          .doc(blockedUserId)
+          .delete();
+      return true;
+    } on FirebaseException catch (e) {
+      log(
+        'Firebase exception: $e from block user removing',
+      );
+      return false;
+    } catch (e, stackTrace) {
+      log('Error while removing blocked user to database: $e',
+          stackTrace: stackTrace);
+      return false;
+    }
+  }
+
+  Stream<List<BlockedUserModel>>? getAllBlockedUsers() {
+    try {
+      final currentUser = fireBaseAuth.currentUser;
+      return firestore
+          .collection(usersCollection)
+          .doc(currentUser?.uid)
+          .collection(blockedUsersCollection)
+          .snapshots()
+          .map((blockedUserSnapshot) {
+        return blockedUserSnapshot.docs
+            .map(
+              (blockedUserDoc) => BlockedUserModel.fromJson(
+                map: blockedUserDoc.data(),
+              ),
+            )
+            .toList();
+      });
+    } on FirebaseException catch (e) {
+      log(
+        'Firebase exception: $e from get all blocked users',
+      );
+      return null;
+    } catch (e, stackTrace) {
+      log('Error while getting all blocked user from database: $e',
+          stackTrace: stackTrace);
+      return null;
     }
   }
 }

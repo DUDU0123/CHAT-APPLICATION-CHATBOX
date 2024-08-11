@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_butttons_common.dart';
+
 class RadioButtonDialogBox extends StatelessWidget {
   const RadioButtonDialogBox({
     super.key,
@@ -59,6 +59,12 @@ class RadioButtonDialogBox extends StatelessWidget {
                 buttonName: "Ok",
                 onPressed: () {
                   if (dialogBoxTitle == "Change Theme") {
+                    Navigator.pop(context);
+                  } else if (dialogBoxTitle == "Last seen and Online") {
+                    Navigator.pop(context);
+                  } else if (dialogBoxTitle == "Profile photo") {
+                    Navigator.pop(context);
+                  } else if (dialogBoxTitle == "About") {
                     Navigator.pop(context);
                   }
                 },

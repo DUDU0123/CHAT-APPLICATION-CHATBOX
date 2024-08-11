@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,6 +11,7 @@ import 'package:official_chatbox_application/features/presentation/bloc/message/
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/user_details/user_profile_container_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/circle_image_show_prevent_error_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class AudioMessageContentShowWidget extends StatefulWidget {
   const AudioMessageContentShowWidget({
@@ -47,10 +47,11 @@ class _AudioMessageContentShowWidgetState
               }
               return circleImageShowPreventErrorWidget(
                 containerSize: 50,
-                image: snapshot.data!.userProfileImage??'',
+                image: snapshot.data!.userProfileImage ?? '',
               );
             }),
         SizedBox(width: 10.w),
+
         GestureDetector(
           onTap: () async {
             await widget.audioPlayers[widget.message.message]
@@ -61,14 +62,16 @@ class _AudioMessageContentShowWidgetState
             if (isPlaying) {
               await widget.audioPlayers[widget.message.message]?.pause();
               if (mounted) {
-                context.read<MessageBloc>().add(AudioPlayerPlayStateChangedEvent(
-                  widget.message.message!, false));
+                context.read<MessageBloc>().add(
+                    AudioPlayerPlayStateChangedEvent(
+                        widget.message.message!, false));
               }
             } else {
               await widget.audioPlayers[widget.message.message]!.play();
               if (mounted) {
-                context.read<MessageBloc>().add(AudioPlayerPlayStateChangedEvent(
-                  widget.message.message!, true));
+                context.read<MessageBloc>().add(
+                    AudioPlayerPlayStateChangedEvent(
+                        widget.message.message!, true));
               }
             }
           },

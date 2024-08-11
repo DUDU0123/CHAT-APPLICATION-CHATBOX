@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -47,39 +46,40 @@ Widget userProfileImageContainerWidget(
           child: Text(state.message),
         );
       }
-      if (state is CurrentUserLoadedState) {
-        return state.currentUserData.userProfileImage != null
-            ? Container(
-                height: containerRadius.h,
-                width: containerRadius.w,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).popupMenuTheme.color,
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: CachedNetworkImageProvider(
-                        state.currentUserData.userProfileImage!),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: containerRadius >= 160
-                    ? Align(
-                        alignment: Alignment.bottomRight,
-                        child: CameraIconButton(
-                          onPressed: () {
-                            userProfilePhotoPickBottomSheetWidget(
-                              context: context,
-                            );
-                          },
-                        ),
-                      )
-                    : zeroMeasureWidget,
-              )
-            : nullImageReplaceWidget(
-                containerRadius: containerRadius,
-                context: context,
-              );
+      if (state.currentUserData == null) {
+        return zeroMeasureWidget;
       }
-      return zeroMeasureWidget;
+
+      return state.currentUserData?.userProfileImage != null
+          ? Container(
+              height: containerRadius.h,
+              width: containerRadius.w,
+              decoration: BoxDecoration(
+                color: Theme.of(context).popupMenuTheme.color,
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  image: CachedNetworkImageProvider(
+                      state.currentUserData!.userProfileImage!),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: containerRadius >= 160
+                  ? Align(
+                      alignment: Alignment.bottomRight,
+                      child: CameraIconButton(
+                        onPressed: () {
+                          userProfilePhotoPickBottomSheetWidget(
+                            context: context,
+                          );
+                        },
+                      ),
+                    )
+                  : zeroMeasureWidget,
+            )
+          : nullImageReplaceWidget(
+              containerRadius: containerRadius,
+              context: context,
+            );
     },
   );
 }

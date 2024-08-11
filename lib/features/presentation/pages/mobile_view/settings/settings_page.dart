@@ -75,7 +75,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const PrivacySettings(),
+                              builder: (context) => PrivacySettings(),
                             ),
                           );
                           break;

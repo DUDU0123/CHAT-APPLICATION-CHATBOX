@@ -34,12 +34,12 @@ class AccountOwnerProfilePage extends StatelessWidget {
               lottie: settingsLottie,
             );
           }
-          if (state is CurrentUserLoadedState) {
+
             return Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SettingsProfileImageAvatarWidget(
-                  userProfileImage: state.currentUserData.userProfileImage,
+                  userProfileImage: state.currentUserData?.userProfileImage,
                 ),
                 // next
                 kHeight60,
@@ -51,8 +51,6 @@ class AccountOwnerProfilePage extends StatelessWidget {
                 ),
               ],
             );
-          }
-          return zeroMeasureWidget;
         },
       ),
     );

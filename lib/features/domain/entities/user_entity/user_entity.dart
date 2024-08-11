@@ -15,6 +15,7 @@ class UserEntity extends Equatable {
   bool? isDisabled;
   String? lastActiveTime;
   List<dynamic>? userGroupIdList;
+  Map<String, dynamic>? privacySettings;
   UserEntity({
     this.id,
     this.userName,
@@ -30,6 +31,7 @@ class UserEntity extends Equatable {
     this.userGroupIdList,
     this.isDisabled,
     this.lastActiveTime,
+    this.privacySettings,
   });
 
   @override
@@ -49,6 +51,7 @@ class UserEntity extends Equatable {
       userGroupIdList,
       isDisabled,
       lastActiveTime,
+      privacySettings,
     ];
   }
 }

@@ -8,6 +8,80 @@ import 'package:official_chatbox_application/core/utils/common_db_functions.dart
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 
+// Future<void> createANewChat({
+//   required String receiverID,
+//   required String receiverContactName,
+//   required ChatModel chatModel,
+// }) async {
+//   try {
+//     String currentUserId = firebaseAuth.currentUser!.uid;
+
+//     // Check if chat already exists for the current user
+//     final existingChatQuery = await fireStore
+//         .collection(usersCollection)
+//         .doc(currentUserId)
+//         .collection(chatsCollection)
+//         .where(receiverId, isEqualTo: receiverID)
+//         .limit(1)
+//         .get();
+
+//     String chatId;
+//     if (existingChatQuery.docs.isEmpty) {
+//       // If chat does not exist, create a new one
+//       final chatDoc = fireStore
+//           .collection(usersCollection)
+//           .doc(currentUserId)
+//           .collection(chatsCollection)
+//           .doc();
+//       chatId = chatDoc.id;
+
+//       final updatedChatModel = chatModel.copyWith(
+//         chatID: chatId,
+//       );
+
+//       // Set the chat for the current user
+//       await chatDoc.set(updatedChatModel.toJson());
+
+//       // Set the chat for the receiver
+//       await fireStore
+//           .collection(usersCollection)
+//           .doc(receiverId)
+//           .collection(chatsCollection)
+//           .doc(chatId)
+//           .set(updatedChatModel.toJson());
+//     } else {
+//       // If chat exists, use the existing chatId
+//       chatId = existingChatQuery.docs.first.id;
+
+//       // Update the existing chat
+//       final updatedChatModel = chatModel.copyWith(
+//         chatID: chatId,
+//       );
+
+//       await fireStore
+//           .collection(usersCollection)
+//           .doc(currentUserId)
+//           .collection(chatsCollection)
+//           .doc(chatId)
+//           .update(updatedChatModel.toJson());
+
+//       await fireStore
+//           .collection(usersCollection)
+//           .doc(receiverId)
+//           .collection(chatsCollection)
+//           .doc(chatId)
+//           .update(updatedChatModel.toJson());
+//     }
+//   } on FirebaseException catch (e) {
+//     log("Firebase exception: ${e.message}");
+//     throw Exception("Error while creating chat: ${e.message}");
+//   } catch (e, stackTrace) {
+//     log("Error while creating chat: $e", stackTrace: stackTrace);
+//     throw Exception("Error while creating chat: $e");
+//   }
+// }
+
+
 class ChatData {
   final FirebaseFirestore firestore;
   final FirebaseAuth firebaseAuth;

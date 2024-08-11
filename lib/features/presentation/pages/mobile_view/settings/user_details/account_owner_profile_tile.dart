@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
+import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/user_details/account_owner_profile_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/user_details/user_profile_container_widget.dart';
@@ -31,14 +32,13 @@ class AccountOwnerProfileTile extends StatelessWidget {
             containerRadius: 68,
           ),
           kWidth10,
-          BlocBuilder<UserBloc, UserState>(
-            builder: (context, state) {
+          BlocConsumer<UserBloc, UserState>(
+            listener: (context, state) {
               if (state is CurrentUserErrorState) {
-                return Center(
-                  child: Text(state.message),
-                );
+                 commonSnackBarWidget(context: context, contentText: state.message);
               }
-              if (state is CurrentUserLoadedState) {
+            },
+            builder: (context, state) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -46,7 +46,7 @@ class AccountOwnerProfileTile extends StatelessWidget {
                       width: screenWidth(context: context) / 1.8,
                       child: TextWidgetCommon(
                         overflow: TextOverflow.ellipsis,
-                        text: state.currentUserData.userName ?? "",
+                        text: state.currentUserData?.userName ?? "",
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w500,
                       ),
@@ -57,14 +57,12 @@ class AccountOwnerProfileTile extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textColor: iconGreyColor,
-                        text: state.currentUserData.userAbout ?? "",
+                        text: state.currentUserData?.userAbout ?? "",
                         fontSize: 15.sp,
                       ),
                     ),
                   ],
                 );
-              }
-              return zeroMeasureWidget;
             },
           ),
         ],

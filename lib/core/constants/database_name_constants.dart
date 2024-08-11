@@ -12,7 +12,10 @@ const userDbGroupIdList = 'user_group_id_list';
 const isUserDisabled = 'is_disabled_user';
 const userDbLastActiveTime = 'user_last_active_time';
 const userDbContactName = 'user_db_contact_name';
-
+const userDbPrivacySettings = 'user_privacy_settings';
+const userDbLastSeenOnline = 'user_last_seen_and_online';
+const userDbAboutPrivacy = 'user_about_privacy';
+const userDbProfilePhotoPrivacy = 'user_profile_photo_privacy';
 // collections names
 const usersCollection = 'users';
 const contactsCollection = 'chat_box_contact';
@@ -21,8 +24,7 @@ const groupsCollection = 'groups';
 const messagesCollection = 'messages';
 const statusCollection = 'statuses';
 const callsCollection = 'calls';
-const attachmentsCollection = 'attachments';
-const starredMessagesCollection = 'starred_collection';
+const blockedUsersCollection = 'blocked_users';
 
 // messageDb fields name
 const dbMessageID = 'message_id';

@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/utils/image_picker_method.dart';
+import 'package:official_chatbox_application/features/data/models/blocked_user_model/blocked_user_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/domain/repositories/user_repo/user_repository.dart';
 
@@ -23,6 +24,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<GetCurrentUserData>(getCurrentUserData);
     on<EditCurrentUserData>(editCurrentUserData);
     on<PickProfileImageFromDevice>(pickProfileImageFromDevice);
+    on<BlockUserEvent>(blockUserEvent);
+    on<GetBlockedUserEvent>(getBlockedUserEvent);
+    on<RemoveBlockedUserEvent>(removeBlockedUserEvent);
   }
 
   Future<FutureOr<void>> getCurrentUserData(
@@ -32,8 +36,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       UserModel? currentUser = await userRepository.getOneUserDataFromDB(
           userId: firebaseAuth.currentUser!.uid);
       if (currentUser != null) {
-      
-        emit(CurrentUserLoadedState(currentUserData: currentUser));
+        emit(UserState(currentUserData: currentUser));
       } else {
         log("User model is null error");
       }
@@ -57,7 +60,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         await userRepository.updateUserInDataBase(
           userModel: updatedUser,
         );
-        emit(CurrentUserLoadedState(currentUserData: updatedUser));
+        // emit(CurrentUserLoadedState(currentUserData: updatedUser));
+        emit(state.copyWith(currentUserData: updatedUser));
       } else {
         emit(const CurrentUserErrorState(message: "User is null"));
       }
@@ -86,8 +90,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           userModel: updatedUser,
         );
         log("User Profie image: $userProfileImageUrl");
-        //await Future.delayed(const Duration(seconds: 1), () {
-        emit(CurrentUserLoadedState(currentUserData: updatedUser));
+
+        emit(state.copyWith(currentUserData: updatedUser));
+
         // },);
       } else {
         log("Picked Image is null");
@@ -104,10 +109,69 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           userNetworkStatus: currentUser.userNetworkStatus,
           userProfileImage: currentUser.userProfileImage,
         );
-        emit(CurrentUserLoadedState(currentUserData: nonEditedUser));
+        emit(state.copyWith(currentUserData: nonEditedUser));
       }
     } catch (e) {
       emit(ImagePickErrorState(message: e.toString()));
+    }
+  }
+
+  Future<FutureOr<void>> blockUserEvent(
+      BlockUserEvent event, Emitter<UserState> emit) async {
+    try {
+      final bool? value = await userRepository.blockUser(
+        blockedUserModel: event.blockedUserModel,
+        chatId: event.chatId,
+      );
+      log(name: "Is Blocked", value.toString());
+      if (value != null) {
+        if (value) {
+          add(GetBlockedUserEvent());
+        } else {
+          emit(
+              const BlockUserErrorState(errorMessage: "Unable to remove user"));
+        }
+      } else {
+        emit(const BlockUserErrorState(errorMessage: "Unable to remove user"));
+      }
+    } catch (e) {
+      emit(BlockUserErrorState(errorMessage: e.toString()));
+    }
+  }
+
+  FutureOr<void> removeBlockedUserEvent(
+      RemoveBlockedUserEvent event, Emitter<UserState> emit) async {
+    try {
+      final bool? value = await userRepository.removeBlockedUser(
+          blockedUserId: event.blockedUserId);
+
+      log(name: "Is Removed", value.toString());
+
+      if (value != null) {
+        if (value) {
+          add(GetBlockedUserEvent());
+        } else {
+          emit(
+              const BlockUserErrorState(errorMessage: "Unable to remove user"));
+        }
+      } else {
+        emit(const BlockUserErrorState(errorMessage: "Unable to remove user"));
+      }
+    } catch (e) {
+      emit(BlockUserErrorState(errorMessage: e.toString()));
+    }
+  }
+
+  FutureOr<void> getBlockedUserEvent(
+      GetBlockedUserEvent event, Emitter<UserState> emit) {
+    try {
+      final blockedUsersList = userRepository.getAllBlockedUsersFromDB();
+      emit(state.copyWith(
+        blockedUsersList: blockedUsersList,
+        currentUserData: state.currentUserData,
+      ));
+    } catch (e) {
+      emit(BlockUserErrorState(errorMessage: e.toString()));
     }
   }
 }

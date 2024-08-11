@@ -163,7 +163,7 @@ class _CallHomePageState extends State<CallHomePage> {
                                               ? Icons.arrow_forward_outlined
                                               : Icons.arrow_back_outlined,
                                           color: callModel.isMissedCall != null
-                                              ? callModel.isMissedCall!
+                                              ? !callModel.isMissedCall!
                                                   ? kGreen
                                                   : kRed
                                               : kRed,
@@ -218,6 +218,7 @@ class _CallHomePageState extends State<CallHomePage> {
                                                           .groupModelId!)
                                               : null;
                                       callButtonsMethods(
+                                        context: context,
                                         callBloc: callBloc,
                                         chatModel: chatModel,
                                         groupModel: groupModel,

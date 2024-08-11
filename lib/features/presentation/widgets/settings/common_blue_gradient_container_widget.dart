@@ -33,10 +33,10 @@ class CommonBlueGradientContainerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (pageType==PageTypeEnum.settingEditProfilePage) {
       final currentState =
-        context.read<UserBloc>().state as CurrentUserLoadedState;
+        context.read<UserBloc>().state;
     controller?.text = fieldTypeSettings == FieldTypeSettings.name
-        ? currentState.currentUserData.userName ?? ""
-        : currentState.currentUserData.userAbout ?? "";
+        ? currentState.currentUserData?.userName ?? ""
+        : currentState.currentUserData?.userAbout ?? "";
     }
     
     return Container(

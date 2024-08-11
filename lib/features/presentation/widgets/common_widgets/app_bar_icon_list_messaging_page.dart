@@ -42,6 +42,7 @@ List<Widget> appBarIconListMessagingPage({
     chatModel != null
         ? chatModel.receiverID != currentUserId
             ? callButtonsMethods(
+              context: context,
                 theme: Theme.of(context),
                 callBloc: callBloc,
                 receiverImage: receiverImage,
@@ -52,6 +53,7 @@ List<Widget> appBarIconListMessagingPage({
               )
             : zeroMeasureWidget
         : callButtonsMethods(
+          context: context,
             theme: Theme.of(context),
             callBloc: callBloc,
             receiverImage: receiverImage,
@@ -64,6 +66,7 @@ List<Widget> appBarIconListMessagingPage({
     chatModel != null
         ? chatModel.receiverID != currentUserId
             ? callButtonsMethods(
+              context: context,
                 callBloc: callBloc,
                 receiverTitle: appBarTitle,
                 receiverImage: receiverImage,
@@ -74,6 +77,7 @@ List<Widget> appBarIconListMessagingPage({
               )
             : zeroMeasureWidget
         : callButtonsMethods(
+          context: context,
             callBloc: callBloc,
             receiverImage: receiverImage,
             receiverTitle: appBarTitle,

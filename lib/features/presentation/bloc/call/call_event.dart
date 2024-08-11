@@ -15,6 +15,14 @@ class CallInfoSaveEvent extends CallEvent {
   @override
   List<Object> get props => [callModel];
 }
+class CallInfoUpdateEvent extends CallEvent {
+  final CallModel callModel;
+  const CallInfoUpdateEvent({
+    required this.callModel,
+  });
+  @override
+  List<Object> get props => [callModel];
+}
 
 class GetAllCallLogEvent extends CallEvent {}
 class DeleteACallLogEvent extends CallEvent {

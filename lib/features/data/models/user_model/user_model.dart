@@ -17,6 +17,7 @@ class UserModel extends UserEntity {
     super.isDisabled,
     super.lastActiveTime,
     super.contactName,
+    super.privacySettings,
   });
 
   factory UserModel.fromJson({required Map<String, dynamic> map}) {
@@ -35,6 +36,9 @@ class UserModel extends UserEntity {
       isDisabled: map[isUserDisabled]??false,
       lastActiveTime: map[userDbLastActiveTime]??'00:00',
       contactName: map[userDbContactName]??'',
+      privacySettings: map[userDbPrivacySettings] != null
+          ? Map<String, dynamic>.from(map[userDbPrivacySettings])
+          : {},
     );
   }
 
@@ -54,6 +58,7 @@ class UserModel extends UserEntity {
       isUserDisabled: isDisabled,
       userDbLastActiveTime: lastActiveTime,
       userDbContactName:contactName,
+      userDbPrivacySettings: privacySettings,
     };
   }
   
@@ -73,6 +78,7 @@ class UserModel extends UserEntity {
     bool? isDisabled,
     String? lastActiveTime,
     String? contactName,
+    Map<String, dynamic>? privacySettings
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -89,6 +95,7 @@ class UserModel extends UserEntity {
       isDisabled: isDisabled??this.isDisabled,
       lastActiveTime: lastActiveTime??this.lastActiveTime,
       contactName: contactName??this.contactName,
+      privacySettings: privacySettings ?? this.privacySettings,
     );
   }
 

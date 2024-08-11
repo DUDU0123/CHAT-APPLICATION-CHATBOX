@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:official_chatbox_application/features/data/models/blocked_user_model/blocked_user_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 
 abstract class UserRepository {
@@ -29,8 +30,14 @@ abstract class UserRepository {
     required File? profileImage,
     required UserModel currentUser,
   });
-
+  Future<bool?> blockUser({
+    required BlockedUserModel blockedUserModel,
+    required String? chatId,
+  });
+  Future<bool?> removeBlockedUser({
+    required String blockedUserId,
+  });
+  Stream<List<BlockedUserModel>>? getAllBlockedUsersFromDB();
   // void userChangeNumber();
-  // void blockUser();
   // void reportUser();
 }

@@ -26,7 +26,7 @@ class AccountOwnerProfileDetailsGridView extends StatelessWidget {
         if (state is CurrentUserErrorState) {
           return Center(child: Text(state.message));
         }
-        if (state is CurrentUserLoadedState) {
+
           return GridView.count(
             physics: const NeverScrollableScrollPhysics(),
             padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -38,7 +38,7 @@ class AccountOwnerProfileDetailsGridView extends StatelessWidget {
                 fieldTypeSettings: FieldTypeSettings.name,
                 controller: nameController,
                 title: "Name",
-                subTitle: state.currentUserData.userName ?? 'Edit Name',
+                subTitle: state.currentUserData?.userName ?? 'Edit Name',
                 icon: contact,
                 pageType: PageTypeEnum.settingEditProfilePage,
               ),
@@ -46,20 +46,19 @@ class AccountOwnerProfileDetailsGridView extends StatelessWidget {
                 fieldTypeSettings: FieldTypeSettings.about,
                 controller: aboutController,
                 title: "About",
-                subTitle: state.currentUserData.userAbout ?? 'Available',
+                subTitle: state.currentUserData?.userAbout ?? 'Available',
                 icon: info,
                 pageType: PageTypeEnum.settingEditProfilePage,
               ),
               CommonBlueGradientContainerWidget(
                 title: "Phone number",
-                subTitle: state.currentUserData.phoneNumber ?? '0000000000',
+                subTitle: state.currentUserData?.phoneNumber ?? '0000000000',
                 icon: call,
                 pageType: PageTypeEnum.none,
               ),
             ],
           );
-        }
-        return zeroMeasureWidget;
+
       },
     );
   }

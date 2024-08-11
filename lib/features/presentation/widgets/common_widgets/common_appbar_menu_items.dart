@@ -7,11 +7,13 @@ import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/contact_methods.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
+import 'package:official_chatbox_application/features/data/models/blocked_user_model/blocked_user_model.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/contact/contact_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/group/group_bloc.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chat/chat_info_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/media_show_page.dart/media_show_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/wallpaper/wallpaper_select_page.dart';
@@ -99,8 +101,34 @@ PopupMenuButton<dynamic> commonAppBarMenuItemHoldWidget({
               );
             },
           ),
-          const PopupMenuItem(child: Text("Report")),
-          const PopupMenuItem(child: Text("Block")),
+          PopupMenuItem(
+            child: const Text("Report"),onTap: () {
+              
+            },
+          ),
+          PopupMenuItem(
+            child: const Text("Block"),
+            onTap: () {
+              normalDialogBoxWidget(
+                context: context,
+                title: "Block User",
+                subtitle: "Do you want to block user?",
+                onPressed: () {
+                  BlockedUserModel blockedUserModel = BlockedUserModel(
+                    userId: chatModel?.receiverID,
+                  );
+                  context.read<UserBloc>().add(
+                        BlockUserEvent(
+                          blockedUserModel: blockedUserModel,
+                          chatId: chatModel?.chatID
+                        ),
+                      );
+                  Navigator.pop(context);
+                },
+                actionButtonName: "Block",
+              );
+            },
+          ),
         ];
       }
       if (pageType == PageTypeEnum.groupMessageInsidePage) {
