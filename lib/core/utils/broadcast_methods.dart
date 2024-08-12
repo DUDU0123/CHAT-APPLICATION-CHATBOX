@@ -28,7 +28,7 @@ class BroadCastMethods {
           .collection(broadcastCollection)
           .doc(broadCastId)
           .update(updatedBroadcastModel.toJson());
-          log("Brodcast creared");
+      log("Brodcast creared");
       return true;
     } on FirebaseException catch (e) {
       log(e.message.toString());
@@ -40,5 +40,3 @@ class BroadCastMethods {
   }
   // method for sending message in broadcast
 }
-
-

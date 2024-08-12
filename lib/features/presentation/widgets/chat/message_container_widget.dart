@@ -72,50 +72,8 @@ class MessageContainerWidget extends StatefulWidget {
 }
 
 class _MessageContainerWidgetState extends State<MessageContainerWidget> {
-  bool _assetExists = true;
-
-  @override
-  void initState() {
-    super.initState();
-    // if ((widget.message.messageType == MessageType.audio ||
-    //         widget.message.messageType == MessageType.video ||
-    //         widget.message.messageType == MessageType.document ||
-    //         widget.message.messageType == MessageType.photo) &&
-    //     widget.message.message != null) {
-    //   _checkAssetExists();
-    // }
-  }
-
-  Future<void> _checkAssetExists() async {
-    bool exists = await checkAssetExists(widget.message.message!);
-    if (mounted) {
-      setState(() {
-        _assetExists = exists;
-      });
-    }
-  }
-    // if (!_assetExists &&
-    //     (widget.message.messageType == MessageType.audio ||
-    //         widget.message.messageType == MessageType.video ||
-    //         widget.message.messageType == MessageType.document ||
-    //         widget.message.messageType == MessageType.photo)) {
-    //   // Return a widget indicating that the asset is not available
-    //   return Align(
-    //     alignment: checkIsIncomingMessage(
-    //       isGroup: widget.isGroup,
-    //       message: widget.message,
-    //       groupModel: widget.groupModel,
-    //     )
-    //         ? Alignment.centerRight
-    //         : Alignment.centerLeft,
-    //     child: noMessageShowWidget(),
-    //     // child: zeroMeasureWidget,
-    //   );
-    // }
-
   @override
   Widget build(BuildContext context) {
-    
     if (widget.message.message == null) {
       return zeroMeasureWidget;
     }
@@ -142,6 +100,7 @@ class _MessageContainerWidgetState extends State<MessageContainerWidget> {
                 )
               : Dismissible(
                   confirmDismiss: (direction) async {
+                    
                     await Future.delayed(const Duration(milliseconds: 2));
                     widget.onSwipeMethod(message: widget.message);
                     return false;
@@ -230,6 +189,7 @@ class _MessageContainerWidgetState extends State<MessageContainerWidget> {
                                 : widget.message.messageType ==
                                         MessageType.photo
                                     ? photoMessageShowWidget(
+                                      mounted: mounted,
                                         isGroup: widget.isGroup,
                                         groupModel: widget.groupModel,
                                         receiverID: widget.receiverID,
@@ -243,6 +203,7 @@ class _MessageContainerWidgetState extends State<MessageContainerWidget> {
                                         ?
                                         //  zeroMeasureWidget
                                         videoMessageShowWidget(
+                                          mounted: mounted,
                                             isGroup: widget.isGroup,
                                             groupModel: widget.groupModel,
                                             receiverID: widget.receiverID,
@@ -261,6 +222,8 @@ class _MessageContainerWidgetState extends State<MessageContainerWidget> {
                                             : widget.message.messageType ==
                                                     MessageType.document
                                                 ? documentMessageWidget(
+                                                  mounted: mounted,
+                                                   context: context,
                                                     message: widget.message,
                                                   )
                                                 : widget.message.messageType ==

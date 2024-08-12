@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_butttons_common.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 
 void normalDialogBoxWidget({
@@ -71,4 +72,39 @@ List<Widget> dialogBoxActionButtons(
       ),
     ),
   ];
+}
+Future<dynamic> simpleDialogBox({
+  required BuildContext context,
+  required String title,
+  required String buttonText,
+  void Function()? onPressed,
+}) {
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return Dialog(
+        child: Container(
+          margin: EdgeInsets.only(top: 20.h),
+          height: 80.h,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              TextWidgetCommon(
+                text: title,
+                textColor: iconGreyColor,
+                fontSize: 16.sp,
+              ),
+              Padding(
+                padding: EdgeInsets.only(right: 20.w),
+                child: TextButtonsCommon(
+                  buttonName: buttonText,
+                  onPressed: onPressed,
+                ),
+              )
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }

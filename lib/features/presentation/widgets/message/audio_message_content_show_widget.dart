@@ -9,8 +9,10 @@ import 'package:official_chatbox_application/features/data/models/message_model/
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/message/message_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/user_details/user_profile_container_widget.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/chat/message_container_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/circle_image_show_prevent_error_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/dialog_widgets/normal_dialogbox_widget.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class AudioMessageContentShowWidget extends StatefulWidget {
@@ -54,7 +56,8 @@ class _AudioMessageContentShowWidgetState
 
         GestureDetector(
           onTap: () async {
-            await widget.audioPlayers[widget.message.message]
+            if (await checkAssetExists(widget.message.message!)) {
+              await widget.audioPlayers[widget.message.message]
                 ?.setUrl(widget.message.message ?? '');
 
             final isPlaying =
@@ -74,6 +77,14 @@ class _AudioMessageContentShowWidgetState
                         widget.message.message!, true));
               }
             }
+            }else{
+              if (mounted) {
+                simpleDialogBox(context: context, title: "Can't play this audio, it is deleted", buttonText: "Ok", onPressed: () {
+                Navigator.pop(context);
+              },);
+              }
+            }
+            
           },
           child: BlocBuilder<MessageBloc, MessageState>(
             builder: (context, state) {

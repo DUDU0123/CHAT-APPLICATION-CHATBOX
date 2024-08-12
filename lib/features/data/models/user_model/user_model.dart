@@ -2,7 +2,7 @@ import 'package:official_chatbox_application/core/constants/database_name_consta
 import 'package:official_chatbox_application/features/domain/entities/user_entity/user_entity.dart';
 
 class UserModel extends UserEntity {
-   UserModel({
+  UserModel({
     super.id,
     super.userName,
     super.userEmailId,
@@ -18,28 +18,35 @@ class UserModel extends UserEntity {
     super.lastActiveTime,
     super.contactName,
     super.privacySettings,
+    super.notificationTone,
+    super.ringTone,
+    super.notificationName,
+    super.ringtoneName,
   });
 
   factory UserModel.fromJson({required Map<String, dynamic> map}) {
     return UserModel(
-      id: map[userDbId],
-      userName: map[userDbName] ?? 'chatbox user',
-      userEmailId: map[userDbEmail] ?? '',
-      phoneNumber: map[userDbPhoneNumber] ?? '',
-      userAbout: map[userDbAbout] ?? 'chatbox about',
-      userProfileImage: map[userDbProfileImage],
-      userNetworkStatus: map[userDbNetworkStatus] ?? false,
-      createdAt: map[userDbCreatedAt] ?? '',
-      tfaPin: map[userDbTFAPin] ?? '',
-      isBlockedUser: map[userDbBlockedStatus] ?? false,
-      userGroupIdList: map[userDbGroupIdList]??[],
-      isDisabled: map[isUserDisabled]??false,
-      lastActiveTime: map[userDbLastActiveTime]??'00:00',
-      contactName: map[userDbContactName]??'',
-      privacySettings: map[userDbPrivacySettings] != null
-          ? Map<String, dynamic>.from(map[userDbPrivacySettings])
-          : {},
-    );
+        id: map[userDbId],
+        userName: map[userDbName] ?? 'chatbox user',
+        userEmailId: map[userDbEmail] ?? '',
+        phoneNumber: map[userDbPhoneNumber] ?? '',
+        userAbout: map[userDbAbout] ?? 'chatbox about',
+        userProfileImage: map[userDbProfileImage],
+        userNetworkStatus: map[userDbNetworkStatus] ?? false,
+        createdAt: map[userDbCreatedAt] ?? '',
+        tfaPin: map[userDbTFAPin] ?? '',
+        isBlockedUser: map[userDbBlockedStatus] ?? false,
+        userGroupIdList: map[userDbGroupIdList] ?? [],
+        isDisabled: map[isUserDisabled] ?? false,
+        lastActiveTime: map[userDbLastActiveTime] ?? '00:00',
+        contactName: map[userDbContactName] ?? '',
+        privacySettings: map[userDbPrivacySettings] != null
+            ? Map<String, dynamic>.from(map[userDbPrivacySettings])
+            : {},
+        notificationTone: map[userDbNotificationTone],
+        ringTone: map[userDbRingTone],
+        notificationName: map[userDBNotificationName],
+        ringtoneName: map[userDBRingtoneName]);
   }
 
   Map<String, dynamic> toJson() {
@@ -57,11 +64,14 @@ class UserModel extends UserEntity {
       userDbGroupIdList: userGroupIdList,
       isUserDisabled: isDisabled,
       userDbLastActiveTime: lastActiveTime,
-      userDbContactName:contactName,
+      userDbContactName: contactName,
       userDbPrivacySettings: privacySettings,
+      userDbNotificationTone: notificationTone,
+      userDbRingTone: ringTone,
+      userDBNotificationName: notificationName,
+      userDBRingtoneName: ringtoneName,
     };
   }
-  
 
   UserModel copyWith({
     String? id,
@@ -77,8 +87,12 @@ class UserModel extends UserEntity {
     List<dynamic>? userGroupIdList,
     bool? isDisabled,
     String? lastActiveTime,
+    String? notificationTone,
+    String? ringTone,
     String? contactName,
-    Map<String, dynamic>? privacySettings
+    String? ringtoneName,
+    String? notificationName,
+    Map<String, dynamic>? privacySettings,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -91,13 +105,15 @@ class UserModel extends UserEntity {
       createdAt: createdAt ?? this.createdAt,
       tfaPin: tfaPin ?? this.tfaPin,
       isBlockedUser: isBlockedUser ?? this.isBlockedUser,
-      userGroupIdList: userGroupIdList??this.userGroupIdList,
-      isDisabled: isDisabled??this.isDisabled,
-      lastActiveTime: lastActiveTime??this.lastActiveTime,
-      contactName: contactName??this.contactName,
+      userGroupIdList: userGroupIdList ?? this.userGroupIdList,
+      isDisabled: isDisabled ?? this.isDisabled,
+      lastActiveTime: lastActiveTime ?? this.lastActiveTime,
+      contactName: contactName ?? this.contactName,
       privacySettings: privacySettings ?? this.privacySettings,
+      notificationTone: notificationTone ?? this.notificationTone,
+      ringTone: ringTone ?? this.ringTone,
+      notificationName: notificationName ?? this.notificationName,
+      ringtoneName: ringtoneName ?? this.ringtoneName,
     );
   }
-
-  
 }

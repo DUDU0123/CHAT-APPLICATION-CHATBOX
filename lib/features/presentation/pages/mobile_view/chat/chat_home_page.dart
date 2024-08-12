@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gemini/flutter_gemini.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
@@ -13,7 +11,7 @@ import 'package:official_chatbox_application/features/presentation/widgets/commo
 
 class ChatHomePage extends StatelessWidget {
   const ChatHomePage({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,4 +82,3 @@ class ChatHomePage extends StatelessWidget {
     );
   }
 }
-

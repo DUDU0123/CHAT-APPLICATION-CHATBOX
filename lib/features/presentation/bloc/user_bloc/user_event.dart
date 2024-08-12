@@ -46,8 +46,9 @@ class BlockUserEvent extends UserEvent {
     required this.chatId,
   });
   @override
-  List<Object> get props => [chatId??''];
+  List<Object> get props => [chatId ?? ''];
 }
+
 class RemoveBlockedUserEvent extends UserEvent {
   final String blockedUserId;
   const RemoveBlockedUserEvent({
@@ -56,14 +57,44 @@ class RemoveBlockedUserEvent extends UserEvent {
   @override
   List<Object> get props => [blockedUserId];
 }
-class GetBlockedUserEvent extends UserEvent{
-  
-}
+
+class GetBlockedUserEvent extends UserEvent {}
+
 class UpdateTFAPinEvent extends UserEvent {
   final String tfAPin;
   const UpdateTFAPinEvent({
     required this.tfAPin,
   });
   @override
-  List<Object> get props => [tfAPin,];
+  List<Object> get props => [
+        tfAPin,
+      ];
+}
+
+class SetNoficationSoundEvent extends UserEvent {
+  final File notficationSoundFile;
+  final String notificationName;
+  const SetNoficationSoundEvent({
+    required this.notficationSoundFile,
+    required this.notificationName,
+  });
+  @override
+  List<Object> get props => [
+        notficationSoundFile,
+        notificationName,
+      ];
+}
+
+class SetRingtoneSoundEvent extends UserEvent {
+  final File ringtoneSoundFile;
+  final String ringtoneName;
+  const SetRingtoneSoundEvent({
+    required this.ringtoneSoundFile,
+    required this.ringtoneName,
+  });
+  @override
+  List<Object> get props => [
+        ringtoneSoundFile,
+        ringtoneName,
+      ];
 }

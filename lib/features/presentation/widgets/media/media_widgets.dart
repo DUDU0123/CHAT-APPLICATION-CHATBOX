@@ -36,8 +36,11 @@ Widget buildMediaItem(String filePath, MediaType mediaType) {
   return FutureBuilder<String>(
     future: firebaseStorage.ref(filePath).getDownloadURL(),
     builder: (context, snapshot) {
+      log(name: "Error medias", snapshot.error.toString());
       final downloadUrl = snapshot.data;
-      if (downloadUrl==null) {
+      if (downloadUrl == null ||
+          snapshot.error ==
+              '[firebase_storage/object-not-found] No object exists at the desired reference.') {
         return zeroMeasureWidget;
       }
       switch (mediaType) {

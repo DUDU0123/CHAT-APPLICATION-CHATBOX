@@ -75,11 +75,6 @@ class TwoStepVerificationPage extends StatelessWidget {
                             title: "Change PIN",
                           ),
                     turnOffWidget(context: context),
-                    // tfaPINCreatePage(
-                    //   context: context,
-                    //   twoStepVerificationPinController:
-                    //       twoStepVerificationPinController,
-                    // ),
                   ],
                 );
               }),

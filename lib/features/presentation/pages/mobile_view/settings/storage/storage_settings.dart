@@ -1,14 +1,10 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/config/common_provider/common_provider.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/utils/media_methods.dart';
-import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/media/media_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/storage/media_files_list_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
@@ -22,22 +18,6 @@ class StorageSettings extends StatefulWidget {
 }
 
 class _StorageSettingsState extends State<StorageSettings> {
-  // Stream<List<String>>? _mediaFilesStream;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   fetchMediaFilesAsStream();
-  // }
-
-  // void fetchMediaFilesAsStream() {
-  //   if (firebaseAuth.currentUser != null) {
-  //     _mediaFilesStream = MediaMethods.getAllUserMediaFilesStream(
-  //       firebaseAuth.currentUser!.uid,
-  //     );
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,11 +36,14 @@ class _StorageSettingsState extends State<StorageSettings> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     dataLevelTextShowWidget(
-                      data: Provider.of<CommonProvider>(context).appStorage,
+                      data: MediaMethods.formatStorageSize(double.parse(
+                          Provider.of<CommonProvider>(context).appStorage)),
                       isUsed: true,
                     ),
                     dataLevelTextShowWidget(
-                      data: "1.8",
+                      data: MediaMethods.formatStorageSize(
+                          Provider.of<CommonProvider>(context)
+                              .deviceFreeStorage),
                       isUsed: false,
                     ),
                   ],

@@ -5,7 +5,9 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
+import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/image_picker_method.dart';
 import 'package:official_chatbox_application/features/data/models/blocked_user_model/blocked_user_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
@@ -28,6 +30,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<GetBlockedUserEvent>(getBlockedUserEvent);
     on<RemoveBlockedUserEvent>(removeBlockedUserEvent);
     on<UpdateTFAPinEvent>(updateTFAPinEvent);
+    on<SetNoficationSoundEvent>(setNoficationSoundEvent);
+    on<SetRingtoneSoundEvent>(setRingtoneSoundEvent);
   }
 
   Future<FutureOr<void>> getCurrentUserData(
@@ -190,6 +194,39 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       } else {
         emit(const CurrentUserErrorState(message: "Unable to change pin"));
       }
+    } catch (e) {
+      emit(CurrentUserErrorState(message: e.toString()));
+    }
+  }
+
+  FutureOr<void> setNoficationSoundEvent(
+      SetNoficationSoundEvent event, Emitter<UserState> emit) async {
+    try {
+      final currentUserId = firebaseAuth.currentUser?.uid;
+      final soundFileString =
+          await CommonDBFunctions.saveUserFileToDataBaseStorage(
+              ref: 'notificationTones/$currentUserId',
+              file: event.notficationSoundFile);
+      await fireStore.collection(usersCollection).doc(currentUserId).update({
+        userDbNotificationTone: soundFileString,
+        userDBNotificationName: event.notificationName,
+      });
+    } catch (e) {
+      emit(CurrentUserErrorState(message: e.toString()));
+    }
+  }
+
+  FutureOr<void> setRingtoneSoundEvent(
+      SetRingtoneSoundEvent event, Emitter<UserState> emit) async {
+    try {
+      final currentUserId = firebaseAuth.currentUser?.uid;
+      final soundFileString =
+          await CommonDBFunctions.saveUserFileToDataBaseStorage(
+              ref: 'ringtones/$currentUserId', file: event.ringtoneSoundFile);
+      await fireStore.collection(usersCollection).doc(currentUserId).update({
+        userDbRingTone: soundFileString,
+        userDBRingtoneName: event.ringtoneName,
+      });
     } catch (e) {
       emit(CurrentUserErrorState(message: e.toString()));
     }

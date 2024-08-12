@@ -15,7 +15,9 @@ import 'package:official_chatbox_application/features/data/models/chat_model/cha
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/message_model/message_model.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chat/camera_photo_pick/asset_show_page.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/chat/message_container_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/dialog_widgets/normal_dialogbox_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:video_player/video_player.dart';
@@ -78,10 +80,25 @@ Widget textMessageWidget({
 
 Widget documentMessageWidget({
   required MessageModel message,
+  required BuildContext context,
+  required bool mounted,
 }) {
   return GestureDetector(
-    onTap: () {
-      openDocument(url: message.message ?? '');
+    onTap: () async {
+      if (await checkAssetExists(message.message!)) {
+        openDocument(url: message.message ?? '');
+      } else {
+       if (mounted) {
+          simpleDialogBox(
+          context: context,
+          title: "Can't open, it is deleted",
+          buttonText: "Ok",
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        );
+       }
+      }
     },
     child: Row(
       children: [
@@ -113,6 +130,7 @@ Widget photoMessageShowWidget({
   required BuildContext context,
   required String receiverID,
   required bool isGroup,
+  required bool mounted,
   GroupModel? groupModel,
 }) {
   final commonProvider = Provider.of<CommonProvider>(context, listen: true);
@@ -121,20 +139,35 @@ Widget photoMessageShowWidget({
     child: Column(
       children: [
         GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AssetShowPage(
-                  isGroup: isGroup,
-                  groupModel: groupModel,
-                  receiverID: receiverID,
-                  messageType: MessageType.photo,
-                  chatID: chatModel?.chatID ?? '',
-                  message: message,
+          onTap: () async {
+            if (await checkAssetExists(message.message!)) {
+              if (mounted) {
+                Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AssetShowPage(
+                    isGroup: isGroup,
+                    groupModel: groupModel,
+                    receiverID: receiverID,
+                    messageType: MessageType.photo,
+                    chatID: chatModel?.chatID ?? '',
+                    message: message,
+                  ),
                 ),
-              ),
-            );
+              );
+              }
+            } else {
+              if (mounted) {
+                simpleDialogBox(
+                context: context,
+                title: "Can't open photo, it is deleted",
+                buttonText: "Ok",
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              );
+              }
+            }
           },
           child: Container(
             height: 250.h,
@@ -181,7 +214,7 @@ Widget videoMessageShowWidget({
   required BuildContext context,
   required String receiverID,
   required final Map<String, VideoPlayerController> videoControllers,
-  required bool isGroup,
+  required bool isGroup,required bool mounted,
   GroupModel? groupModel,
 }) {
   final commonProvider = Provider.of<CommonProvider>(context, listen: true);
@@ -191,29 +224,41 @@ Widget videoMessageShowWidget({
       mainAxisSize: MainAxisSize.min,
       children: [
         GestureDetector(
-          onTap: () {
-            log(
-              videoControllers[message.message!]!.value.duration.toString(),
-            );
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AssetShowPage(
-                  isGroup: isGroup,
-                  groupModel: groupModel,
-                  receiverID: receiverID,
-                  messageType: MessageType.video,
-                  chatID: chatModel?.chatID ?? '',
-                  controllers: videoControllers,
-                  message: message,
+          onTap: () async {
+            if (await checkAssetExists(message.message!)) {
+              if (mounted) {
+                Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AssetShowPage(
+                    isGroup: isGroup,
+                    groupModel: groupModel,
+                    receiverID: receiverID,
+                    messageType: MessageType.video,
+                    chatID: chatModel?.chatID ?? '',
+                    controllers: videoControllers,
+                    message: message,
+                  ),
                 ),
-              ),
-            );
+              );
+              }
+            } else {
+              if (mounted) {
+                simpleDialogBox(
+                context: context,
+                title: "Can't play video, it is deleted",
+                buttonText: "Ok",
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              );
+              }
+            }
           },
           child: Stack(
             children: [
               SizedBox(
-                height: 260.h, // Set a fixed height for the video player
+                height: 260.h,
                 child: VideoPlayer(
                   videoControllers[message.message!]!,
                 ),

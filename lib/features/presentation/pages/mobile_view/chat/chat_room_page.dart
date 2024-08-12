@@ -88,8 +88,6 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) =>
-        scrollController.jumpTo(scrollController.position.maxScrollExtent));
     context.read<MessageBloc>().add(GetAllMessageEvent(
           isGroup: widget.isGroup,
           groupModel: widget.groupModel,

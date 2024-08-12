@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/config/common_provider/common_provider.dart';
 import 'package:official_chatbox_application/core/constants/app_constants.dart';
@@ -99,6 +100,12 @@ class _SettingsPageState extends State<SettingsPage> {
                         case PageTypeEnum.storageSetting:
                           int usage =
                               await StorageMethods.calculateAppStorageUsage();
+                          const diskChannel =
+                              MethodChannel('freediskspacegiver');
+                          double value = await diskChannel
+                              .invokeMethod('getFreeDiskSpace');
+                          commonProvider
+                              .setDeviceFreeStorage(deviceFreeSpace: value);
                           commonProvider.setStorage(storage: usage);
                           if (mounted) {
                             Navigator.push(

@@ -16,6 +16,10 @@ const userDbPrivacySettings = 'user_privacy_settings';
 const userDbLastSeenOnline = 'user_last_seen_and_online';
 const userDbAboutPrivacy = 'user_about_privacy';
 const userDbProfilePhotoPrivacy = 'user_profile_photo_privacy';
+const userDbNotificationTone = 'user_notification_tone';
+const userDbRingTone = 'user_ringtone';
+const userDBNotificationName = 'notification_name';
+const userDBRingtoneName = 'ringtone_name';
 // collections names
 const usersCollection = 'users';
 const contactsCollection = 'chat_box_contact';

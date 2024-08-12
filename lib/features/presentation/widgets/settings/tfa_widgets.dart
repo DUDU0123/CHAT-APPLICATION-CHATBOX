@@ -12,6 +12,7 @@ import 'package:official_chatbox_application/features/presentation/widgets/commo
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_butttons_common.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_field_common.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/dialog_widgets/normal_dialogbox_widget.dart';
 
 // Widget tfaPINCreatePage({
 //   required BuildContext context,
@@ -62,10 +63,13 @@ class TFAPinCreatePage extends StatelessWidget {
           CommonButtonContainer(
             horizontalMarginOfButton: 40,
             text: "Save",
-            onTap: ()  {
+            onTap: () {
               if (twoStepVerificationPinController.text.isNotEmpty &&
                   twoStepVerificationPinController.text.length == 6) {
-                context.read<UserBloc>().add(UpdateTFAPinEvent(tfAPin: twoStepVerificationPinController.text),);
+                context.read<UserBloc>().add(
+                      UpdateTFAPinEvent(
+                          tfAPin: twoStepVerificationPinController.text),
+                    );
                 twoStepVerificationPinController.text = '';
                 Navigator.pop(context);
               } else {
@@ -86,45 +90,24 @@ Widget turnOffWidget({required BuildContext context}) {
       twoStepListTileWidget(
         icon: Icons.close_rounded,
         onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return Dialog(
-                child: Container(
-                  margin: EdgeInsets.only(top: 20.h),
-                  height: 80.h,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      TextWidgetCommon(
-                        text: " Turn off two-step verfication",
-                        textColor: iconGreyColor,
-                        fontSize: 16.sp,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(right: 20.w),
-                        child: TextButtonsCommon(
-                          buttonName: "Turn Off",
-                          onPressed: () {
-                            context.read<UserBloc>().add(
-                                  const UpdateTFAPinEvent(tfAPin: ""),
-                                );
-                            Navigator.pop(context);
-                          },
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
+          simpleDialogBox(
+              context: context,
+              title: " Turn off two-step verfication",
+              buttonText: "Turn Off",
+              onPressed: () {
+                context.read<UserBloc>().add(
+                      const UpdateTFAPinEvent(tfAPin: ""),
+                    );
+                Navigator.pop(context);
+              });
         },
         title: "Turn Off",
       ),
     ],
   );
 }
+
+
 
 ListTile twoStepListTileWidget({
   required void Function()? onTap,

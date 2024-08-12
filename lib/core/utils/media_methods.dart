@@ -8,6 +8,29 @@ import 'package:official_chatbox_application/features/data/models/chat_model/cha
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 
 class MediaMethods {
+  static String formatStorageSize(double sizeInMB) {
+  String formattedSize;
+
+  if (sizeInMB < 1024) {
+    formattedSize = sizeInMB % 1 == 0
+        ? sizeInMB.toStringAsFixed(0)
+        : sizeInMB.toStringAsFixed(1);
+    return "$formattedSize MB";
+  } else if (sizeInMB < 1024 * 1024) {
+    double sizeInGB = sizeInMB / 1024;
+    formattedSize = sizeInGB % 1 == 0
+        ? sizeInGB.toStringAsFixed(0)
+        : sizeInGB.toStringAsFixed(1);
+    return "$formattedSize GB";
+  } else {
+    double sizeInTB = sizeInMB / (1024 * 1024);
+    formattedSize = sizeInTB % 1 == 0
+        ? sizeInTB.toStringAsFixed(0)
+        : sizeInTB.toStringAsFixed(1);
+    return "$formattedSize TB";
+  }
+}
+
   static Future<List<String>> getMediaFiles(String folderPath) async {
     try {
       final storageRef = firebaseStorage.ref(folderPath);
