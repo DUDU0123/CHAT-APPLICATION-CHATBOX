@@ -24,6 +24,7 @@ Widget groupMemberListTileWidget({
     leading: GestureDetector(
       onTap: () {
         userProfileShowDialog(
+          groupModel: groupData,
           context: context,
           userProfileImage: groupMemberSnapshot.data?.userProfileImage,
         );

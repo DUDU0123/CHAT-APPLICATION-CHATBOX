@@ -72,21 +72,29 @@ class UserRepositoryImpl extends UserRepository {
   }
 
   @override
- Future<bool?> blockUser({
+  Future<bool?> blockUser({
     required BlockedUserModel blockedUserModel,
-   required String? chatId,
+    required String? chatId,
   }) async {
-    return await userData.blockAUser(blockedUserModel: blockedUserModel, chatId:chatId, );
+    return await userData.blockAUser(
+      blockedUserModel: blockedUserModel,
+      chatId: chatId,
+    );
   }
 
   @override
   Future<bool?> removeBlockedUser({required String blockedUserId}) async {
     return await userData.removeFromBlockedUser(blockedUserId: blockedUserId);
   }
-  
+
   @override
   Stream<List<BlockedUserModel>>? getAllBlockedUsersFromDB() {
     return userData.getAllBlockedUsers();
+  }
+
+  @override
+  Future<bool> updateTfaPinInDB({required String tfaPin}) {
+    return userData.updateTFAPin(tfaPin: tfaPin);
   }
 
   // @override

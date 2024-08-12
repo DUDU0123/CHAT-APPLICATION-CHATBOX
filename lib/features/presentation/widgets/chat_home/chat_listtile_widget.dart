@@ -101,8 +101,12 @@ class ChatListTileWidget extends StatelessWidget {
         },
         leading: GestureDetector(
           onTap: () {
-            log("Tapped image");
+            
             userProfileShowDialog(
+              userName: userName,
+              chatModel: chatModel,
+              groupModel: groupModel,
+              isGroup: isGroup,
               context: context,
               userProfileImage: userProfileImage,
             );

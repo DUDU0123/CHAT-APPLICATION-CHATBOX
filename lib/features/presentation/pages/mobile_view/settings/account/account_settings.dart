@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
-import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/account/change_number_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/account/delete_account_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/account/two_step_verification_page.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_appbar_widget.dart';
@@ -40,27 +39,6 @@ class AccountSettings extends StatelessWidget {
               leading: SvgPicture.asset(
                 tfaPin,
                 width: 25.w,
-                height: 20.h,
-                colorFilter: ColorFilter.mode(
-                    Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn),
-              ),
-              isSmallTitle: false,
-              context: context,
-            ),
-            kHeight5,
-            commonListTile(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ChangeNumberPage(),
-                  ),
-                );
-              },
-              title: "Change number",
-              leading: SvgPicture.asset(
-                changeNumberIcon,
-                width: 20.w,
                 height: 20.h,
                 colorFilter: ColorFilter.mode(
                     Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn),

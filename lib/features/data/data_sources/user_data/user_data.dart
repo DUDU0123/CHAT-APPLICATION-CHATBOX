@@ -386,7 +386,6 @@ class UserData {
           .collection(messagesCollection)
           .get();
 
-
       // Delete each message document
       for (QueryDocumentSnapshot<Map<String, dynamic>> messageDoc
           in messages.docs) {
@@ -482,6 +481,29 @@ class UserData {
       log('Error while getting all blocked user from database: $e',
           stackTrace: stackTrace);
       return null;
+    }
+  }
+
+  Future<bool> updateTFAPin({
+    required String tfaPin,
+  }) async {
+    try {
+      await fireStore
+          .collection(usersCollection)
+          .doc(firebaseAuth.currentUser?.uid)
+          .update({
+        userDbTFAPin: tfaPin,
+      });
+      return true;
+    } on FirebaseException catch (e) {
+      log(
+        'Firebase exception: $e from tfa pin update',
+      );
+      return false;
+    } catch (e, stackTrace) {
+      log('Error while tfa pin update in database: $e',
+          stackTrace: stackTrace);
+      return false;
     }
   }
 }

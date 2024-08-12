@@ -4,6 +4,7 @@ import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/help_methods.dart';
+import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/help/inner_pages/help_center_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/help/inner_pages/terms_and_privacy_policy_page.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_appbar_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_list_tile.dart';
@@ -54,7 +55,9 @@ class HelpSettings extends StatelessWidget {
             kHeight15,
             linkText(
               text: "Help Center",
-              onTap: () {},
+              onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => HelpCenterPage(),));
+              },
             ),
             kHeight15,
             linkText(

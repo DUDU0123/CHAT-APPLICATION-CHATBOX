@@ -38,6 +38,8 @@ abstract class UserRepository {
     required String blockedUserId,
   });
   Stream<List<BlockedUserModel>>? getAllBlockedUsersFromDB();
-  // void userChangeNumber();
+  Future<bool> updateTfaPinInDB({
+    required String tfaPin,
+  });
   // void reportUser();
 }

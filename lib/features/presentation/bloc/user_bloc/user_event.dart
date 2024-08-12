@@ -59,3 +59,11 @@ class RemoveBlockedUserEvent extends UserEvent {
 class GetBlockedUserEvent extends UserEvent{
   
 }
+class UpdateTFAPinEvent extends UserEvent {
+  final String tfAPin;
+  const UpdateTFAPinEvent({
+    required this.tfAPin,
+  });
+  @override
+  List<Object> get props => [tfAPin,];
+}

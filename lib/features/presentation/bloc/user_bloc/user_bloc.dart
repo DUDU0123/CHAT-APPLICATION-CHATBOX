@@ -27,6 +27,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<BlockUserEvent>(blockUserEvent);
     on<GetBlockedUserEvent>(getBlockedUserEvent);
     on<RemoveBlockedUserEvent>(removeBlockedUserEvent);
+    on<UpdateTFAPinEvent>(updateTFAPinEvent);
   }
 
   Future<FutureOr<void>> getCurrentUserData(
@@ -172,6 +173,25 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       ));
     } catch (e) {
       emit(BlockUserErrorState(errorMessage: e.toString()));
+    }
+  }
+
+  FutureOr<void> updateTFAPinEvent(
+      UpdateTFAPinEvent event, Emitter<UserState> emit) async {
+    try {
+      final value = await userRepository.updateTfaPinInDB(tfaPin: event.tfAPin);
+      if (value) {
+        emit(
+          state.copyWith(
+            blockedUsersList: state.blockedUsersList,
+            currentUserData: state.currentUserData,
+          ),
+        );
+      } else {
+        emit(const CurrentUserErrorState(message: "Unable to change pin"));
+      }
+    } catch (e) {
+      emit(CurrentUserErrorState(message: e.toString()));
     }
   }
 }
