@@ -1,19 +1,32 @@
+import 'dart:convert';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
+import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chat/ai_chat_room/ai_chat_room_page.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat_home/chat_listtile_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat_home/searchbar_chat_home.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 
 class ChatHomePage extends StatelessWidget {
-  const ChatHomePage({super.key});
-  
+  ChatHomePage({super.key});
+  Map payload = {};
   @override
   Widget build(BuildContext context) {
+    final data = ModalRoute.of(context)?.settings.arguments;
+    if (data is RemoteMessage) {
+      payload = data.data;
+    }
+    if (data is NotificationResponse) {
+      payload = jsonDecode(data.payload!);
+    }
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -78,6 +91,22 @@ class ChatHomePage extends StatelessWidget {
             },
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: darkLinearGradientColorTwo,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AIChatRoomPage(),
+            ),
+          );
+        },
+        child: Icon(
+          Icons.adb_sharp,
+          color: kWhite,
+          size: 30.sp,
+        ),
       ),
     );
   }

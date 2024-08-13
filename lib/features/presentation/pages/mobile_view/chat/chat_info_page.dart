@@ -24,12 +24,13 @@ class ChatInfoPage extends StatelessWidget {
     this.receiverContactName,
     this.groupData,
     required this.isGroup,
-    this.chatModel,
+    this.chatModel, this.isAIChat,
   });
   final UserModel? receiverData;
   final String? receiverContactName;
   final GroupModel? groupData;
   final bool isGroup;
+  final bool? isAIChat;
   final ChatModel? chatModel;
   @override
   Widget build(BuildContext context) {

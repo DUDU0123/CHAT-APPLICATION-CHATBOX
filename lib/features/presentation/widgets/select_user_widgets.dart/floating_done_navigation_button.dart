@@ -16,7 +16,6 @@ import 'package:official_chatbox_application/features/data/models/contact_model/
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/status_model/status_model.dart';
 import 'package:official_chatbox_application/features/data/models/status_model/uploaded_status_model.dart';
-import 'package:official_chatbox_application/features/presentation/bloc/broadcast/broadcast_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/message/message_bloc.dart';
 
 class FloatingDoneNavigateButton extends StatefulWidget {
@@ -126,29 +125,6 @@ class _FloatingDoneNavigateButtonState
             if (mounted) {
               Navigator.pop(context);
             }
-            break;
-          case PageTypeEnum.broadcastMembersSelectPage:
-            final currentUserId = firebaseAuth.currentUser?.uid;
-            if (currentUserId != null && widget.selectedContactList != null) {
-              List<String> selectUsersID = [];
-              for (var user in widget.selectedContactList!) {
-                if (user.chatBoxUserId != null) {
-                  selectUsersID.add(user.chatBoxUserId!);
-                }
-              }
-              final newBroadCast = BroadCastModel(
-                broadCastAdminId: currentUserId,
-                broadCastMembersId: [currentUserId, ...selectUsersID],
-              );
-
-              context.read<BroadcastBloc>().add(
-                    CreateBroadCastEvent(
-                      newBroadCastModel: newBroadCast,
-                    ),
-                  );
-              Navigator.pop(context);
-            }
-
             break;
           case PageTypeEnum.groupDetailsAddPage:
             GroupMethods.groupDetailsAddOnCreationMethod(

@@ -14,6 +14,6 @@ abstract class StatusRepository{
   Future<void> updateStatusViewersListInDB({
     required StatusModel statusModel,
     required UploadedStatusModel uploadedStatusModel,
-    required String viewerId,
+    required String viewerId,required String ownerId,
   });
 }

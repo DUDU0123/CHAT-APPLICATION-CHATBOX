@@ -72,11 +72,13 @@ class UpdateStatusViewersList extends StatusEvent {
   final StatusModel statusModel;
   final UploadedStatusModel uploadedStatusModel;
   final String viewerId;
+  final String ownerId;
   const UpdateStatusViewersList({
     required this.statusModel,
     required this.uploadedStatusModel,
     required this.viewerId,
+    required this.ownerId,
   });
   @override
-  List<Object> get props => [statusModel, uploadedStatusModel, viewerId];
+  List<Object> get props => [statusModel, uploadedStatusModel, viewerId, ownerId,];
 }

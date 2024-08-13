@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
+import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/features/data/models/status_model/status_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/status/status_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/status/build_status_item_widget.dart';
@@ -14,7 +15,10 @@ import 'package:story_view/widgets/story_view.dart';
 
 class StatusShowPage extends StatefulWidget {
   const StatusShowPage(
-      {super.key, required this.statusModel, required this.isCurrentUser, this.currentUserId});
+      {super.key,
+      required this.statusModel,
+      required this.isCurrentUser,
+      this.currentUserId});
   final StatusModel statusModel;
   final String? currentUserId;
   final bool isCurrentUser;
@@ -27,7 +31,7 @@ class _StatusShowPageState extends State<StatusShowPage> {
   final StoryController controller = StoryController();
 
   final ValueNotifier<int> currentIndexNotifier = ValueNotifier<int>(0);
-
+ 
   @override
   void dispose() {
     controller.dispose();
@@ -50,13 +54,17 @@ class _StatusShowPageState extends State<StatusShowPage> {
               },
               onStoryShow: (s, i) {
                 currentIndexNotifier.value = i;
-             widget.currentUserId!=null?   context.read<StatusBloc>().add(
-                      UpdateStatusViewersList(
-                        statusModel: widget.statusModel,
-                        uploadedStatusModel: widget.statusModel.statusList![i],
-                        viewerId: widget.currentUserId!,
-                      ),
-                    ):null;
+                widget.currentUserId != null
+                    ? context.read<StatusBloc>().add(
+                          UpdateStatusViewersList(
+                            ownerId: widget.statusModel.statusUploaderId!,
+                            statusModel: widget.statusModel,
+                            uploadedStatusModel:
+                                widget.statusModel.statusList![i],
+                            viewerId: widget.currentUserId!,
+                          ),
+                        )
+                    : null;
                 log(widget.statusModel.statusList![currentIndexNotifier.value]
                     .viewers!.length
                     .toString());
@@ -87,18 +95,19 @@ class _StatusShowPageState extends State<StatusShowPage> {
                       );
                     },
                     child: viewersShowButton(
-                      viewersLength: widget
+                      viewersList: widget
                                   .statusModel
                                   .statusList?[currentIndexNotifier.value]
-                                  .viewers !=
-                              null
-                          ? widget
-                                  .statusModel
-                                  .statusList![currentIndexNotifier.value]
-                                  .viewers!
-                                  .length -
-                              1
-                          : 0,
+                                  .viewers
+                          //          !=
+                          //     null
+                          // ? widget
+                          //         .statusModel
+                          //         .statusList![currentIndexNotifier.value]
+                          //         .viewers!
+                          //         .length -
+                          //     1
+                          // : 0,
                     ),
                   ),
                 )

@@ -31,9 +31,10 @@ class StatusRepositoryImpl extends StatusRepository {
   Future<void> updateStatusViewersListInDB({
     required StatusModel statusModel,
     required UploadedStatusModel uploadedStatusModel,
-    required String viewerId,
+    required String viewerId,required String ownerId,
   }) async {
     await statusData.updateStatusViewersList(
+      ownerId: ownerId,
       statusModel: statusModel,
       uploadedStatusModel: uploadedStatusModel,
       viewerId: viewerId,

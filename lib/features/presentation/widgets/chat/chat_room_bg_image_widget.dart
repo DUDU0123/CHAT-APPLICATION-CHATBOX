@@ -9,8 +9,8 @@ import 'package:provider/provider.dart';
 
 Widget chatRoomBackgroundImageWidget({
   required BuildContext context,
-  required ChatModel? chatModel,
-  required GroupModel? groupModel,
+   ChatModel? chatModel,
+   GroupModel? groupModel,
 }) {
   return SizedBox(
     width: screenWidth(context: context),

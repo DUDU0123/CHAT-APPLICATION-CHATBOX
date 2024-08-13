@@ -22,6 +22,7 @@ class UserModel extends UserEntity {
     super.ringTone,
     super.notificationName,
     super.ringtoneName,
+    super.fcmToken,
   });
 
   factory UserModel.fromJson({required Map<String, dynamic> map}) {
@@ -46,7 +47,8 @@ class UserModel extends UserEntity {
         notificationTone: map[userDbNotificationTone],
         ringTone: map[userDbRingTone],
         notificationName: map[userDBNotificationName],
-        ringtoneName: map[userDBRingtoneName]);
+        ringtoneName: map[userDBRingtoneName],
+        fcmToken: map[userDbFcmToken]);
   }
 
   Map<String, dynamic> toJson() {
@@ -70,6 +72,7 @@ class UserModel extends UserEntity {
       userDbRingTone: ringTone,
       userDBNotificationName: notificationName,
       userDBRingtoneName: ringtoneName,
+      userDbFcmToken: fcmToken,
     };
   }
 
@@ -93,6 +96,7 @@ class UserModel extends UserEntity {
     String? ringtoneName,
     String? notificationName,
     Map<String, dynamic>? privacySettings,
+    String? fcmToken,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -114,6 +118,7 @@ class UserModel extends UserEntity {
       ringTone: ringTone ?? this.ringTone,
       notificationName: notificationName ?? this.notificationName,
       ringtoneName: ringtoneName ?? this.ringtoneName,
+      fcmToken: fcmToken ?? this.fcmToken,
     );
   }
 }

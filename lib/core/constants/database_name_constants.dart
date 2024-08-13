@@ -20,6 +20,7 @@ const userDbNotificationTone = 'user_notification_tone';
 const userDbRingTone = 'user_ringtone';
 const userDBNotificationName = 'notification_name';
 const userDBRingtoneName = 'ringtone_name';
+const userDbFcmToken = 'user_fcm_token';
 // collections names
 const usersCollection = 'users';
 const contactsCollection = 'chat_box_contact';
@@ -29,6 +30,7 @@ const messagesCollection = 'messages';
 const statusCollection = 'statuses';
 const callsCollection = 'calls';
 const blockedUsersCollection = 'blocked_users';
+const aiChatMessagesCollection = 'ai_chat_messages_collection';
 
 // messageDb fields name
 const dbMessageID = 'message_id';

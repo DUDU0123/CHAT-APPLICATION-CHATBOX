@@ -171,9 +171,9 @@ Widget statusTileWidget({
         }),
     trailing: TextWidgetCommon(
       text: !isCurrentUser
-          ? TimeProvider.getRelativeTime(
-              statusModel!.statusList!.last.statusUploadedTime!)
-          : "",
+          ?statusModel!=null?statusModel.statusList!=null? TimeProvider.getRelativeTime(
+              statusModel.statusList!.last.statusUploadedTime!)
+          : "":'':'',
       textColor: iconGreyColor,
       fontWeight: FontWeight.normal,
       fontSize: 10.sp,

@@ -296,35 +296,88 @@ class CommonDBFunctions {
       return null;
     }
   }
+  static Future<void> updateStatusListInStatusModelInDB({required String? userId,}) async {
+    try {
+         final currentUser = firebaseAuth.currentUser?.uid;
+        final now = DateTime.now();
+        final cutoffTime = now.subtract(const Duration(hours: 24));
 
-  static void startCleanupTimer() {
-    Timer.periodic(const Duration(hours: 1), (timer) async {
-      await deleteOldStatuses();
-    });
-  }
+        if (currentUser == null) {
+          debugPrint("No current user found.");
+          return;
+        }
+        final statusCollectionSnap = await fireStore
+            .collection(usersCollection)
+            .doc(userId)
+            .collection(statusCollection)
+            .get();
+        if (statusCollectionSnap.docs.isEmpty) {
+        debugPrint("No statuses found for the current user.");
+        return;
+      }
 
-  static Future<void> deleteOldStatuses() async {
-    final now = DateTime.now();
-    final cutoffTime = now.subtract(const Duration(hours: 24));
+        final StatusModel statusModel =
+            StatusModel.fromJson(map: statusCollectionSnap.docs.first.data());
+        if (statusModel.statusList == null) {
+          debugPrint("No statuses in the status list.");
+          return;
+        }
+        final updatedStatusList = statusModel.statusList?.where((uploadedStatus) {
+          final statusTime = DateTime.parse(uploadedStatus.statusUploadedTime!);
+          return statusTime.isAfter(cutoffTime);
+        });
+        await fireStore
+            .collection(usersCollection)
+            .doc(currentUser)
+            .collection(statusCollection)
+            .doc(statusModel.statusId)
+            .update({
+          dbStatusContentList:
+              updatedStatusList?.map((status) => status.toJson()).toList(),
+        });
+      // final now = DateTime.now();
+      // final cutoffTime = now.subtract(const Duration(hours: 24));
 
-    final currentUser = firebaseAuth.currentUser?.uid;
-    if (currentUser == null) {
-      debugPrint("No current user found.");
-      return;
-    }
+      // final usersCollection = FirebaseFirestore.instance.collection('users');
+      // final usersSnapshot = await usersCollection.get();
 
-    final statusCol = fireStore
-        .collection(usersCollection)
-        .doc(currentUser)
-        .collection(statusCollection);
+      // for (var userDoc in usersSnapshot.docs) {
+      //   final userId = userDoc.id;
+      //   final statusCollectionSnap =
+      //       await usersCollection.doc(userId).collection('status').get();
 
-    final oldStatusesQuery =
-        statusCol.where(dbStatusModelTimeStamp, isLessThan: cutoffTime).get();
+      //   if (statusCollectionSnap.docs.isEmpty) {
+      //     continue;
+      //   }
 
-    final oldStatuses = await oldStatusesQuery;
+      //   final statusDocs = statusCollectionSnap.docs;
+      //   for (var doc in statusDocs) {
+      //     final StatusModel statusModel = StatusModel.fromJson(map: doc.data());
+      //     if (statusModel.statusList == null) {
+      //       continue;
+      //     }
 
-    for (final doc in oldStatuses.docs) {
-      await doc.reference.delete();
+      //     final updatedStatusList =
+      //         statusModel.statusList?.where((uploadedStatus) {
+      //       final statusTime =
+      //           DateTime.parse(uploadedStatus.statusUploadedTime!);
+      //       return statusTime.isAfter(cutoffTime);
+      //     }).toList();
+
+      //     await usersCollection
+      //         .doc(userId)
+      //         .collection(statusCollection)
+      //         .doc(statusModel.statusId)
+      //         .update({
+      //       dbStatusContentList:
+      //           updatedStatusList?.map((status) => status.toJson()).toList(),
+      //     });
+      //   }
+      // }
+      log("Old statuses deleted successfully.");
+    } catch (e) {
+      log("Error while deleting old statuses: $e");
+      null;
     }
   }
 

@@ -6,6 +6,7 @@ import 'package:official_chatbox_application/config/common_provider/common_provi
 import 'package:official_chatbox_application/config/theme/theme_constants.dart';
 import 'package:official_chatbox_application/config/theme/theme_manager.dart';
 import 'package:official_chatbox_application/features/presentation/pages/main_page/main_page.dart';
+import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chat/chat_home_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chatbox_welcome/chatbox_welcome_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/create_account/create_account_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/navigator_bottomnav_page/navigator_bottomnav_page.dart';
@@ -64,7 +65,8 @@ class RootWidgetPage extends StatelessWidget {
       "bottomNav_Navigator": (context) => const NavigatorBottomnavPage(),
       // "/messaging_page":(context)=> MessagingPage(),
       "/search_page": (context) => SearchPage(),
-      "/settings_page": (context) => const SettingsPage()
+      "/settings_page": (context) => const SettingsPage(),
+      "/chat_home":(context)=> ChatHomePage(),
     };
   } //routes provider method end
 }

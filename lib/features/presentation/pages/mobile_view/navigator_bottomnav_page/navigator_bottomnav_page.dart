@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
+import 'package:official_chatbox_application/config/notification_service/notification_service.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/utils/get_appbar_title.dart';
 import 'package:official_chatbox_application/core/utils/network_status_methods.dart';
@@ -51,7 +52,7 @@ class NavigatorBottomnavPage extends StatefulWidget {
 
 class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
   final pages = [
-    const ChatHomePage(),
+     ChatHomePage(),
     const GroupHomePage(),
     StatusHomePage(currentUserId: AuthenticationRepoImpl(firebaseAuth: firebaseAuth).getCurrentUserId(firebaseAuth.currentUser?.uid),),
     const CallHomePage(),
@@ -61,6 +62,7 @@ class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
 
   @override
   void initState() {
+    NotificationService.getDeviceToken();
     super.initState();
   }
 

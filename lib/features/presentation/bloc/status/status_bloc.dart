@@ -168,6 +168,7 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
       UpdateStatusViewersList event, Emitter<StatusState> emit) async {
     try {
       await statusRepository.updateStatusViewersListInDB(
+        ownerId: event.ownerId,
         statusModel: event.statusModel,
         uploadedStatusModel: event.uploadedStatusModel,
         viewerId: event.viewerId,

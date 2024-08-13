@@ -321,7 +321,7 @@ Widget readMoreTextWidget({
   return TextWidgetCommon(
     fontSize: 16.sp,
     maxLines:
-        !commonProvider.isExpandedMessage(messageModel.messageId!) ? 30 : null,
+       messageModel.messageId!=null? !commonProvider.isExpandedMessage(messageModel.messageId!) ? 30 : null:null,
     text: message ?? '',
     textColor: kWhite,
   );

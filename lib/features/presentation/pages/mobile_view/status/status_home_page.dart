@@ -14,7 +14,10 @@ import 'package:official_chatbox_application/features/presentation/pages/mobile_
 import 'package:official_chatbox_application/features/presentation/widgets/status/status_tile_widget.dart';
 
 class StatusHomePage extends StatefulWidget {
-  const StatusHomePage({super.key, required this.currentUserId,});
+  const StatusHomePage({
+    super.key,
+    required this.currentUserId,
+  });
   final String? currentUserId;
 
   @override
@@ -22,6 +25,13 @@ class StatusHomePage extends StatefulWidget {
 }
 
 class _StatusHomePageState extends State<StatusHomePage> {
+  @override
+  void initState() {
+    CommonDBFunctions.updateStatusListInStatusModelInDB(
+        userId: firebaseAuth.currentUser?.uid);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +43,6 @@ class _StatusHomePageState extends State<StatusHomePage> {
               contentText: state.errorMessage,
             );
           }
-          
         },
         builder: (context, state) {
           if (state is StatusLoadingState) {
@@ -65,9 +74,7 @@ class _StatusHomePageState extends State<StatusHomePage> {
                     builder: (context, snapshot) {
                       log(snapshot.data.toString());
                       if (snapshot.data == null || snapshot.hasError) {
-                        return commonErrorWidget(
-                            message:
-                               "No status");
+                        return commonErrorWidget(message: "No status");
                       }
                       if (snapshot.data!.isEmpty) {
                         return emptyShowWidget(
@@ -76,13 +83,20 @@ class _StatusHomePageState extends State<StatusHomePage> {
                       final otherUsersStatuses = snapshot.data!
                           .where((status) =>
                               status.statusUploaderId !=
-                              firebaseAuth.currentUser?.uid)
+                                  firebaseAuth.currentUser?.uid &&
+                              (status.statusList?.isNotEmpty ?? false))
                           .toList();
 
                       if (otherUsersStatuses.isEmpty) {
                         return emptyShowWidget(
                             context: context, text: "No status");
                       }
+
+                      for (var statusmodel in otherUsersStatuses) {
+                        CommonDBFunctions.updateStatusListInStatusModelInDB(
+                            userId: statusmodel.statusUploaderId);
+                      }
+
                       return ListView.separated(
                         separatorBuilder: (context, index) =>
                             const SizedBox(height: 20),

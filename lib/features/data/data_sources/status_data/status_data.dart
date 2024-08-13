@@ -173,54 +173,48 @@ class StatusData {
   }
 
   Future<void> updateStatusViewersList({
-    required StatusModel statusModel,
-    required UploadedStatusModel uploadedStatusModel,
-    required String viewerId,
-  }) async {
-    try {
-      final currentUserId = firebaseAuth.currentUser?.uid;
-      final statusDocRef = await firebaseFireStore
+  required StatusModel statusModel,
+  required UploadedStatusModel uploadedStatusModel,
+  required String viewerId,
+  required String ownerId,
+}) async {
+  try {
+    final statusDocRef = await firebaseFireStore
+        .collection(usersCollection)
+        .doc(ownerId)
+        .collection(statusCollection)
+        .doc(statusModel.statusId)
+        .get();
+
+    if (statusDocRef.exists) {
+      final data = statusDocRef.data() as Map<String, dynamic>;
+      final fetchedStatusModel = StatusModel.fromJson(map: data);
+
+      final updatedStatusList = fetchedStatusModel.statusList?.map((uploadedStatus) {
+        if (uploadedStatus.uploadedStatusId == uploadedStatusModel.uploadedStatusId) {
+          final updatedViewersList = List<String>.from(uploadedStatus.viewers ?? []);
+          if (!updatedViewersList.contains(viewerId)) {
+            updatedViewersList.add(viewerId);
+          }
+          return uploadedStatus.copyWith(viewers: updatedViewersList);
+        }
+        return uploadedStatus;
+      }).toList();
+
+      final updatedStatusModel = fetchedStatusModel.copyWith(statusList: updatedStatusList);
+
+      await firebaseFireStore
           .collection(usersCollection)
-          .doc(currentUserId)
+          .doc(ownerId)
           .collection(statusCollection)
           .doc(statusModel.statusId)
-          .get();
-
-      if (statusDocRef.exists) {
-        // Deserialize the StatusModel
-        final data = statusDocRef.data() as Map<String, dynamic>;
-        final fetchedStatusModel = StatusModel.fromJson(map: data);
-
-        // Find the specific UploadedStatusModel and update its viewer list
-        final updatedStatusList =
-            fetchedStatusModel.statusList?.map((uploadedStatus) {
-          if (uploadedStatus.uploadedStatusId ==
-              uploadedStatusModel.uploadedStatusId) {
-            final updatedViewersList =
-                List<String>.from(uploadedStatus.viewers ?? []);
-            if (!updatedViewersList.contains(viewerId)) {
-              updatedViewersList.add(viewerId);
-            }
-            return uploadedStatus.copyWith(viewers: updatedViewersList);
-          }
-          return uploadedStatus;
-        }).toList();
-
-        final updatedStatusModel =
-            fetchedStatusModel.copyWith(statusList: updatedStatusList);
-
-        await firebaseFireStore
-            .collection(usersCollection)
-            .doc(currentUserId)
-            .collection(statusCollection)
-            .doc(statusModel.statusId)
-            .update(updatedStatusModel.toJson());
-      }
-    } on FirebaseException catch (e) {
-      log("Firebase Auth exception on updating status viewers list: ${e.message}");
-    } catch (e, stackTrace) {
-      log("Error while updating status viewers list: $e",
-          stackTrace: stackTrace);
+          .update(updatedStatusModel.toJson());
     }
+  } on FirebaseException catch (e) {
+    log("Firebase Auth exception on updating status viewers list: ${e.message}");
+  } catch (e, stackTrace) {
+    log("Error while updating status viewers list: $e", stackTrace: stackTrace);
   }
+}
+
 }

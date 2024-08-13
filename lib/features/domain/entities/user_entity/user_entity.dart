@@ -20,6 +20,7 @@ class UserEntity extends Equatable {
   final String? ringTone;
   final String? notificationName;
   final String? ringtoneName;
+  final String? fcmToken;
   const UserEntity({
     this.id,
     this.userName,
@@ -40,6 +41,7 @@ class UserEntity extends Equatable {
     this.ringTone,
     this.notificationName,
     this.ringtoneName,
+    this.fcmToken,
   });
 
   @override
@@ -64,6 +66,7 @@ class UserEntity extends Equatable {
       ringTone,
       notificationName,
       ringtoneName,
+      fcmToken,
     ];
   }
 }

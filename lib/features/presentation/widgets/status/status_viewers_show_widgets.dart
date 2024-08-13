@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
@@ -7,11 +8,14 @@ import 'package:official_chatbox_application/features/data/models/user_model/use
 import 'package:official_chatbox_application/features/presentation/widgets/chat_home/chat_tile_widgets.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 
-Widget viewersShowButton({required int viewersLength}) {
+Widget viewersShowButton({required List<String>? viewersList}) {
+  final viewers = viewersList
+      ?.where((viewerId) => viewerId != firebaseAuth.currentUser?.uid)
+      .toList();
   return Column(
     children: [
       TextWidgetCommon(
-        text: viewersLength.toString(),
+        text: viewers!=null? viewers.length.toString():'0',
         textColor: kWhite,
         fontSize: 16.sp,
       ),
