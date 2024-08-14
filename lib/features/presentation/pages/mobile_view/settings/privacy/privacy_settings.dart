@@ -8,7 +8,6 @@ import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/features/data/models/blocked_user_model/blocked_user_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
-import 'package:official_chatbox_application/features/presentation/bloc/privacy/privacy_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/privacy/blocked_contacts_page.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_appbar_widget.dart';
@@ -91,21 +90,21 @@ class _PrivacySettingsState extends State<PrivacySettings> {
                                   )
                                 : 1,
                             radioOneOnChanged: (value) {
-                              context.read<PrivacyBloc>().add(
+                              context.read<UserBloc>().add(
                                   LastSeenPrivacyChangeEvent(
                                       currentValue: value));
 
                               Navigator.pop(context);
                             },
                             radioTwoOnChanged: (value) {
-                              context.read<PrivacyBloc>().add(
+                              context.read<UserBloc>().add(
                                   LastSeenPrivacyChangeEvent(
                                       currentValue: value));
 
                               Navigator.pop(context);
                             },
                             radioThreeOnChanged: (value) {
-                              context.read<PrivacyBloc>().add(
+                              context.read<UserBloc>().add(
                                     LastSeenPrivacyChangeEvent(
                                       currentValue: value,
                                     ),
@@ -141,7 +140,7 @@ class _PrivacySettingsState extends State<PrivacySettings> {
                                   )
                                 : 1,
                             radioOneOnChanged: (value) {
-                              context.read<PrivacyBloc>().add(
+                              context.read<UserBloc>().add(
                                     ProfilePhotoPrivacyChangeEvent(
                                       currentValue: value,
                                     ),
@@ -149,7 +148,7 @@ class _PrivacySettingsState extends State<PrivacySettings> {
                               Navigator.pop(context);
                             },
                             radioTwoOnChanged: (value) {
-                              context.read<PrivacyBloc>().add(
+                              context.read<UserBloc>().add(
                                     ProfilePhotoPrivacyChangeEvent(
                                       currentValue: value,
                                     ),
@@ -157,7 +156,7 @@ class _PrivacySettingsState extends State<PrivacySettings> {
                               Navigator.pop(context);
                             },
                             radioThreeOnChanged: (value) {
-                              context.read<PrivacyBloc>().add(
+                              context.read<UserBloc>().add(
                                     ProfilePhotoPrivacyChangeEvent(
                                       currentValue: value,
                                     ),
@@ -193,7 +192,7 @@ class _PrivacySettingsState extends State<PrivacySettings> {
                                   )
                                 : 1,
                             radioOneOnChanged: (value) {
-                              context.read<PrivacyBloc>().add(
+                              context.read<UserBloc>().add(
                                     AboutPrivacyChangeEvent(
                                       currentValue: value,
                                     ),
@@ -201,7 +200,7 @@ class _PrivacySettingsState extends State<PrivacySettings> {
                               Navigator.pop(context);
                             },
                             radioTwoOnChanged: (value) {
-                              context.read<PrivacyBloc>().add(
+                              context.read<UserBloc>().add(
                                     AboutPrivacyChangeEvent(
                                       currentValue: value,
                                     ),
@@ -209,7 +208,7 @@ class _PrivacySettingsState extends State<PrivacySettings> {
                               Navigator.pop(context);
                             },
                             radioThreeOnChanged: (value) {
-                              context.read<PrivacyBloc>().add(
+                              context.read<UserBloc>().add(
                                     AboutPrivacyChangeEvent(
                                       currentValue: value,
                                     ),

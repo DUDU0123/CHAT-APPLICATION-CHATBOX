@@ -10,7 +10,7 @@ import 'package:official_chatbox_application/features/presentation/widgets/commo
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/info_page_widgets.dart/info_page_small_widgets.dart';
 
-class CommonAppBar extends StatelessWidget {
+class CommonAppBar extends StatefulWidget {
   const CommonAppBar({
     super.key,
     required this.pageType,
@@ -24,12 +24,16 @@ class CommonAppBar extends StatelessWidget {
   final String? userProfileImage;
   final void Function()? onTap;
   final GroupModel? groupModel;final ChatModel? chatModel; final bool? isGroup;
+  @override
+  State<CommonAppBar> createState() => _CommonAppBarState();
+}
 
+class _CommonAppBarState extends State<CommonAppBar> {
   @override
   Widget build(BuildContext context) {
     final bool isPhotoNeededPage =
-        (pageType == PageTypeEnum.oneToOneChatInsidePage ||
-            pageType == PageTypeEnum.groupMessageInsidePage);
+        (widget.pageType == PageTypeEnum.oneToOneChatInsidePage ||
+            widget.pageType == PageTypeEnum.groupMessageInsidePage);
     final theme = Theme.of(context);
     return AppBar(
       automaticallyImplyLeading: isPhotoNeededPage ? false : true,
@@ -46,9 +50,9 @@ class CommonAppBar extends StatelessWidget {
                   ),
                 ),
                 kWidth5,
-                    userProfileImage!=null? userProfileImageShowWidget(
+                    widget.userProfileImage!=null? userProfileImageShowWidget(
                       context: context,
-                      imageUrl: userProfileImage!,
+                      imageUrl: widget.userProfileImage!,
                     ):nullImageReplaceWidget(
                         containerRadius: 45,
                         context: context,
@@ -56,18 +60,18 @@ class CommonAppBar extends StatelessWidget {
                 kWidth5,
                 Expanded(
                   child: GestureDetector(
-                    onTap: onTap,
+                    onTap: widget.onTap,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         TextWidgetCommon(
                           overflow: TextOverflow.ellipsis,
-                          text: appBarTitle,
+                          text: widget.appBarTitle,
                           fontSize: 18.sp,
                         ),
-                      pageType!=PageTypeEnum.groupMessageInsidePage?  TextWidgetCommon(
+                      widget.pageType!=PageTypeEnum.groupMessageInsidePage?  TextWidgetCommon(
                           overflow: TextOverflow.ellipsis,
-                          text: userStatus ?? 'Last seen 10:00am',
+                          text: widget.userStatus ?? 'Last seen 10:00am',
                           fontSize: 10.sp,
                         ):zeroMeasureWidget,
                       ],
@@ -77,15 +81,16 @@ class CommonAppBar extends StatelessWidget {
               ],
             )
           : TextWidgetCommon(
-              text: appBarTitle,
+              text: widget.appBarTitle,
             ),
-      actions: !(pageType == PageTypeEnum.settingsPage)
+      actions: !(widget.pageType == PageTypeEnum.settingsPage)
           ? appBarIconListMessagingPage(
-            appBarTitle: appBarTitle,
-            chatModel: chatModel,groupModel: groupModel,isGroup: isGroup??false,
-              pageType: pageType,
+            mounted: mounted,
+            appBarTitle: widget.appBarTitle,
+            chatModel: widget.chatModel,groupModel: widget.groupModel,isGroup: widget.isGroup??false,
+              pageType: widget.pageType,
               context: context,
-              receiverImage: userProfileImage,
+              receiverImage: widget.userProfileImage,
             )
           : [],
     );

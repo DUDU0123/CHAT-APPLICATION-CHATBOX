@@ -6,6 +6,11 @@ class CommonProvider extends ChangeNotifier {
   bool isEmptyList = false;
   String appStorage = '';
   double deviceFreeStorage = 0.0;
+  bool isEmojiPickerOpened = false;
+  void setEmojiPickerStatus(){
+    isEmojiPickerOpened =!isEmojiPickerOpened;
+    notifyListeners();
+  }
   void setStorage({required int storage}) {
     appStorage = (storage ~/ (1024 * 1024)).toString();
     notifyListeners();

@@ -31,7 +31,7 @@ class MediaShowPage extends StatelessWidget {
           title: TextWidgetCommon(
             text: pageTypeEnum == PageTypeEnum.groupMessageInsidePage
                 ? "Group media"
-                : "Media, links and docs",
+                : "Media Files",
           ),
           bottom: TabBar(
             labelColor: buttonSmallTextColor,

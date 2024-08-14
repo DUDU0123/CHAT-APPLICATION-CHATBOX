@@ -24,8 +24,14 @@ class GroupRepoImpl extends GroupRepository {
   }
 
   @override
-  Future<bool> updateGroupData({required GroupModel updatedGroupData, required File? groupImageFile,}) async {
-    return await groupData.updateGroupData(updatedGroupModel: updatedGroupData, groupImageFile: groupImageFile,);
+  Future<bool> updateGroupData({
+    required GroupModel updatedGroupData,
+    required File? groupImageFile,
+  }) async {
+    return await groupData.updateGroupData(
+      updatedGroupModel: updatedGroupData,
+      groupImageFile: groupImageFile,
+    );
   }
 
   @override
@@ -33,9 +39,20 @@ class GroupRepoImpl extends GroupRepository {
       {required String groupID}) async {
     return await groupData.deleteAgroupFromGroupsCurrentUser(groupID: groupID);
   }
-  
+
   @override
-  Future<void> groupClearChatMethod({required String groupID}) async{
+  Future<void> groupClearChatMethod({required String groupID}) async {
     await groupData.clearGroupChat(groupID: groupID);
+  }
+
+  @override
+  Future<bool> removeOrExitFromGroupMethod({
+    required GroupModel updatedGroupModel,
+    required GroupModel oldGroupModel,
+  }) {
+    return groupData.removeOrExitFromGroupMethod(
+      updatedGroupModel: updatedGroupModel,
+      oldGroupModel: oldGroupModel,
+    );
   }
 }

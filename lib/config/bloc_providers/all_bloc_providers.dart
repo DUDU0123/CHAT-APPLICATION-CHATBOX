@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:official_chatbox_application/features/data/data_sources/ai_data/ai_data.dart';
-import 'package:official_chatbox_application/features/data/data_sources/broadcast_data/broadcast_data.dart';
 import 'package:official_chatbox_application/features/data/data_sources/call_data/call_data.dart';
 import 'package:official_chatbox_application/features/data/data_sources/chat_data/chat_data.dart';
 import 'package:official_chatbox_application/features/data/data_sources/contact_data/contact_data.dart';
@@ -13,7 +12,6 @@ import 'package:official_chatbox_application/features/data/data_sources/status_d
 import 'package:official_chatbox_application/features/data/data_sources/user_data/user_data.dart';
 import 'package:official_chatbox_application/features/data/repositories/ai_repo_impl/ai_repository_impl.dart';
 import 'package:official_chatbox_application/features/data/repositories/auth_repo_impl/authentication_repo_impl.dart';
-import 'package:official_chatbox_application/features/data/repositories/broadcast_repo_impl/brocast_repository_impl.dart';
 import 'package:official_chatbox_application/features/data/repositories/call_repo_impl/call_repository_impl.dart';
 import 'package:official_chatbox_application/features/data/repositories/chat_repository_impl/chat_repo_impl.dart';
 import 'package:official_chatbox_application/features/data/repositories/contact_repository_impl/contact_repo_impl.dart';
@@ -30,7 +28,6 @@ import 'package:official_chatbox_application/features/presentation/bloc/contact/
 import 'package:official_chatbox_application/features/presentation/bloc/group/group_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/media/media_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/message/message_bloc.dart';
-import 'package:official_chatbox_application/features/presentation/bloc/privacy/privacy_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/status/status_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:provider/single_child_widget.dart';
@@ -205,9 +202,6 @@ class AppBlocProvider {
     ),
     BlocProvider(
       create: (context) => MediaBloc()..add(GetAllMediaFiles()),
-    ),
-    BlocProvider(
-      create: (context) => PrivacyBloc(),
     ),
     BlocProvider(
       create: (context) => BoxAIBloc(

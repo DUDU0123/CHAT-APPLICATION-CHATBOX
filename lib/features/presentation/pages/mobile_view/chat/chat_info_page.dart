@@ -10,6 +10,7 @@ import 'package:official_chatbox_application/features/data/models/chat_model/cha
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/select_contacts/select_contact_page.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/chat_home/chat_tile_actions_on_longpress_method.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat_info/chat_info_widgets.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_list_tile.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/info_page_widgets.dart/info_page_appbar_content_widget.dart';
@@ -24,7 +25,8 @@ class ChatInfoPage extends StatelessWidget {
     this.receiverContactName,
     this.groupData,
     required this.isGroup,
-    this.chatModel, this.isAIChat,
+    this.chatModel,
+    this.isAIChat,
   });
   final UserModel? receiverData;
   final String? receiverContactName;
@@ -98,88 +100,132 @@ class ChatInfoPage extends StatelessWidget {
               : zeroMeasureWidget,
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              infoPageUserDetailsPart(
-                groupNameEditController: groupNameEditController,
-                context: context,
-                receiverData: receiverData,
-                groupData: groupData,
-                isGroup: isGroup,
-                receiverContactName: receiverContactName,
-              ),
-              kHeight20,
-              infoPageActionIconsBlueGradient(
-                context: context,
-                isGroup: isGroup,
-              ),
-              chatDescriptionOrAbout(
-                groupData: groupData,
-                context: context,
-                isGroup: isGroup,
-                receiverAbout: receiverData?.userAbout,
-                groupDescription: groupData?.groupDescription,
-              ),
-              heightWidgetReturnOnCondition(
-                isGroup: isGroup,
-                groupData: groupData,
-              ),
-              !isGroup
-                  ? chatMediaGradientContainerWidget(
-                      context: context, chatModel: chatModel,)
-                  : isAdmin
-                      ? groupPermissionGraientContainerWidget(
-                          context: context,
-                          groupData: groupData,
-                        )
-                      : zeroMeasureWidget,
-              heightWidgetReturnOnCondition(
-                isGroup: isGroup,
-                groupData: groupData,
-              ),
-              membersListOrGroupListWidget(
-                context: context,
-                receiverData: receiverData,
-                groupData: groupData,
-              ),
-              kHeight20,
-              infoPageListTileWidget(
-                groupData: groupData,
-                context: context,
-                isGroup: isGroup,
-                receiverData: receiverData,
-                isFirstTile: true,
-              ),
-              groupData != null
-                  ? !groupData!.groupMembers!
-                          .contains(firebaseAuth.currentUser?.uid)
-                      ? commonListTile(
-                          leading: Icon(
-                            Icons.delete_outline,
-                            color: kRed,
-                            size: 28.sp,
-                          ),
+      body: chatInfoPageBody(groupNameEditController, context, isAdmin),
+    );
+  }
+
+  Padding chatInfoPageBody(TextEditingController groupNameEditController,
+      BuildContext context, bool isAdmin) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            infoPageUserDetailsPart(
+              groupNameEditController: groupNameEditController,
+              context: context,
+              receiverData: receiverData,
+              groupData: groupData,
+              isGroup: isGroup,
+              receiverContactName: receiverContactName,
+            ),
+            kHeight20,
+            infoPageActionIconsBlueGradient(
+              context: context,
+              isGroup: isGroup,
+            ),
+            chatDescriptionOrAbout(
+              groupData: groupData,
+              context: context,
+              isGroup: isGroup,
+              receiverAbout: receiverData?.userAbout,
+              groupDescription: groupData?.groupDescription,
+            ),
+            heightWidgetReturnOnCondition(
+              isGroup: isGroup,
+              groupData: groupData,
+            ),
+            !isGroup
+                ? chatMediaGradientContainerWidget(
+                    context: context,
+                    chatModel: chatModel,
+                  )
+                : isAdmin
+                    ? groupPermissionGraientContainerWidget(
+                        context: context,
+                        groupData: groupData,
+                      )
+                    : zeroMeasureWidget,
+            heightWidgetReturnOnCondition(
+              isGroup: isGroup,
+              groupData: groupData,
+            ),
+            membersListOrGroupListWidget(
+              context: context,
+              receiverData: receiverData,
+              groupData: groupData,
+            ),
+            kHeight20,
+            chatModel != null
+                ? infoPageListTileWidget(
+                    chatModel: chatModel,
+                    context: context,
+                    receiverData: receiverData,
+                    isFirstTile: true,
+                  )
+                : zeroMeasureWidget,
+            // idsfisif
+            groupData != null
+                ? groupData!.groupMembers!
+                        .contains(firebaseAuth.currentUser?.uid)
+                    ? groupListTile(
+                        context: context,
+                        isGroup: isGroup,
+                        title: "Exit group",
+                        groupData: groupData!,
+                        icon: Icons.logout,
+                        tileType: 'exit-tile',
+                      )
+                    : zeroMeasureWidget
+                : zeroMeasureWidget,
+            // dfksdsjds
+            groupData != null
+                ? !groupData!.groupMembers!
+                        .contains(firebaseAuth.currentUser?.uid)
+                    ? commonListTile(
+                        leading: Icon(
+                          Icons.delete_outline,
                           color: kRed,
-                          onTap: () {},
-                          title: "Delete Group",
-                          isSmallTitle: false,
-                          context: context,
-                        )
-                      : zeroMeasureWidget
-                  : zeroMeasureWidget,
-              infoPageListTileWidget(
-                groupData: groupData,
-                context: context,
-                isGroup: isGroup,
-                receiverData: receiverData,
-                isFirstTile: false,
-              ),
-            ],
-          ),
+                          size: 28.sp,
+                        ),
+                        color: kRed,
+                        onTap: () {
+                          deleteChatMethodCommon(
+                            context: context,
+                            isGroup: isGroup,
+                            chatModel: chatModel,
+                            groupModel: groupData,
+                          );
+                        },
+                        title: "Delete Group",
+                        isSmallTitle: false,
+                        context: context,
+                      )
+                    : zeroMeasureWidget
+                : zeroMeasureWidget,
+            groupData != null
+                ? groupData!.groupMembers!
+                        .contains(firebaseAuth.currentUser?.uid)
+                    ? groupListTile(
+                        context: context,
+                        isGroup: isGroup,
+                        title: "Report group",
+                        groupData: groupData!,
+                        icon: Icons.logout,
+                        tileType: 'report-tile',
+                      )
+                    : zeroMeasureWidget
+                : zeroMeasureWidget,
+            chatModel != null
+                ? infoPageListTileWidget(
+                    context: context,
+                    isFirstTile: false,
+                    chatModel: chatModel,
+                    receiverData: receiverData,
+                  )
+                : zeroMeasureWidget,
+          ],
         ),
       ),
     );

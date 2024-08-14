@@ -9,6 +9,7 @@ import 'package:official_chatbox_application/config/bloc_providers/all_bloc_prov
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/image_picker_method.dart';
+import 'package:official_chatbox_application/core/utils/user_methods.dart';
 import 'package:official_chatbox_application/features/data/models/blocked_user_model/blocked_user_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/domain/repositories/user_repo/user_repository.dart';
@@ -32,6 +33,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<UpdateTFAPinEvent>(updateTFAPinEvent);
     on<SetNoficationSoundEvent>(setNoficationSoundEvent);
     on<SetRingtoneSoundEvent>(setRingtoneSoundEvent);
+    on<LastSeenPrivacyChangeEvent>(lastSeenPrivacyChangeEvent);
+    on<ProfilePhotoPrivacyChangeEvent>(profilePhotoPrivacyChangeEvent);
+    on<AboutPrivacyChangeEvent>(aboutPrivacyChangeEvent);
   }
 
   Future<FutureOr<void>> getCurrentUserData(
@@ -227,6 +231,76 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         userDbRingTone: soundFileString,
         userDBRingtoneName: event.ringtoneName,
       });
+    } catch (e) {
+      emit(CurrentUserErrorState(message: e.toString()));
+    }
+  }
+
+  Future<FutureOr<void>> lastSeenPrivacyChangeEvent(
+      LastSeenPrivacyChangeEvent event, Emitter<UserState> emit) async {
+    try {
+      await UserMethods.updatePrivacySettings(
+        lastSeenGroupValue: event.currentValue,
+        profilePhotoGroupValue: state.profilePhotoPrivacyGroupValue,
+        aboutGroupValue: state.aboutPrivacyGroupValue,
+      );
+
+      emit(state.copyWith(
+        blockedUsersList: state.blockedUsersList,
+        currentUserData: state.currentUserData,
+        lastSeenPrivacyGroupValue: event.currentValue,
+        profilePhotoPrivacyGroupValue: state.profilePhotoPrivacyGroupValue,
+        aboutPrivacyGroupValue: state.aboutPrivacyGroupValue,
+      ));
+      // here I want to hide the last seen and online status for all users other than the current user and the users in the contacts of the user, if the current user selected my contacts,
+      // here I don't want to hide the last seen and online status for any users, if the current user selected eveyone
+      // here I want to hide the last seen and online status for all users other than the current user, if the current user selected nobody
+    } catch (e) {
+      emit(CurrentUserErrorState(message: e.toString()));
+    }
+  }
+
+  Future<FutureOr<void>> profilePhotoPrivacyChangeEvent(
+      ProfilePhotoPrivacyChangeEvent event, Emitter<UserState> emit) async {
+    try {
+      await UserMethods.updatePrivacySettings(
+        lastSeenGroupValue: state.lastSeenPrivacyGroupValue,
+        profilePhotoGroupValue: event.currentValue,
+        aboutGroupValue: state.aboutPrivacyGroupValue,
+      );
+      emit(state.copyWith(
+        blockedUsersList: state.blockedUsersList,
+        currentUserData: state.currentUserData,
+        profilePhotoPrivacyGroupValue: event.currentValue,
+        aboutPrivacyGroupValue: state.aboutPrivacyGroupValue,
+        lastSeenPrivacyGroupValue: state.lastSeenPrivacyGroupValue,
+      ));
+      // here I want to hide the profile photo of the current user for all users other than the current user and the users in the contacts of the user, if the current user selected my contacts,
+      // here I don't want to hide the profile photo of the current user for any users, if the current user selected eveyone
+      // here I want to hide the profile photo of the current user for all users other than the current user, if the current user selected nobody
+    } catch (e) {
+      emit(CurrentUserErrorState(message: e.toString()));
+    }
+  }
+
+  Future<FutureOr<void>> aboutPrivacyChangeEvent(
+      AboutPrivacyChangeEvent event, Emitter<UserState> emit) async {
+    try {
+      await UserMethods.updatePrivacySettings(
+        lastSeenGroupValue: state.lastSeenPrivacyGroupValue,
+        profilePhotoGroupValue: state.profilePhotoPrivacyGroupValue,
+        aboutGroupValue: event.currentValue,
+      );
+      emit(state.copyWith(
+        blockedUsersList: state.blockedUsersList,
+        currentUserData: state.currentUserData,
+        aboutPrivacyGroupValue: event.currentValue,
+        lastSeenPrivacyGroupValue: state.lastSeenPrivacyGroupValue,
+        profilePhotoPrivacyGroupValue: state.profilePhotoPrivacyGroupValue,
+      ));
+      // here I want to hide the about of current user for all users other than the current user and the users in the contacts of the user, if the current user selected my contacts,
+      // here I don't want to hide the labout of current user for any users, if the current user selected eveyone
+      // here I want to hide the about of current user for all users other than the current user, if the current user selected nobody
     } catch (e) {
       emit(CurrentUserErrorState(message: e.toString()));
     }

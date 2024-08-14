@@ -125,3 +125,17 @@ class UpdateAdminPermissionEvent extends GroupEvent {
         groupModel ?? const GroupModel(),
       ];
 }
+
+class RemoveOrExitFromGroupEvent extends GroupEvent {
+  final GroupModel updatedGroupData;
+  final GroupModel oldGroupModel;
+  const RemoveOrExitFromGroupEvent({
+    required this.updatedGroupData,
+    required this.oldGroupModel,
+  });
+  @override
+  List<Object> get props => [
+        updatedGroupData,
+        oldGroupModel,
+      ];
+}

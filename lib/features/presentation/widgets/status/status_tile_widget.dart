@@ -17,26 +17,29 @@ import 'package:official_chatbox_application/features/presentation/widgets/setti
 import 'package:status_view/status_view.dart';
 
 int getSeenStatusIndex(StatusModel? statusModel, String? currentUserId) {
-  if (statusModel == null || statusModel.statusList == null || currentUserId == null) {
+  if (statusModel == null ||
+      statusModel.statusList == null ||
+      currentUserId == null) {
     log('Invalid input: statusModel or statusList or currentUserId is null');
     return -1;
   }
 
   log('currentUserId: $currentUserId');
   log('Status List Length: ${statusModel.statusList!.length}');
-  
-  for (int i = statusModel.statusList!.length - 1; i >= 0; i--) {
+
+  int highestViewedIndex = -1;
+
+  for (int i = 0; i < statusModel.statusList!.length; i++) {
     final status = statusModel.statusList![i];
     log('Checking status index: $i');
     log('Viewers: ${status.viewers}');
-    if (status.viewers != null) {
-      log('Contains currentUserId: ${status.viewers!.contains(currentUserId)}');
-      if (status.viewers!.contains(currentUserId)) {
-        return i;
-      }
+    if (status.viewers != null && status.viewers!.contains(currentUserId)) {
+      highestViewedIndex = i;
     }
   }
-  return -1;
+
+  log('Highest index of seen status: $highestViewedIndex');
+  return highestViewedIndex;
 }
 
 
@@ -73,11 +76,13 @@ Widget statusTileWidget({
                             : firebaseAuth.currentUser!.uid
                     : ''),
             builder: (context, snapshot) {
-              log(name: "Index of seen", getSeenStatusIndex(statusModel, currentUserId).toString());
+              log(
+                  name: "Index of seen",
+                  getSeenStatusIndex(statusModel, firebaseAuth.currentUser?.uid).toString());
               return StatusView(
                 padding: 0,
                 indexOfSeenStatus:
-                    getSeenStatusIndex(statusModel, currentUserId),
+                    getSeenStatusIndex(statusModel, currentUserId) +1,
                 numberOfStatus: statusModel != null
                     ? statusModel.statusList != null
                         ? statusModel.statusList!.length
@@ -171,9 +176,13 @@ Widget statusTileWidget({
         }),
     trailing: TextWidgetCommon(
       text: !isCurrentUser
-          ?statusModel!=null?statusModel.statusList!=null? TimeProvider.getRelativeTime(
-              statusModel.statusList!.last.statusUploadedTime!)
-          : "":'':'',
+          ? statusModel != null
+              ? statusModel.statusList != null
+                  ? TimeProvider.getRelativeTime(
+                      statusModel.statusList!.last.statusUploadedTime!)
+                  : ""
+              : ''
+          : '',
       textColor: iconGreyColor,
       fontWeight: FontWeight.normal,
       fontSize: 10.sp,

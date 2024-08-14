@@ -98,3 +98,27 @@ class SetRingtoneSoundEvent extends UserEvent {
         ringtoneName,
       ];
 }
+class LastSeenPrivacyChangeEvent extends UserEvent {
+  final int? currentValue;
+  const LastSeenPrivacyChangeEvent({
+    required this.currentValue,
+  });
+   @override
+  List<Object> get props => [currentValue??1];
+}
+class ProfilePhotoPrivacyChangeEvent extends UserEvent{
+  final int? currentValue;
+  const ProfilePhotoPrivacyChangeEvent({
+    required this.currentValue,
+  });
+   @override
+  List<Object> get props => [currentValue??1];
+}
+class AboutPrivacyChangeEvent extends UserEvent{
+  final int? currentValue;
+  const AboutPrivacyChangeEvent({
+    required this.currentValue,
+  });
+   @override
+  List<Object> get props => [currentValue??1];
+}

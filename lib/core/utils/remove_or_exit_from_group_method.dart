@@ -20,10 +20,8 @@ void removeOrExitFromGroupMethod({
     subtitle: subtitle,
     onPressed: () {
       log("Indide it");
-      final Set<String> updatedGroupMembers =
-          Set<String>.from(groupData.groupMembers ?? []);
-      final Set<String> updatedGroupAdmins =
-          Set<String>.from(groupData.groupAdmins ?? []);
+      final Set<String> updatedGroupMembers =Set<String>.from(groupData.groupMembers ?? []);
+      final Set<String> updatedGroupAdmins =Set<String>.from(groupData.groupAdmins ?? []);
           log("Current group members: ${groupData.groupMembers}");
       log("Current group admins: ${groupData.groupAdmins}");
       log("Current user ID: ${groupMemberSnapshot.data?.id}");
@@ -38,8 +36,9 @@ void removeOrExitFromGroupMethod({
         groupAdmins: updatedGroupAdmins.toList(),
       );
       context.read<GroupBloc>().add(
-            UpdateGroupEvent(
+            RemoveOrExitFromGroupEvent(
               updatedGroupData: updatedGroupData,
+              oldGroupModel: groupData,
             ),
           );
            log("Updated group members: ${updatedGroupData.groupMembers}");

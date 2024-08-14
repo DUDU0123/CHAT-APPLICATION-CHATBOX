@@ -189,19 +189,19 @@ class _CallHomePageState extends State<CallHomePage> {
                                       //           )
                                       //         : null;
                                       //   },
-                                      //   child:
-                                        //  callButtonsMethods(
-                                        //   callBloc: callBloc,
-                                        //   chatModel: chatModel,
-                                        //   groupModel: groupModel,
-                                        //   isVideoCall:
-                                        //       callModel.callType == CallType.audio
-                                        //           ? false
-                                        //           : true,
-                                        //   theme: theme,
-                                        //   receiverTitle: callModel.receiverName!,
-                                        //   receiverImage: callModel.receiverImage,
-                                        // ),
+                                      // //   child:
+                                      //    callButtonsMethods(
+                                      //     callBloc: callBloc,
+                                      //     chatModel: chatModel,
+                                      //     groupModel: groupModel,
+                                      //     isVideoCall:
+                                      //         callModel.callType == CallType.audio
+                                      //             ? false
+                                      //             : true,
+                                      //     theme: theme,
+                                      //     receiverTitle: callModel.receiverName!,
+                                      //     receiverImage: callModel.receiverImage,
+                                      //   ),
                                       // ),
                                       IconButton(
                                     onPressed: () async {

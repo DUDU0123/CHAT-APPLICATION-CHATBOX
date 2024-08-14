@@ -1,8 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/contact_methods.dart';
@@ -11,7 +8,6 @@ import 'package:official_chatbox_application/features/data/models/blocked_user_m
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
-import 'package:official_chatbox_application/features/presentation/bloc/contact/contact_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/group/group_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chat/chat_info_page.dart';
@@ -25,6 +21,7 @@ PopupMenuButton<dynamic> commonAppBarMenuItemHoldWidget({
   required ChatModel? chatModel,
   required GroupModel? groupModel,
   required bool isGroup,
+  required bool mounted,
 }) {
   return PopupMenuButton(
     itemBuilder: (context) {
@@ -102,31 +99,35 @@ PopupMenuButton<dynamic> commonAppBarMenuItemHoldWidget({
             },
           ),
           PopupMenuItem(
-            child: const Text("Report"),onTap: () {
-              
-            },
+            child: const Text("Report"),
+            onTap: () {},
           ),
           PopupMenuItem(
             child: const Text("Block"),
-            onTap: () {
-              normalDialogBoxWidget(
-                context: context,
-                title: "Block User",
-                subtitle: "Do you want to block user?",
-                onPressed: () {
-                  BlockedUserModel blockedUserModel = BlockedUserModel(
-                    userId: chatModel?.receiverID,
-                  );
-                  context.read<UserBloc>().add(
-                        BlockUserEvent(
-                          blockedUserModel: blockedUserModel,
-                          chatId: chatModel?.chatID
-                        ),
-                      );
-                  Navigator.pop(context);
-                },
-                actionButtonName: "Block",
-              );
+            onTap: () async {
+              final receiverModel =
+                  await CommonDBFunctions.getOneUserDataFromDBFuture(
+                      userId: chatModel?.receiverID);
+              if (mounted) {
+                normalDialogBoxWidget(
+                  context: context,
+                  title: "Block ${receiverModel?.contactName ?? receiverModel?.userName ?? receiverModel?.phoneNumber}",
+                  subtitle:
+                      "Do you want to block ${receiverModel?.contactName ?? receiverModel?.userName ?? receiverModel?.phoneNumber}?",
+                  onPressed: () {
+                    BlockedUserModel blockedUserModel = BlockedUserModel(
+                      userId: chatModel?.receiverID,
+                    );
+                    context.read<UserBloc>().add(
+                          BlockUserEvent(
+                              blockedUserModel: blockedUserModel,
+                              chatId: chatModel?.chatID),
+                        );
+                    Navigator.pop(context);
+                  },
+                  actionButtonName: "Block",
+                );
+              }
             },
           ),
         ];

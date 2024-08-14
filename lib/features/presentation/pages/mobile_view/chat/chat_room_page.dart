@@ -11,6 +11,7 @@ import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/call_methods.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
+import 'package:official_chatbox_application/core/utils/emoji_select.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
 import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
@@ -157,40 +158,47 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                 },
               )),
               widget.isGroup &&
-                      !widget.groupModel!.membersPermissions!
-                          .contains(MembersGroupPermission.sendMessages) &&
-                      !widget.groupModel!.groupAdmins!
+                      (!widget.groupModel!.membersPermissions!
+                              .contains(MembersGroupPermission.sendMessages) ||
+                          !widget.groupModel!.groupAdmins!
+                              .contains(firebaseAuth.currentUser?.uid)) &&
+                      widget.groupModel!.groupMembers!
                           .contains(firebaseAuth.currentUser?.uid)
-                  ? Container(
-                      width: screenWidth(context: context),
-                      padding: EdgeInsets.symmetric(
-                        vertical: 5.h,
-                      ),
-                      color: darkSwitchColor.withOpacity(0.3),
-                      child: TextWidgetCommon(
-                        text: "Only Admins can send messages",
-                        textColor: buttonSmallTextColor,
-                        textAlign: TextAlign.center,
-                        fontSize: 14.sp,
-                      ),
-                    )
-                  : ChatBarWidget(
-                      isChatBoxAI: false,
-                      replyMessage:
-                          Provider.of<CommonProvider>(context).replyMessage,
-                      onCancelReply: () {
-                        cancelReply(context: context);
-                      },
-                      focusNode: focusNode,
-                      isGroup: widget.isGroup,
-                      groupModel: widget.groupModel,
-                      receiverContactName: widget.userName,
-                      recorder: recorder,
-                      scrollController: scrollController,
-                      chatModel: widget.chatModel,
-                      isImojiButtonClicked: false,
-                      messageController: messageController,
-                    )
+                  ? messageSendRestrictingWidget(
+                      context: context, text: "Only Admins can send messages")
+                  : widget.isGroup &&
+                          !widget.groupModel!.groupMembers!
+                              .contains(firebaseAuth.currentUser?.uid)
+                      ? messageSendRestrictingWidget(
+                          context: context,
+                          text: "You're no longer a member in this group")
+                      : Column(
+                          children: [
+                            ChatBarWidget(
+                              isChatBoxAI: false,
+                              replyMessage: Provider.of<CommonProvider>(context)
+                                  .replyMessage,
+                              onCancelReply: () {
+                                cancelReply(context: context);
+                              },
+                              focusNode: focusNode,
+                              isGroup: widget.isGroup,
+                              groupModel: widget.groupModel,
+                              receiverContactName: widget.userName,
+                              recorder: recorder,
+                              scrollController: scrollController,
+                              chatModel: widget.chatModel,
+                              isImojiButtonClicked: false,
+                              messageController: messageController,
+                            ),
+                            Provider.of<CommonProvider>(context)
+                                    .isEmojiPickerOpened
+                                ? emojiSelect(
+                                    textEditingController: messageController,
+                                  )
+                                : zeroMeasureWidget,
+                          ],
+                        ),
             ],
           ),
           Positioned(
@@ -213,6 +221,25 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget messageSendRestrictingWidget({
+    required BuildContext context,
+    required String text,
+  }) {
+    return Container(
+      width: screenWidth(context: context),
+      padding: EdgeInsets.symmetric(
+        vertical: 5.h,
+      ),
+      color: darkSwitchColor.withOpacity(0.3),
+      child: TextWidgetCommon(
+        text: text,
+        textColor: buttonSmallTextColor,
+        textAlign: TextAlign.center,
+        fontSize: 14.sp,
       ),
     );
   }

@@ -19,6 +19,7 @@ List<Widget> appBarIconListMessagingPage({
   required bool isGroup,
   required String appBarTitle,
   required String? receiverImage,
+  required bool mounted,
 }) {
   final currentUserId = firebaseAuth.currentUser?.uid;
   final callBloc = context.read<CallBloc>();
@@ -87,6 +88,7 @@ List<Widget> appBarIconListMessagingPage({
             theme: Theme.of(context),
           ),
     commonAppBarMenuItemHoldWidget(
+      mounted: mounted,
       pageType: pageType,
       chatModel: chatModel,
       groupModel: groupModel,

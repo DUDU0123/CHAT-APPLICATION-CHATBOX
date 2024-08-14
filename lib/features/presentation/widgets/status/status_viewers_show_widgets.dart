@@ -27,10 +27,18 @@ Widget viewersShowButton({required List<String>? viewersList}) {
     ],
   );
 }
-
 Future<dynamic> statusViewersListShowBottomSheet(
     {required BuildContext context, required List<String>? viewersList}) {
+  
+  // Calculate the height based on the number of viewers
+  double maxHeight = screenHeight(context: context) / 2;
+  double calculatedHeight = (viewersList?.length ?? 0) * 70.h + 100.h; // Adjust 70.h as per your item height
+  
+  // Ensure the height does not exceed the maximum height (half of the screen)
+  double finalHeight = calculatedHeight > maxHeight ? maxHeight : calculatedHeight;
+
   return showModalBottomSheet(
+    isScrollControlled: true,
     context: context,
     builder: (context) {
       return Container(
@@ -42,7 +50,7 @@ Future<dynamic> statusViewersListShowBottomSheet(
             topRight: Radius.circular(20.sp),
           ),
         ),
-        height: screenWidth(context: context) / 2,
+        height: finalHeight,
         child: Column(
           children: [
             Container(

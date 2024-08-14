@@ -22,7 +22,7 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
     on<ClearGroupChatEvent>(clearGroupChatEvent);
     on<DeleteGroupEvent>(deleteGroupEvent);
     on<GroupImagePickEvent>(groupImagePickEvent);
-    // on<ResetPickedFileEvent>(resetPickedFileEvent);
+    on<RemoveOrExitFromGroupEvent>(removeOrExitFromGroupEvent);
     on<UpdateMemberPermissionEvent>(updateMemberPermissionEvent);
     on<UpdateAdminPermissionEvent>(updateAdminPermissionEvent);
     on<LoadGroupPermissionsEvent>(loadGroupPermissionsEvent);
@@ -171,7 +171,6 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
         adminPermissions: initialAdminPermissions,
       ));
     } else {
-      // Reset permissions for new group creation
       emit(state.copyWith(
         memberPermissions: {},
         adminPermissions: {},
@@ -183,6 +182,27 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
       ClearGroupChatEvent event, Emitter<GroupState> emit) async {
     try {
       await groupRepository.groupClearChatMethod(groupID: event.groupID);
+    } catch (e) {
+      log(" group clear chat error: ${e.toString()}");
+      emit(GroupErrorState(message: e.toString()));
+    }
+  }
+
+  Future<FutureOr<void>> removeOrExitFromGroupEvent(
+      RemoveOrExitFromGroupEvent event, Emitter<GroupState> emit) async {
+    try {
+      await groupRepository.removeOrExitFromGroupMethod(
+        oldGroupModel: event.oldGroupModel,
+        updatedGroupModel: event.updatedGroupData,
+      );
+      emit(
+        state.copyWith(
+          groupList: state.groupList,
+          adminPermissions: state.adminPermissions,
+          groupPickedImageFile: state.groupPickedImageFile,
+          memberPermissions: state.memberPermissions,
+        ),
+      );
     } catch (e) {
       log(" group clear chat error: ${e.toString()}");
       emit(GroupErrorState(message: e.toString()));

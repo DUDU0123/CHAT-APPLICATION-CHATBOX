@@ -1,10 +1,8 @@
 import 'dart:developer';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
-import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/features/data/models/status_model/status_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/status/status_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/status/build_status_item_widget.dart';
@@ -94,20 +92,14 @@ class _StatusShowPageState extends State<StatusShowPage> {
                         viewersList: viewersList,
                       );
                     },
-                    child: viewersShowButton(
-                      viewersList: widget
-                                  .statusModel
-                                  .statusList?[currentIndexNotifier.value]
-                                  .viewers
-                          //          !=
-                          //     null
-                          // ? widget
-                          //         .statusModel
-                          //         .statusList![currentIndexNotifier.value]
-                          //         .viewers!
-                          //         .length -
-                          //     1
-                          // : 0,
+                    child:ValueListenableBuilder<int>(
+                      valueListenable: currentIndexNotifier,
+                      builder: (context, currentIndex, _) {
+                        return viewersShowButton(
+                          viewersList: widget
+                              .statusModel.statusList?[currentIndex].viewers,
+                        );
+                      },
                     ),
                   ),
                 )

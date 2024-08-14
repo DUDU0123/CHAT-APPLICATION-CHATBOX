@@ -17,8 +17,11 @@ Widget groupMemberListTileWidget({
   required AsyncSnapshot<UserModel?> groupMemberSnapshot,
   required GroupModel groupData,
 }) {
-  final String? groupMemberName = groupMemberSnapshot.data?.contactName ??
-      groupMemberSnapshot.data?.userName;
+  final String? groupMemberName =
+      groupMemberSnapshot.data?.id == firebaseAuth.currentUser?.uid
+          ? '${groupMemberSnapshot.data?.userName}(You)'
+          : groupMemberSnapshot.data?.contactName ??
+              groupMemberSnapshot.data?.userName;
   return ListTile(
     contentPadding: const EdgeInsets.all(0),
     leading: GestureDetector(
@@ -42,9 +45,9 @@ Widget groupMemberListTileWidget({
         ? Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              groupMemberSnapshot.data?.id != firebaseAuth.currentUser?.uid
-              &&groupData.groupAdmins!
-                            .contains(firebaseAuth.currentUser?.uid)
+              groupMemberSnapshot.data?.id != firebaseAuth.currentUser?.uid &&
+                      groupData.groupAdmins!
+                          .contains(firebaseAuth.currentUser?.uid)
                   ? removeButtonWidget(
                       context: context,
                       groupMemberName: groupMemberName,

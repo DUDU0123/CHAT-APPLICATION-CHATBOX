@@ -72,7 +72,6 @@ Widget callButtonsMethods({
         )
         .toList();
     return ZegoSendCallInvitationButton(
-      
       onPressed: (code, message, p2) {
         CallModel callModel = CallModel(
           groupModelId: groupModel.groupID,

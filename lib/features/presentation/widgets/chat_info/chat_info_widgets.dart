@@ -80,7 +80,7 @@ Widget chatMediaGradientContainerWidget({
     },
     rootContext: context,
     isSmallTitle: false,
-    title: "Media,links and docs",
+    title: "Media Files",
     trailing: Icon(
       Icons.arrow_forward_ios,
       color: kWhite,
@@ -111,7 +111,7 @@ Widget membersListOrGroupListWidget({
                           !groupData.groupAdmins!
                               .contains(firebaseAuth.currentUser?.uid)
                       ? ""
-                      : "${snapshot.data?.groupMembers?.length ?? groupData.groupMembers?.length} Members",
+                      : snapshot.data!=null?snapshot.data!.groupMembers!=null?snapshot.data!.groupMembers!.contains(firebaseAuth.currentUser?.uid)? "${snapshot.data?.groupMembers?.length ?? groupData.groupMembers?.length} Members":'':'':'',
               overflow: TextOverflow.ellipsis,
               fontSize: 14.sp,
               textColor: iconGreyColor,
@@ -123,10 +123,10 @@ Widget membersListOrGroupListWidget({
           receiverData: receiverData,
         ),
       if (groupData != null)
-        infoPageGroupMembersList(
+       groupData.groupMembers!.contains(firebaseAuth.currentUser!.uid)? infoPageGroupMembersList(
           context: context,
           groupData: groupData,
-        )
+        ):zeroMeasureWidget
     ],
   );
 }

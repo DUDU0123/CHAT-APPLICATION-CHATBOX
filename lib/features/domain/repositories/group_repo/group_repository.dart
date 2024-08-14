@@ -13,4 +13,8 @@ abstract class GroupRepository {
     required String groupID,
   });
   Future<void> groupClearChatMethod({required String groupID});
+   Future<bool> removeOrExitFromGroupMethod({
+    required GroupModel updatedGroupModel,
+    required GroupModel oldGroupModel,
+  });
 }

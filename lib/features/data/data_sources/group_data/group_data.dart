@@ -166,6 +166,43 @@ class GroupData {
     }
     return false;
   }
+   Future<bool> removeOrExitFromGroupMethod({
+    required GroupModel updatedGroupModel,
+    required GroupModel oldGroupModel,
+  }) async {
+    try {
+      final User? currentUser = firebaseAuth.currentUser;
+      if (currentUser == null) {
+        return false;
+      }
+      if (updatedGroupModel.groupMembers == null ||
+          updatedGroupModel.groupMembers!.isEmpty) {
+        return false;
+      }
+
+      WriteBatch batch = firebaseFirestore.batch();
+      DocumentReference groupDocRef = firebaseFirestore
+          .collection(groupsCollection)
+          .doc(updatedGroupModel.groupID);
+      batch.update(groupDocRef, updatedGroupModel.toJson());
+      for (String userID in oldGroupModel.groupMembers!) {
+        final updatedDocumentRefernce = firebaseFirestore
+            .collection(usersCollection)
+            .doc(userID)
+            .collection(groupsCollection)
+            .doc(updatedGroupModel.groupID);
+        batch.set(updatedDocumentRefernce, updatedGroupModel.toJson(),
+            SetOptions(merge: true));
+      }
+      await batch.commit();
+      return true;
+    } on FirebaseException catch (e) {
+      log("From new group creation firebase: ${e.toString()}");
+    } catch (e) {
+      log("From new group creation catch: ${e.toString()}");
+    }
+    return false;
+  }
 
   Future<String> deleteAgroupFromGroupsCurrentUser(
       {required String groupID}) async {
