@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
+import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat_home/chat_tile_widgets.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat_home/user_profile_show_dialog.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
@@ -22,18 +25,28 @@ Widget groupMemberListTileWidget({
           ? '${groupMemberSnapshot.data?.userName}(You)'
           : groupMemberSnapshot.data?.contactName ??
               groupMemberSnapshot.data?.userName;
+  final isShowableProfileImage = context
+              .watch<UserBloc>()
+              .state
+              .userPrivacySettings?[groupMemberSnapshot.data?.id]
+          ?[userDbProfilePhotoPrivacy] ??
+      false;
   return ListTile(
     contentPadding: const EdgeInsets.all(0),
     leading: GestureDetector(
       onTap: () {
+
         userProfileShowDialog(
-          groupModel: groupData,
-          context: context,
-          userProfileImage: groupMemberSnapshot.data?.userProfileImage,
-        );
+            groupModel: groupData,
+            context: context,
+            userProfileImage: isShowableProfileImage
+                ? groupMemberSnapshot.data?.userProfileImage
+                : null);
       },
       child: buildProfileImage(
-        userProfileImage: groupMemberSnapshot.data?.userProfileImage,
+        userProfileImage: isShowableProfileImage
+            ? groupMemberSnapshot.data?.userProfileImage
+            : null,
         context: context,
       ),
     ),

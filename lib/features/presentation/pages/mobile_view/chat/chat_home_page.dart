@@ -74,6 +74,7 @@ class ChatHomePage extends StatelessWidget {
                       if (chat == null) {
                         return zeroMeasureWidget;
                       }
+                      
                       return ChatListTileWidget(
                         isIncomingMessage: chat[index].isIncomingMessage,
                         chatModel: chat[index],

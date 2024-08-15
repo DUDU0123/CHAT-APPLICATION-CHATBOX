@@ -49,7 +49,7 @@ class AuthenticationBloc
           );
           final bool userAuthStatus =
               await authenticationRepo.getUserAthStatus();
-          
+
           emit(AuthenticationInitial(isUserSignedIn: userAuthStatus));
         } else {
           emit(AuthenticationErrorState(
@@ -107,15 +107,17 @@ class AuthenticationBloc
           onSuccess: () {},
         );
         UserModel userModel = UserModel(
-          createdAt: DateTime.now().millisecondsSinceEpoch.toString(),
-          id: userCredential.user?.uid,
-          phoneNumber: userCredential.user?.phoneNumber,
-          lastActiveTime: "Online",
-        );
+            createdAt: DateTime.now().millisecondsSinceEpoch.toString(),
+            id: userCredential.user?.uid,
+            phoneNumber: userCredential.user?.phoneNumber,
+            lastActiveTime: "Online",
+            privacySettings: const {
+              userDbLastSeenOnline: 'Everyone',
+              userDbProfilePhotoPrivacy: 'Everyone',
+              userDbAboutPrivacy: 'Everyone',
+            });
         userRepository.saveUserDataToDataBase(userModel: userModel);
-
         emit(AuthenticationSuccessState(user: UserModel()));
-
         debugPrint("Hi From Bloc Verify Otp: ${userCredential.user?.uid}");
       } else {
         emit(AuthenticationErrorState(message: "Enter correct Otp"));

@@ -1,9 +1,12 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
+import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
@@ -44,11 +47,11 @@ class ContactMethods {
 
   static openContactInDevice({
     required BuildContext context,
-      required String? receiverID,
+    required String? receiverID,
   }) async {
     final contactBloc = context.read<ContactBloc>();
     final userModel = await CommonDBFunctions.getOneUserDataFromDBFuture(
-      userId:receiverID,
+      userId: receiverID,
     );
     try {
       // Find the contact where the chatBoxUserId matches the userModel's id
@@ -72,6 +75,7 @@ class ContactMethods {
       log("Error: ${e.toString()}");
     }
   }
+
   static openEditContactInDevice({
     required BuildContext context,
     required String? receiverID,
@@ -100,6 +104,21 @@ class ContactMethods {
       }
     } catch (e) {
       log("Error: ${e.toString()}");
+    }
+  }
+
+  static Future<QuerySnapshot<Map<String, dynamic>>?> getContactsCollection({
+    required String? id,
+  }) async {
+    try {
+      return await fireStore
+          .collection(usersCollection)
+          .doc(id)
+          .collection(callsCollection)
+          .get();
+    } catch (e) {
+      log("Error from get contacts collection: ${e.toString()}");
+      return null;
     }
   }
 }

@@ -10,7 +10,6 @@ import 'package:official_chatbox_application/core/utils/contact_methods.dart';
 import 'package:official_chatbox_application/core/utils/group_methods.dart';
 import 'package:official_chatbox_application/core/utils/message_methods.dart';
 import 'package:official_chatbox_application/core/utils/status_methods.dart';
-import 'package:official_chatbox_application/features/data/models/broadcast_model/broadcast_model.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/contact_model/contact_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';

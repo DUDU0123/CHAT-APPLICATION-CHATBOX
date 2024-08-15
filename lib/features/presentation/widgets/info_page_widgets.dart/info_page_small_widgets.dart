@@ -1,9 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/config/common_provider/common_provider.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
+import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
@@ -11,6 +11,7 @@ import 'package:official_chatbox_application/core/utils/date_provider.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat/icon_container_widget_gradient_color.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/info_page_widgets.dart/group_description_add_page.dart';
@@ -39,7 +40,14 @@ Widget chatDescriptionOrAbout({
   String? groupDescription,
   required BuildContext context,
   required GroupModel? groupData,
+  required UserModel? receiverData,
 }) {
+  final isShowableAbout = context
+          .watch<UserBloc>()
+          .state
+          .userPrivacySettings?[receiverData?.id]?[userDbAboutPrivacy] ??
+      false;
+
   return StreamBuilder<GroupModel?>(
       stream: groupData != null
           ? CommonDBFunctions.getOneGroupDataByStream(
@@ -47,13 +55,16 @@ Widget chatDescriptionOrAbout({
               groupID: groupData.groupID!)
           : null,
       builder: (context, snapshot) {
-        
         final commonProvider =
             Provider.of<CommonProvider>(context, listen: true);
-        bool isAdmin =
-           snapshot.data!=null? snapshot.data!.groupAdmins!.contains(firebaseAuth.currentUser?.uid):false;
-        bool isEditable = snapshot.data!=null?snapshot.data!.membersPermissions!
-            .contains(MembersGroupPermission.editGroupSettings):false;
+        bool isAdmin = snapshot.data != null
+            ? snapshot.data!.groupAdmins!
+                .contains(firebaseAuth.currentUser?.uid)
+            : false;
+        bool isEditable = snapshot.data != null
+            ? snapshot.data!.membersPermissions!
+                .contains(MembersGroupPermission.editGroupSettings)
+            : false;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -91,7 +102,9 @@ Widget chatDescriptionOrAbout({
               children: [
                 TextWidgetCommon(
                   text: !isGroup
-                      ? receiverAbout ?? ''
+                      ? isShowableAbout
+                          ? receiverAbout ?? ''
+                          : ''
                       : snapshot.data?.groupDescription ?? 'No description',
                   overflow: TextOverflow.ellipsis,
                   fontSize: 14.sp,

@@ -33,7 +33,7 @@ class SearchPage extends StatelessWidget {
       body: ListView.separated(
         padding: EdgeInsets.symmetric(vertical: 10.h),
         itemBuilder: (context, index) {
-          return const ChatListTileWidget(
+          return ChatListTileWidget(
             chatModel: ChatModel(),
             userName: "User", isGroup: false,);
         },

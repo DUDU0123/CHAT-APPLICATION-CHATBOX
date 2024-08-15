@@ -64,10 +64,11 @@ Future<void> main() async {
   //     );
   //   }
   // });
-  final RemoteMessage? remoteMessage = await FirebaseMessaging.instance.getInitialMessage();
-  if (remoteMessage!=null) {
+  final RemoteMessage? remoteMessage =
+      await FirebaseMessaging.instance.getInitialMessage();
+  if (remoteMessage != null) {
     log("Launched from terminated state");
-    Future.delayed(const Duration(seconds: 1),(){
+    Future.delayed(const Duration(seconds: 1), () {
       navigatorKey.currentState?.pushNamed(
         "/chat_home",
         arguments: remoteMessage,

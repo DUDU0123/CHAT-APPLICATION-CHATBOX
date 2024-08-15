@@ -131,6 +131,7 @@ class ChatInfoPage extends StatelessWidget {
               isGroup: isGroup,
               receiverAbout: receiverData?.userAbout,
               groupDescription: groupData?.groupDescription,
+              receiverData: receiverData,
             ),
             heightWidgetReturnOnCondition(
               isGroup: isGroup,

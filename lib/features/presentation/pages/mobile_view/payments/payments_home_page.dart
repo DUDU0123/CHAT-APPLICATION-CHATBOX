@@ -33,7 +33,7 @@ class PaymentsHomePage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => PaymentHistoryPage(),
+                  builder: (context) =>const PaymentHistoryPage(),
                 ),
               );
             },
@@ -255,7 +255,7 @@ class PaymentHistoryPage extends StatelessWidget {
               userProfileImage: null,
               context: context,
             ),
-            title: TextWidgetCommon(
+            title: const TextWidgetCommon(
               text: "Name",
             ),
             trailing: TextWidgetCommon(text: "\u20B9100", textColor: iconGreyColor, fontSize: 16.sp,),

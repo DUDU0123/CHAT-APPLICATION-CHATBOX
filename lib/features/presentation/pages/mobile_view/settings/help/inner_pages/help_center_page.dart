@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
@@ -13,7 +12,13 @@ class HelpCenterPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: darkScaffoldColor,
       appBar: AppBar(
-        title: const TextWidgetCommon(text: "Help Center"),
+        iconTheme: IconThemeData(
+          color: kWhite,
+        ),
+        title: TextWidgetCommon(
+          text: "Help Center",
+          textColor: kWhite,
+        ),
         backgroundColor: darkScaffoldColor,
       ),
       body: SingleChildScrollView(
@@ -57,8 +62,7 @@ class HelpCenterPage extends StatelessWidget {
               text: makeOneToOneChatAnswer,
             ),
             kHeight15,
-            semiBoldTextWidget(
-                text: "How to change theme of the application?"),
+            semiBoldTextWidget(text: "How to change theme of the application?"),
             kHeight10,
             normalTextWidget(
               text: makeOneToOneChatAnswer,

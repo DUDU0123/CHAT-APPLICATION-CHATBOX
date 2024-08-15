@@ -32,10 +32,6 @@ Widget oneToOneChatAppBarWidget({
             if (chatModel.receiverID == null) {
               return;
             }
-            // final UserModel? receiverData =
-            //     await CommonDBFunctions.getOneUserDataFromDBFuture(
-            //   userId: chatModel.receiverID,
-            // );
             Navigator.push(
                 context,
                 MaterialPageRoute(

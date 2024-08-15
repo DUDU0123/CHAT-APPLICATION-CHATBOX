@@ -74,21 +74,21 @@ List<Widget> appBarIconsHome(
                     ));
               },
             ),
-            commonPopUpMenuItem(
-              context: context,
-              menuText: "New broadcast",
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SelectContactPage(
-                        isGroup: false,
-                        pageType: PageTypeEnum.broadcastMembersSelectPage,
-                      ),
-                    ));
-              },
-            ),
-            commonPopUpMenuItem(context: context, menuText: "Linked devices"),
+            // commonPopUpMenuItem(
+            //   context: context,
+            //   menuText: "New broadcast",
+            //   onTap: () {
+            //     Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //           builder: (context) => const SelectContactPage(
+            //             isGroup: false,
+            //             pageType: PageTypeEnum.broadcastMembersSelectPage,
+            //           ),
+            //         ));
+            //   },
+            // ),
+            // commonPopUpMenuItem(context: context, menuText: "Linked devices"),
             // commonPopUpMenuItem(context: context, menuText: "Starred messages"),
             commonPopUpMenuItem(
               context: context,

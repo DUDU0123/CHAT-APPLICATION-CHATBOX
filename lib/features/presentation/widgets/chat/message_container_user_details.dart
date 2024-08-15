@@ -1,11 +1,14 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
+import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/features/data/models/message_model/message_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/user_details/user_profile_container_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/info_page_widgets.dart/info_page_small_widgets.dart';
@@ -29,7 +32,8 @@ StreamBuilder<UserModel?> messageContainerUserDetails(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            messageSenderProfileImage != null
+
+            messageSenderProfileImage != null &&context.watch<UserBloc>().state.userPrivacySettings![snapshot.data!.id]!=null? context.watch<UserBloc>().state.userPrivacySettings![snapshot.data!.id]![userDbProfilePhotoPrivacy]!
                 ? userProfileImageShowWidget(
                     context: context,
                     imageUrl: messageSenderProfileImage,
@@ -38,7 +42,12 @@ StreamBuilder<UserModel?> messageContainerUserDetails(
                 : nullImageReplaceWidget(
                     containerRadius: 20,
                     context: context,
+                  )
+                : nullImageReplaceWidget(
+                    containerRadius: 20,
+                    context: context,
                   ),
+               
             kWidth5,
             Expanded(
               child: TextWidgetCommon(

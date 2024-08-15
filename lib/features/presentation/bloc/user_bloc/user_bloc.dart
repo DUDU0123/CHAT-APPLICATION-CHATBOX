@@ -9,6 +9,7 @@ import 'package:official_chatbox_application/config/bloc_providers/all_bloc_prov
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/image_picker_method.dart';
+import 'package:official_chatbox_application/core/utils/privacy_methods.dart';
 import 'package:official_chatbox_application/core/utils/user_methods.dart';
 import 'package:official_chatbox_application/features/data/models/blocked_user_model/blocked_user_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
@@ -36,6 +37,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<LastSeenPrivacyChangeEvent>(lastSeenPrivacyChangeEvent);
     on<ProfilePhotoPrivacyChangeEvent>(profilePhotoPrivacyChangeEvent);
     on<AboutPrivacyChangeEvent>(aboutPrivacyChangeEvent);
+    // privacy checking event
+    on<ProfileImageShowCheckerEvent>(profileImageShowCheckerEvent);
+    on<OnlineStatusShowCheckerEvent>(onlineStatusShowCheckerEvent);
+    on<AboutShowCheckerEvent>(aboutShowCheckerEvent);
   }
 
   Future<FutureOr<void>> getCurrentUserData(
@@ -301,6 +306,77 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       // here I want to hide the about of current user for all users other than the current user and the users in the contacts of the user, if the current user selected my contacts,
       // here I don't want to hide the labout of current user for any users, if the current user selected eveyone
       // here I want to hide the about of current user for all users other than the current user, if the current user selected nobody
+    } catch (e) {
+      emit(CurrentUserErrorState(message: e.toString()));
+    }
+  }
+
+  Future<FutureOr<void>> profileImageShowCheckerEvent(
+      ProfileImageShowCheckerEvent event, Emitter<UserState> emit) async {
+    try {
+      final isShowableProfileImage =
+          await PrivacyMethods.isShowableProfileImage(receiverID: event.receiverID);
+          //=======================================================
+          final isShowableLastSeenOnline =
+          await PrivacyMethods.isShowableOnlineLastSeen(receiverID: event.receiverID);
+          final isShowableAbout =
+          await PrivacyMethods.isShowableAbout(receiverID: event.receiverID);
+          // ======================================================
+      final updatedPrivacySettings = Map<String, Map<String, bool?>>.from(state.userPrivacySettings??{});
+      updatedPrivacySettings[event.receiverID ?? ''] = {
+        userDbProfilePhotoPrivacy: isShowableProfileImage,
+      // ------------------------
+      userDbAboutPrivacy: isShowableAbout,
+       userDbLastSeenOnline: isShowableLastSeenOnline,
+      //  ===============================
+      };
+      emit(
+        state.copyWith(
+          userPrivacySettings: updatedPrivacySettings,
+        ),
+      );
+      log("Updated privacy settings: $updatedPrivacySettings");
+    } catch (e) {
+      emit(CurrentUserErrorState(message: e.toString()));
+    }
+  }
+
+  Future<FutureOr<void>> aboutShowCheckerEvent(
+      AboutShowCheckerEvent event, Emitter<UserState> emit) async {
+    try {
+       final isShowableAbout =
+          await PrivacyMethods.isShowableAbout(receiverID: event.receiverID);
+      final updatedPrivacySettings = Map<String, Map<String, bool?>>.from(state.userPrivacySettings??{});
+      updatedPrivacySettings[event.receiverID ?? ''] = {
+        userDbAboutPrivacy: isShowableAbout,
+        
+      };
+      emit(
+        state.copyWith(
+          userPrivacySettings: updatedPrivacySettings,
+        ),
+      );
+      log("Updated privacy settings: $updatedPrivacySettings");
+    } catch (e) {
+      emit(CurrentUserErrorState(message: e.toString()));
+    }
+  }
+
+  FutureOr<void> onlineStatusShowCheckerEvent(
+      OnlineStatusShowCheckerEvent event, Emitter<UserState> emit) async {
+    try {
+      final isShowableLastSeenOnline =
+          await PrivacyMethods.isShowableOnlineLastSeen(receiverID: event.receiverID);
+      final updatedPrivacySettings = Map<String, Map<String, bool?>>.from(state.userPrivacySettings??{});
+      updatedPrivacySettings[event.receiverID ?? ''] = {
+        userDbLastSeenOnline: isShowableLastSeenOnline,
+      };
+      emit(
+        state.copyWith(
+          userPrivacySettings: updatedPrivacySettings,
+        ),
+      );
+      log("Updated privacy settings: $updatedPrivacySettings");
     } catch (e) {
       emit(CurrentUserErrorState(message: e.toString()));
     }
