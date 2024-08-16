@@ -26,9 +26,6 @@ class RootWidgetPage extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => ThemeManager()..init(),
         ),
-        // ChangeNotifierProvider(
-        //   create: (_) => RestartProvider(),
-        // ),
         ChangeNotifierProvider(
           create: (_) => CommonProvider(),
         ),
@@ -55,15 +52,11 @@ class RootWidgetPage extends StatelessWidget {
   Map<String, Widget Function(BuildContext)> routes(
       {required BuildContext context}) {
     return {
-      "/": (context) => const MainPage(
-          // mobileScreenLayout: ChatboxWelcomePage(),
-          // webScreenLayout: ChatboxWebAuthenticationPage(),
-          ),
+      "/": (context) => const MainPage(),
       'welcome_page': (context) => const ChatboxWelcomePage(),
       "create_account": (context) => CreateAccountPage(),
       "verify_number": (context) => NumberVerifyPage(),
       "bottomNav_Navigator": (context) => const NavigatorBottomnavPage(),
-      // "/messaging_page":(context)=> MessagingPage(),
       "/search_page": (context) => SearchPage(),
       "/settings_page": (context) => const SettingsPage(),
       "/chat_home":(context)=> ChatHomePage(),

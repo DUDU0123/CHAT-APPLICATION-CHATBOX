@@ -6,6 +6,7 @@ import 'package:official_chatbox_application/core/constants/database_name_consta
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
+import 'package:official_chatbox_application/core/utils/privacy_methods.dart';
 import 'package:official_chatbox_application/features/data/models/blocked_user_model/blocked_user_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
@@ -13,32 +14,6 @@ import 'package:official_chatbox_application/features/presentation/pages/mobile_
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_appbar_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_list_tile.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/dialog_widgets/radio_button_dialogbox_widget.dart';
-
-String typeGiver({required int? groupValue}) {
-  switch (groupValue) {
-    case 1:
-      return "Everyone";
-    case 2:
-      return "My contacts";
-    case 3:
-      return "Nobody";
-    default:
-      return "Everyone";
-  }
-}
-
-int typeIntGiver({required String? groupValueString}) {
-  switch (groupValueString) {
-    case 'Everyone':
-      return 1;
-    case 'My contacts':
-      return 2;
-    case 'Nobody':
-      return 3;
-    default:
-      return 1;
-  }
-}
 
 class PrivacySettings extends StatefulWidget {
   const PrivacySettings({super.key});
@@ -84,7 +59,7 @@ class _PrivacySettingsState extends State<PrivacySettings> {
                             radioThreeTitle: "Nobody",
                             dialogBoxTitle: "Last seen and Online",
                             groupValue: privacySettingMap != null
-                                ? typeIntGiver(
+                                ? PrivacyMethods.typeIntGiver(
                                     groupValueString:
                                         privacySettingMap[userDbLastSeenOnline],
                                   )
@@ -134,7 +109,7 @@ class _PrivacySettingsState extends State<PrivacySettings> {
                             radioThreeTitle: "Nobody",
                             dialogBoxTitle: "Profile photo",
                             groupValue: privacySettingMap != null
-                                ? typeIntGiver(
+                                ? PrivacyMethods.typeIntGiver(
                                     groupValueString: privacySettingMap[
                                         userDbProfilePhotoPrivacy],
                                   )
@@ -186,7 +161,7 @@ class _PrivacySettingsState extends State<PrivacySettings> {
                             radioThreeTitle: "Nobody",
                             dialogBoxTitle: "About",
                             groupValue: privacySettingMap != null
-                                ? typeIntGiver(
+                                ? PrivacyMethods.typeIntGiver(
                                     groupValueString:
                                         privacySettingMap[userDbAboutPrivacy],
                                   )
@@ -226,7 +201,7 @@ class _PrivacySettingsState extends State<PrivacySettings> {
                     isSmallTitle: true,
                     context: context,
                   ),
-                   kHeight10,
+                  kHeight10,
                   commonListTile(
                     onTap: () {
                       showDialog(
@@ -238,7 +213,7 @@ class _PrivacySettingsState extends State<PrivacySettings> {
                             radioThreeTitle: "Nobody",
                             dialogBoxTitle: "Status",
                             groupValue: privacySettingMap != null
-                                ? typeIntGiver(
+                                ? PrivacyMethods.typeIntGiver(
                                     groupValueString:
                                         privacySettingMap[userDbStatusPrivacy],
                                   )

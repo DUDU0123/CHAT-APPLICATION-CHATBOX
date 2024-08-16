@@ -6,6 +6,32 @@ import 'package:official_chatbox_application/core/utils/common_db_functions.dart
 import 'package:official_chatbox_application/core/utils/contact_methods.dart';
 
 class PrivacyMethods {
+  static String typeGiver({required int? groupValue}) {
+  switch (groupValue) {
+    case 1:
+      return "Everyone";
+    case 2:
+      return "My contacts";
+    case 3:
+      return "Nobody";
+    default:
+      return "Everyone";
+  }
+}
+
+static int typeIntGiver({required String? groupValueString}) {
+  switch (groupValueString) {
+    case 'Everyone':
+      return 1;
+    case 'My contacts':
+      return 2;
+    case 'Nobody':
+      return 3;
+    default:
+      return 1;
+  }
+}
+
   static Future<bool> _isUserInContacts(String receiverID) async {
     // Fetch contacts for the given receiver
     final contactsSnapshot = await ContactMethods.getContactsCollection(id: receiverID);
