@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -224,6 +222,58 @@ class _PrivacySettingsState extends State<PrivacySettings> {
                     title: "About",
                     subtitle: privacySettingMap != null
                         ? privacySettingMap[userDbAboutPrivacy]
+                        : "Everyone",
+                    isSmallTitle: true,
+                    context: context,
+                  ),
+                   kHeight10,
+                  commonListTile(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return RadioButtonDialogBox(
+                            radioOneTitle: "Everyone",
+                            radioTwoTitle: "My contacts",
+                            radioThreeTitle: "Nobody",
+                            dialogBoxTitle: "Status",
+                            groupValue: privacySettingMap != null
+                                ? typeIntGiver(
+                                    groupValueString:
+                                        privacySettingMap[userDbStatusPrivacy],
+                                  )
+                                : 1,
+                            radioOneOnChanged: (value) {
+                              context.read<UserBloc>().add(
+                                    StatusPrivacyChangeEvent(
+                                      currentValue: value,
+                                    ),
+                                  );
+                              Navigator.pop(context);
+                            },
+                            radioTwoOnChanged: (value) {
+                              context.read<UserBloc>().add(
+                                    StatusPrivacyChangeEvent(
+                                      currentValue: value,
+                                    ),
+                                  );
+                              Navigator.pop(context);
+                            },
+                            radioThreeOnChanged: (value) {
+                              context.read<UserBloc>().add(
+                                    StatusPrivacyChangeEvent(
+                                      currentValue: value,
+                                    ),
+                                  );
+                              Navigator.pop(context);
+                            },
+                          );
+                        },
+                      );
+                    },
+                    title: "Status",
+                    subtitle: privacySettingMap != null
+                        ? privacySettingMap[userDbStatusPrivacy]
                         : "Everyone",
                     isSmallTitle: true,
                     context: context,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:official_chatbox_application/config/theme/theme_constants.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
+import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/help/inner_pages/terms_and_privacy_policy_page.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/app_icon_hold_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_button_container.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
@@ -36,7 +37,7 @@ class ChatboxWelcomePage extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    
+                    Navigator.push(context, MaterialPageRoute(builder: (context) =>const TermsAndPrivacyPolicyPage(),));
                   },
                   child: Text(
                     "Privacy Policy ",

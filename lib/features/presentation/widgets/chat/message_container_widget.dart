@@ -179,6 +179,7 @@ class _MessageContainerWidgetState extends State<MessageContainerWidget> {
                                 : zeroMeasureWidget,
                             widget.isGroup
                                 ? messageContainerUserDetails(
+                                  context: context,
                                     message: widget.message,
                                   )
                                 : zeroMeasureWidget,

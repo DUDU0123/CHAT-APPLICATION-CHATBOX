@@ -7,6 +7,7 @@ class UserState extends Equatable {
     this.lastSeenPrivacyGroupValue = 1,
     this.profilePhotoPrivacyGroupValue = 1,
     this.aboutPrivacyGroupValue = 1,
+    this.statusPrivacyGroupValue=1,
     this.userPrivacySettings,
   });
   final UserModel? currentUserData;
@@ -14,6 +15,7 @@ class UserState extends Equatable {
   final int? lastSeenPrivacyGroupValue;
   final int? profilePhotoPrivacyGroupValue;
   final int? aboutPrivacyGroupValue;
+  final int? statusPrivacyGroupValue;
   final Map<String, Map<String, bool?>>? userPrivacySettings;
   UserState copyWith({
     UserModel? currentUserData,
@@ -21,6 +23,7 @@ class UserState extends Equatable {
     int? lastSeenPrivacyGroupValue,
     int? profilePhotoPrivacyGroupValue,
     int? aboutPrivacyGroupValue,
+    int? statusPrivacyGroupValue,
     bool? isShowableProfileImage,
     bool? isShowableAbout,
     bool? isShowableLastSeenOnline,
@@ -35,6 +38,7 @@ class UserState extends Equatable {
           lastSeenPrivacyGroupValue ?? this.lastSeenPrivacyGroupValue,
       profilePhotoPrivacyGroupValue:
           profilePhotoPrivacyGroupValue ?? this.profilePhotoPrivacyGroupValue,
+          statusPrivacyGroupValue: statusPrivacyGroupValue ?? this.statusPrivacyGroupValue,
       userPrivacySettings: userPrivacySettings ?? this.userPrivacySettings,
     );
   }
@@ -45,7 +49,7 @@ class UserState extends Equatable {
         blockedUsersList ?? [],
         lastSeenPrivacyGroupValue ?? 1,
         profilePhotoPrivacyGroupValue ?? 1,
-        aboutPrivacyGroupValue ?? 1,
+        aboutPrivacyGroupValue ?? 1,statusPrivacyGroupValue??1,
         userPrivacySettings ?? {},
       ];
 }

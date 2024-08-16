@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/config/common_provider/common_provider.dart';
@@ -42,11 +45,19 @@ Widget chatDescriptionOrAbout({
   required GroupModel? groupData,
   required UserModel? receiverData,
 }) {
-  final isShowableAbout = context
-          .watch<UserBloc>()
-          .state
-          .userPrivacySettings?[receiverData?.id]?[userDbAboutPrivacy] ??
-      false;
+  log(receiverData.toString());
+  // final isShowableAbout = context
+  //         .watch<UserBloc>()
+  //         .state
+  //         .userPrivacySettings![receiverData?.id]?[userDbAboutPrivacy] ??
+  //     false;
+
+  //     log("Setting::::${context
+  //         .watch<UserBloc>()
+  //         .state
+  //         .userPrivacySettings![receiverData?.id]}");
+
+  //         log(isShowableAbout.toString());
 
   return StreamBuilder<GroupModel?>(
       stream: groupData != null
@@ -100,21 +111,30 @@ Widget chatDescriptionOrAbout({
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                TextWidgetCommon(
-                  text: !isGroup
-                      ? isShowableAbout
-                          ? receiverAbout ?? ''
-                          : ''
-                      : snapshot.data?.groupDescription ?? 'No description',
-                  overflow: TextOverflow.ellipsis,
-                  fontSize: 14.sp,
-                  textColor: iconGreyColor,
-                  maxLines: !isGroup
-                      ? 1
-                      : !commonProvider.isExpanded
-                          ? 6
-                          : null,
-                ),
+                !isGroup
+                    ? BlocBuilder<UserBloc, UserState>(
+                        builder: (context, state) {
+                          final privacySettings =
+                              state.userPrivacySettings?[receiverData?.id] ??
+                                  {};
+
+                          final isShowableAbout =
+                              privacySettings[userDbAboutPrivacy] ?? false;
+                          return aboutDescriptionWidget(
+                            isGroup: false,
+                            commonProvider: commonProvider,
+                            text: isShowableAbout
+                                ? receiverAbout ?? 'No about'
+                                : '',
+                          );
+                        },
+                      )
+                    : aboutDescriptionWidget(
+                        isGroup: true,
+                        commonProvider: commonProvider,
+                        text:
+                            snapshot.data?.groupDescription ?? 'No description',
+                      ),
                 if (isGroup)
                   isGroup
                       ? snapshot.data != null
@@ -155,6 +175,24 @@ Widget chatDescriptionOrAbout({
           ],
         );
       });
+}
+
+Widget aboutDescriptionWidget({
+  required String text,
+  required bool isGroup,
+  required CommonProvider commonProvider,
+}) {
+  return TextWidgetCommon(
+    text: text,
+    overflow: TextOverflow.ellipsis,
+    fontSize: 14.sp,
+    textColor: iconGreyColor,
+    maxLines: !isGroup
+        ? 1
+        : !commonProvider.isExpanded
+            ? 6
+            : null,
+  );
 }
 
 Widget infoPageActionIconsBlueGradient({

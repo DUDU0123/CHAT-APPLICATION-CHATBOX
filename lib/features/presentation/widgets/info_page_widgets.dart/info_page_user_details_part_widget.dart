@@ -72,7 +72,6 @@ Widget infoPageUserDetailsPart({
                             },
                             context: context,
                             imageUrl:
-                                //  groupData!.groupProfileImage!,
                                 snapshot.data!.groupProfileImage ?? '',
                             radius: 80,
                           );

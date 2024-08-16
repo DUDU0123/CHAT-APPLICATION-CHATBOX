@@ -20,104 +20,110 @@ Widget groupMemberListTileWidget({
   required AsyncSnapshot<UserModel?> groupMemberSnapshot,
   required GroupModel groupData,
 }) {
+  context.read<UserBloc>().add(
+      ProfileImageShowCheckerEvent(receiverID: groupMemberSnapshot.data?.id));
+
   final String? groupMemberName =
       groupMemberSnapshot.data?.id == firebaseAuth.currentUser?.uid
-          ? '${groupMemberSnapshot.data?.userName}(You)'
+          ? '${groupMemberSnapshot.data?.userName} (You)'
           : groupMemberSnapshot.data?.contactName ??
               groupMemberSnapshot.data?.userName;
-  final isShowableProfileImage = context
-              .watch<UserBloc>()
-              .state
-              .userPrivacySettings?[groupMemberSnapshot.data?.id]
-          ?[userDbProfilePhotoPrivacy] ??
-      false;
-  return ListTile(
-    contentPadding: const EdgeInsets.all(0),
-    leading: GestureDetector(
-      onTap: () {
+  return BlocBuilder<UserBloc, UserState>(
+    builder: (context, state) {
+      final privacySettings =
+          state.userPrivacySettings?[groupMemberSnapshot.data?.id] ?? {};
 
-        userProfileShowDialog(
-            groupModel: groupData,
-            context: context,
+      final isShowableProfileImage =
+          privacySettings[userDbProfilePhotoPrivacy] ?? false;
+      return ListTile(
+        contentPadding: const EdgeInsets.all(0),
+        leading: GestureDetector(
+          onTap: () {
+            userProfileShowDialog(
+                groupModel: groupData,
+                context: context,
+                userProfileImage: isShowableProfileImage
+                    ? groupMemberSnapshot.data?.userProfileImage
+                    : null);
+          },
+          child: buildProfileImage(
             userProfileImage: isShowableProfileImage
                 ? groupMemberSnapshot.data?.userProfileImage
-                : null);
-      },
-      child: buildProfileImage(
-        userProfileImage: isShowableProfileImage
-            ? groupMemberSnapshot.data?.userProfileImage
-            : null,
-        context: context,
-      ),
-    ),
-    title: TextWidgetCommon(
-      text: groupMemberName ?? '',
-      overflow: TextOverflow.ellipsis,
-    ),
-    trailing: groupData.groupAdmins!.contains(groupMemberSnapshot.data?.id)
-        ? Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              groupMemberSnapshot.data?.id != firebaseAuth.currentUser?.uid &&
-                      groupData.groupAdmins!
-                          .contains(firebaseAuth.currentUser?.uid)
-                  ? removeButtonWidget(
-                      context: context,
-                      groupMemberName: groupMemberName,
-                      groupData: groupData,
-                      groupMemberSnapshot: groupMemberSnapshot,
-                    )
-                  : zeroMeasureWidget,
-              commonContainerChip(
-                onTap: () {
-                  if (groupMemberSnapshot.data?.id !=
-                      firebaseAuth.currentUser?.uid) {
-                    groupData.groupAdmins!
-                            .contains(firebaseAuth.currentUser?.uid)
-                        ? dismissAdminMethodInGroup(
-                            context: context,
-                            groupMemberName: groupMemberName,
-                            groupData: groupData,
-                            groupMemberSnapshot: groupMemberSnapshot,
-                          )
-                        : null;
-                  }
-                },
-                chipText: "Group Admin",
-                chipColor: buttonSmallTextColor.withOpacity(0.3),
-                chipWidth: 100.w,
-              ),
-            ],
-          )
-        : groupData.groupAdmins!.contains(firebaseAuth.currentUser?.uid)
+                : null,
+            context: context,
+          ),
+        ),
+        title: TextWidgetCommon(
+          text: groupMemberName ?? '',
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: groupData.groupAdmins!.contains(groupMemberSnapshot.data?.id)
             ? Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (groupMemberSnapshot.data?.id !=
-                      firebaseAuth.currentUser?.uid)
-                    removeButtonWidget(
-                      context: context,
-                      groupMemberName: groupMemberName,
-                      groupData: groupData,
-                      groupMemberSnapshot: groupMemberSnapshot,
-                    ),
-                  if (groupMemberSnapshot.data?.id !=
-                      firebaseAuth.currentUser?.uid)
-                    commonContainerChip(
-                      chipWidth: 80.w,
-                      chipColor: buttonSmallTextColor.withOpacity(0.3),
-                      chipText: "as admin",
-                      onTap: () {
-                        makeAMemberAsAdminInGroupMethod(
+                  groupMemberSnapshot.data?.id !=
+                              firebaseAuth.currentUser?.uid &&
+                          groupData.groupAdmins!
+                              .contains(firebaseAuth.currentUser?.uid)
+                      ? removeButtonWidget(
                           context: context,
                           groupMemberName: groupMemberName,
-                          groupMemberSnapshot: groupMemberSnapshot,
                           groupData: groupData,
-                        );
-                      },
-                    ),
+                          groupMemberSnapshot: groupMemberSnapshot,
+                        )
+                      : zeroMeasureWidget,
+                  commonContainerChip(
+                    onTap: () {
+                      if (groupMemberSnapshot.data?.id !=
+                          firebaseAuth.currentUser?.uid) {
+                        groupData.groupAdmins!
+                                .contains(firebaseAuth.currentUser?.uid)
+                            ? dismissAdminMethodInGroup(
+                                context: context,
+                                groupMemberName: groupMemberName,
+                                groupData: groupData,
+                                groupMemberSnapshot: groupMemberSnapshot,
+                              )
+                            : null;
+                      }
+                    },
+                    chipText: "Group Admin",
+                    chipColor: buttonSmallTextColor.withOpacity(0.3),
+                    chipWidth: 100.w,
+                  ),
                 ],
               )
-            : zeroMeasureWidget,
+            : groupData.groupAdmins!.contains(firebaseAuth.currentUser?.uid)
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (groupMemberSnapshot.data?.id !=
+                          firebaseAuth.currentUser?.uid)
+                        removeButtonWidget(
+                          context: context,
+                          groupMemberName: groupMemberName,
+                          groupData: groupData,
+                          groupMemberSnapshot: groupMemberSnapshot,
+                        ),
+                      if (groupMemberSnapshot.data?.id !=
+                          firebaseAuth.currentUser?.uid)
+                        commonContainerChip(
+                          chipWidth: 80.w,
+                          chipColor: buttonSmallTextColor.withOpacity(0.3),
+                          chipText: "as admin",
+                          onTap: () {
+                            makeAMemberAsAdminInGroupMethod(
+                              context: context,
+                              groupMemberName: groupMemberName,
+                              groupMemberSnapshot: groupMemberSnapshot,
+                              groupData: groupData,
+                            );
+                          },
+                        ),
+                    ],
+                  )
+                : zeroMeasureWidget,
+      );
+    },
   );
 }

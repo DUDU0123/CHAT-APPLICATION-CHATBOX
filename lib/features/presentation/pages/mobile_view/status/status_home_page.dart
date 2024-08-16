@@ -4,12 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
+import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
 import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/data/models/status_model/status_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/status/status_bloc.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/status/status_pages/text_status_setup_page.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/status/status_tile_widget.dart';
 
@@ -87,10 +89,27 @@ class _StatusHomePageState extends State<StatusHomePage> {
                               (status.statusList?.isNotEmpty ?? false))
                           .toList();
 
+                      // final otherUsersStatusees =
+                      //     snapshot.data!.where((status) {
+                      //   final privacySettings = context
+                      //       .watch<UserBloc>()
+                      //       .state
+                      //       .userPrivacySettings?[status.statusUploaderId];
+                      //   final isShowableStatus =
+                      //       privacySettings?[userDbStatusPrivacy] ??
+                      //           false;
+                      //   return status.statusUploaderId !=
+                      //           firebaseAuth.currentUser?.uid &&
+                      //       (status.statusList?.isNotEmpty ?? false) &&
+                      //       isShowableStatus;
+                      // }).toList();
+
                       if (otherUsersStatuses.isEmpty) {
                         return emptyShowWidget(
                             context: context, text: "No status");
                       }
+                      //               final userID =  ?? widget.receiverID;
+                      // final privacySettings = state.userPrivacySettings?[userID] ?? {};
 
                       for (var statusmodel in otherUsersStatuses) {
                         CommonDBFunctions.updateStatusListInStatusModelInDB(

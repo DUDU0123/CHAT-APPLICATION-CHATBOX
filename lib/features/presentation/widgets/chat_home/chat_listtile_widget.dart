@@ -61,14 +61,8 @@ class _ChatListTileWidgetState extends State<ChatListTileWidget> {
       builder: (context, state) {
         final userID = widget.chatModel?.receiverID ?? widget.receiverID;
         final privacySettings = state.userPrivacySettings?[userID] ?? {};
-
-        print("Privacy settings for userID $userID: $privacySettings");
-
         final isShowableProfileImage =
             privacySettings[userDbProfilePhotoPrivacy] ?? false;
-
-        print("Is showable profile image: $isShowableProfileImage");
-
         return GestureDetector(
           onTap: () {
             context.read<MessageBloc>().add(GetAllMessageEvent(

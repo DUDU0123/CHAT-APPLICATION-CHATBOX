@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -58,32 +60,15 @@ class _CommonAppBarState extends State<CommonAppBar> {
                   ),
                 ),
                 kWidth5,
-
-                context.watch<UserBloc>().state.userPrivacySettings != null
-                    ? context.watch<UserBloc>().state.userPrivacySettings![
-                                widget.chatModel?.receiverID] !=
-                            null
-                        ? context.watch<UserBloc>().state.userPrivacySettings![
-                                widget.chatModel
-                                    ?.receiverID]![userDbProfilePhotoPrivacy]!=null?context.watch<UserBloc>().state.userPrivacySettings![
-                                widget.chatModel
-                                    ?.receiverID]![userDbProfilePhotoPrivacy]!
-                            ? widget.userProfileImage != null
-                                ? userProfileImageShowWidget(
-                                    context: context,
-                                    imageUrl: widget.userProfileImage!,
-                                  )
-                                : nullImageReplaceWidget(
-                                    containerRadius: 45,
-                                    context: context,
-                                  )
-                            : nullImageReplaceWidget(
-                                containerRadius: 45, context: context)
-                        : nullImageReplaceWidget(
-                            containerRadius: 45, context: context)
+                widget.userProfileImage != null
+                    ? userProfileImageShowWidget(
+                        context: context,
+                        imageUrl: widget.userProfileImage!,
+                      )
                     : nullImageReplaceWidget(
-                        containerRadius: 45, context: context):nullImageReplaceWidget(
-                        containerRadius: 45, context: context),
+                        containerRadius: 45,
+                        context: context,
+                      ),
                 kWidth5,
                 Expanded(
                   child: GestureDetector(
@@ -97,27 +82,27 @@ class _CommonAppBarState extends State<CommonAppBar> {
                           fontSize: 18.sp,
                         ),
                         widget.pageType != PageTypeEnum.groupMessageInsidePage
-                            ? context
-                                                .watch<UserBloc>()
-                                                .state
-                                                .userPrivacySettings?[
-                                            widget.chatModel?.receiverID]
-                                        ?[userDbLastSeenOnline] !=
-                                    null
-                                ? context
-                                                .watch<UserBloc>()
-                                                .state
-                                                .userPrivacySettings![
-                                            widget.chatModel?.receiverID]![
-                                        userDbLastSeenOnline]!
-                                    ? TextWidgetCommon(
-                                        overflow: TextOverflow.ellipsis,
-                                        text: widget.userStatus ??
-                                            'Last seen 10:00am',
-                                        fontSize: 10.sp,
-                                      )
-                                    : zeroMeasureWidget
-                                : zeroMeasureWidget
+                            ? BlocBuilder<UserBloc, UserState>(
+                                builder: (context, state) {
+                                  final privacySettings =
+                                      state.userPrivacySettings?[
+                                              widget.chatModel?.receiverID] ??
+                                          {};
+                                  final isShowableLastSeen =
+                                      privacySettings[userDbLastSeenOnline] ??
+                                          false;
+
+                                          log("Last Seen : $isShowableLastSeen");
+                                  return isShowableLastSeen
+                                      ? TextWidgetCommon(
+                                          overflow: TextOverflow.ellipsis,
+                                          text: widget.userStatus ??
+                                              'Last seen 10:00am',
+                                          fontSize: 10.sp,
+                                        )
+                                      : zeroMeasureWidget;
+                                },
+                              )
                             : zeroMeasureWidget,
                       ],
                     ),
@@ -137,17 +122,19 @@ class _CommonAppBarState extends State<CommonAppBar> {
               isGroup: widget.isGroup ?? false,
               pageType: widget.pageType,
               context: context,
-              receiverImage:
-                  context.watch<UserBloc>().state.userPrivacySettings != null
+              receiverImage: context
+                          .watch<UserBloc>()
+                          .state
+                          .userPrivacySettings !=
+                      null
+                  ? context.watch<UserBloc>().state.userPrivacySettings![
+                              widget.chatModel?.receiverID] !=
+                          null
                       ? context.watch<UserBloc>().state.userPrivacySettings![
-                                  widget.chatModel?.receiverID] !=
+                                      widget.chatModel?.receiverID]![
+                                  userDbProfilePhotoPrivacy] !=
                               null
                           ? context
-                                      .watch<UserBloc>()
-                                      .state
-                                      .userPrivacySettings![
-                                  widget.chatModel
-                                      ?.receiverID]![userDbProfilePhotoPrivacy]!=null? context
                                       .watch<UserBloc>()
                                       .state
                                       .userPrivacySettings![
@@ -156,7 +143,8 @@ class _CommonAppBarState extends State<CommonAppBar> {
                               ? widget.userProfileImage
                               : null
                           : null
-                      : null:null,
+                      : null
+                  : null,
             )
           : [],
     );

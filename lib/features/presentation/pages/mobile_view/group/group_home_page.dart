@@ -12,7 +12,6 @@ class GroupHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: BlocBuilder<GroupBloc, GroupState>(
         builder: (context, state) {
@@ -42,7 +41,9 @@ class GroupHomePage extends StatelessWidget {
                     message: "Something went wrong: ${snapshot.error}",
                   );
                 }
-                if (!snapshot.hasData || snapshot.data == null || snapshot.data!.isEmpty) {
+                if (!snapshot.hasData ||
+                    snapshot.data == null ||
+                    snapshot.data!.isEmpty) {
                   return commonErrorWidget(
                     message: "No groups",
                   );

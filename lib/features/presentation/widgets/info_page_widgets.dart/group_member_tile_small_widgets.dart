@@ -114,7 +114,7 @@ Widget commonGroupDataShowWidgetInChatInfo({
     },
     leading: GestureDetector(
       child: buildProfileImage(
-        userProfileImage: null,
+        userProfileImage: groupData?.groupProfileImage,
         context: context,
       ),
     ),

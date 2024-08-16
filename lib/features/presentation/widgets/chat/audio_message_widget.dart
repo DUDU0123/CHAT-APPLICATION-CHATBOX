@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -39,7 +38,7 @@ Widget audioMessageWidget({
           .add(AudioPlayerCompletedEvent(message.message!));
     }
   });
- 
+
   return Dismissible(
     confirmDismiss: (direction) async {
       await Future.delayed(const Duration(milliseconds: 2));
@@ -48,9 +47,6 @@ Widget audioMessageWidget({
     },
     key: UniqueKey(),
     child: Container(
-      // height: !isGroup?
-      //  70.h
-      //  :null,
       height: null,
       width: screenWidth(context: context) / 1.26,
       margin: EdgeInsets.symmetric(vertical: 3.h),
@@ -78,7 +74,10 @@ Widget audioMessageWidget({
       child: Column(
         children: [
           isGroup
-              ? messageContainerUserDetails(message: message)
+              ? messageContainerUserDetails(
+                  message: message,
+                  context: context,
+                )
               : zeroMeasureWidget,
           AudioMessageContentShowWidget(
             audioPlayers: audioPlayers,
@@ -89,4 +88,3 @@ Widget audioMessageWidget({
     ),
   );
 }
-

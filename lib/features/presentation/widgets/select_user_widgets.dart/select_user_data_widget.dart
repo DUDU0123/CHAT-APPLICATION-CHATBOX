@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
 import 'package:official_chatbox_application/features/data/data_sources/user_data/user_data.dart';
 import 'package:official_chatbox_application/features/data/models/contact_model/contact_model.dart';
@@ -26,7 +27,20 @@ BlocBuilder<UserBloc, UserState> selectedUserDataWidget(
             );
           }
           return snapshot.data?.userProfileImage != null
-              ? circleImageShowPreventErrorWidget(containerSize: 50, image: snapshot.data!.userProfileImage!,)
+              ? BlocBuilder<UserBloc, UserState>(
+                  builder: (context, state) {
+                    final privacySettings =
+                        state.userPrivacySettings?[snapshot.data?.id] ?? {};
+                    final isShowableProfileImage =
+                        privacySettings[userDbProfilePhotoPrivacy] ?? false;
+                    return isShowableProfileImage? circleImageShowPreventErrorWidget(
+                      containerSize: 50,
+                      image: snapshot.data!.userProfileImage!,
+                    ): commonProfileDefaultIconCircularCotainer(
+                  context: context,
+                );
+                  },
+                )
               : commonProfileDefaultIconCircularCotainer(
                   context: context,
                 );
@@ -35,5 +49,3 @@ BlocBuilder<UserBloc, UserState> selectedUserDataWidget(
     },
   );
 }
-
-

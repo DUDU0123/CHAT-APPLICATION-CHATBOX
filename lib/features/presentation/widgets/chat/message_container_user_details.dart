@@ -1,3 +1,4 @@
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +15,9 @@ import 'package:official_chatbox_application/features/presentation/widgets/commo
 import 'package:official_chatbox_application/features/presentation/widgets/info_page_widgets.dart/info_page_small_widgets.dart';
 
 StreamBuilder<UserModel?> messageContainerUserDetails(
-    {required MessageModel message}) {
+    {required MessageModel message, required BuildContext context,}) {
+      context.read<UserBloc>().add(ProfileImageShowCheckerEvent(
+          receiverID: message.senderID));
   return StreamBuilder<UserModel?>(
       stream: CommonDBFunctions.getOneUserDataFromDataBaseAsStream(
           userId: message.senderID ?? ''),
@@ -32,22 +35,30 @@ StreamBuilder<UserModel?> messageContainerUserDetails(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-
-            messageSenderProfileImage != null &&context.watch<UserBloc>().state.userPrivacySettings![snapshot.data!.id]!=null? context.watch<UserBloc>().state.userPrivacySettings![snapshot.data!.id]![userDbProfilePhotoPrivacy]!
-                ? userProfileImageShowWidget(
-                    context: context,
-                    imageUrl: messageSenderProfileImage,
-                    radius: 10,
-                  )
-                : nullImageReplaceWidget(
-                    containerRadius: 20,
-                    context: context,
+            messageSenderProfileImage != null
+                ? BlocBuilder<UserBloc, UserState>(
+                    builder: (context, state) {
+                      final privacySettings =
+                          state.userPrivacySettings?[snapshot.data?.id] ?? {};
+                          log("Group Privacy user: $privacySettings");
+                      final bool isShowableProfileImage =
+                          privacySettings[userDbProfilePhotoPrivacy] ?? false;
+                      return isShowableProfileImage
+                          ? userProfileImageShowWidget(
+                              context: context,
+                              imageUrl: messageSenderProfileImage,
+                              radius: 10,
+                            )
+                          : nullImageReplaceWidget(
+                              containerRadius: 20,
+                              context: context,
+                            );
+                    },
                   )
                 : nullImageReplaceWidget(
                     containerRadius: 20,
                     context: context,
                   ),
-               
             kWidth5,
             Expanded(
               child: TextWidgetCommon(

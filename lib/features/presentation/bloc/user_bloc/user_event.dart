@@ -122,6 +122,14 @@ class AboutPrivacyChangeEvent extends UserEvent{
    @override
   List<Object> get props => [currentValue??1];
 }
+class StatusPrivacyChangeEvent extends UserEvent{
+  final int? currentValue;
+  const StatusPrivacyChangeEvent({
+    required this.currentValue,
+  });
+   @override
+  List<Object> get props => [currentValue??1];
+}
 
 class ProfileImageShowCheckerEvent extends UserEvent {
   final String? receiverID;

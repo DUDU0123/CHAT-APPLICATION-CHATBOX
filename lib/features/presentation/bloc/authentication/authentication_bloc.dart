@@ -115,6 +115,7 @@ class AuthenticationBloc
               userDbLastSeenOnline: 'Everyone',
               userDbProfilePhotoPrivacy: 'Everyone',
               userDbAboutPrivacy: 'Everyone',
+              userDbStatusPrivacy: "Everyone",
             });
         userRepository.saveUserDataToDataBase(userModel: userModel);
         emit(AuthenticationSuccessState(user: UserModel()));
