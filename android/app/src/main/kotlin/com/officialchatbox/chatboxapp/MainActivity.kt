@@ -11,17 +11,19 @@ import android.os.Build.VERSION_CODES
 import io.flutter.embedding.engine.FlutterEngine
 import android.os.Environment
 import android.os.StatFs
+import android.widget.Toast
 import io.flutter.plugin.common.MethodChannel
 
-class MainActivity: FlutterActivity(){
+class MainActivity: FlutterActivity() {
     private val RINGTONE_GIVER = "ringtonegiver"
     private val NOTIFICATION_TONE_GIVER = "notificationtonegiver"
     private val DISK_SPACE_GIVER = "freediskspacegiver"
-    override fun configureFlutterEngine(flutterEngine:FlutterEngine){
+    private val TOAST_SHOWER_CHANNEL = "toastshowerchannel"
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, NOTIFICATION_TONE_GIVER)
             .setMethodCallHandler { call, result ->
-                when (call.method){
+                when (call.method) {
                     "getAllNotificationTones" -> {
                         val notficationTones = getAllNotificationTones(this)
                         result.success(notficationTones);
@@ -30,7 +32,7 @@ class MainActivity: FlutterActivity(){
             }
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, RINGTONE_GIVER)
             .setMethodCallHandler { call, result ->
-                when (call.method){
+                when (call.method) {
                     "getAllRingtones" -> {
                         val ringtones = getAllRingtones(this)
                         result.success(ringtones);
@@ -39,11 +41,23 @@ class MainActivity: FlutterActivity(){
             }
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, DISK_SPACE_GIVER)
             .setMethodCallHandler { call, result ->
-                when(call.method) {
+                when (call.method) {
                     "getFreeDiskSpace" -> result.success(getFreeDiskSpace())
                     else -> result.notImplemented()
                 }
 
+            }
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, TOAST_SHOWER_CHANNEL)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "showToast" -> {
+                        val message = call.argument<String>("message")
+                        showToast(message)
+                        result.success(null)
+                    }
+
+                    else -> result.notImplemented()
+                }
             }
     }
 
@@ -60,6 +74,7 @@ class MainActivity: FlutterActivity(){
         cursor.close()
         return list
     }
+
     private fun getAllRingtones(context: Context): List<String> {
         val manager = RingtoneManager(context)
         manager.setType(RingtoneManager.TYPE_RINGTONE)
@@ -74,7 +89,9 @@ class MainActivity: FlutterActivity(){
     }
 
     private fun getFreeDiskSpace(): Double {
-        val stat = StatFs(getExternalFilesDir(null)?.path ?: Environment.getExternalStorageDirectory().path)
+        val stat = StatFs(
+            getExternalFilesDir(null)?.path ?: Environment.getExternalStorageDirectory().path
+        )
         val bytesAvailable: Long
         bytesAvailable = if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN_MR2) {
             stat.blockSizeLong * stat.availableBlocksLong
@@ -82,5 +99,11 @@ class MainActivity: FlutterActivity(){
             stat.blockSize.toLong() * stat.availableBlocks.toLong()
         }
         return bytesAvailable.toDouble() / (1024 * 1024) // Return the result in MB
+    }
+
+    private fun showToast(message: String?) {
+        if (message != null) {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
     }
 }

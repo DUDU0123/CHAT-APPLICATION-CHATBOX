@@ -105,16 +105,14 @@ class AssetMessageState extends MessageState {
 }
 
 class CurrentLocationState extends MessageState {
-  final LatLng currentLocation;
   final double latitude;
   final double longitude;
   const CurrentLocationState({
-    required this.currentLocation,
     required this.latitude,
     required this.longitude,
   });
   @override
   List<Object> get props => [
-        currentLocation,
+        latitude,longitude,
       ];
 }

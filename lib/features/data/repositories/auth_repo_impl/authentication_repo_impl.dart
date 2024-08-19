@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:official_chatbox_application/core/constants/app_constants.dart';
 import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/domain/repositories/authentication_repo/authentication_repo.dart';
@@ -28,7 +27,9 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
     required String phoneNumber,
   }) async {
     if (!await isConnected()) {
-      commonSnackBarWidget(context: context, contentText: "No internet connection. Please try again later.");
+      commonSnackBarWidget(
+          context: context,
+          contentText: "No internet connection. Please try again later.");
       return;
     }
 
@@ -61,9 +62,10 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
     }
   }
 
-  String? getCurrentUserId(String? uid){
+  String? getCurrentUserId(String? uid) {
     return firebaseAuth.currentUser?.uid;
   }
+
   @override
   Future<UserCredential> verifyOtp({
     required BuildContext context,
@@ -72,7 +74,9 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
     required Function onSuccess,
   }) async {
     if (!await isConnected()) {
-      commonSnackBarWidget(context: context, contentText: "No internet connection. Please try again later.");
+      commonSnackBarWidget(
+          context: context,
+          contentText: "No internet connection. Please try again later.");
       return Future.error("No internet connection.");
     }
 
@@ -81,7 +85,8 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
         verificationId: verificationId,
         smsCode: otpCode,
       );
-      UserCredential value = await firebaseAuth.signInWithCredential(credential);
+      UserCredential value =
+          await firebaseAuth.signInWithCredential(credential);
 
       // Set user authentication status in SharedPreferences
       await setUserAuthStatus(isSignedIn: true);
@@ -89,9 +94,10 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
       return value;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-verification-code') {
-        Fluttertoast.showToast(msg: "Invalid Code");
+        commonSnackBarWidget(context: context, contentText: "Invalid code");
       } else if (e.code == 'quota-exceeded') {
-        Fluttertoast.showToast(msg: "Otp limit exceeded, try next day");
+        commonSnackBarWidget(
+            context: context, contentText: "Otp limit exceeded, try next day");
       }
       throw Exception(e.message);
     } catch (e) {
@@ -118,14 +124,17 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
     required int? forceResendingToken,
   }) async {
     if (!await isConnected()) {
-      commonSnackBarWidget(context: context, contentText: "No internet connection. Please try again later.");
+      commonSnackBarWidget(
+          context: context,
+          contentText: "No internet connection. Please try again later.");
       return;
     }
 
     try {
       await firebaseAuth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
-        forceResendingToken: forceResendingToken, // Use the resending token here
+        forceResendingToken:
+            forceResendingToken, // Use the resending token here
         verificationCompleted: (PhoneAuthCredential phoneAuthCredential) async {
           await firebaseAuth.signInWithCredential(phoneAuthCredential);
         },
@@ -133,7 +142,8 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
           throw Exception(error.message);
         },
         codeSent: (verificationId, forceResendingToken) {
-          forceResendingToken = forceResendingToken; // Update the resending token
+          forceResendingToken =
+              forceResendingToken; // Update the resending token
           Navigator.pushNamed(
             context,
             "verify_number",
