@@ -166,7 +166,7 @@ class ChatInfoPage extends StatelessWidget {
                     isFirstTile: true,
                   )
                 : zeroMeasureWidget,
-            // idsfisif
+            // for group
             groupData != null
                 ? groupData!.groupMembers!
                         .contains(firebaseAuth.currentUser?.uid)
@@ -180,7 +180,7 @@ class ChatInfoPage extends StatelessWidget {
                       )
                     : zeroMeasureWidget
                 : zeroMeasureWidget,
-            // dfksdsjds
+            // for group
             groupData != null
                 ? !groupData!.groupMembers!
                         .contains(firebaseAuth.currentUser?.uid)
@@ -205,19 +205,7 @@ class ChatInfoPage extends StatelessWidget {
                       )
                     : zeroMeasureWidget
                 : zeroMeasureWidget,
-            groupData != null
-                ? groupData!.groupMembers!
-                        .contains(firebaseAuth.currentUser?.uid)
-                    ? groupListTile(
-                        context: context,
-                        isGroup: isGroup,
-                        title: "Report group",
-                        groupData: groupData!,
-                        icon: Icons.logout,
-                        tileType: 'report-tile',
-                      )
-                    : zeroMeasureWidget
-                : zeroMeasureWidget,
+            // for one-to-one chat
             chatModel != null
                 ? infoPageListTileWidget(
                     context: context,

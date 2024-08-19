@@ -98,61 +98,56 @@ class SetRingtoneSoundEvent extends UserEvent {
         ringtoneName,
       ];
 }
+
 class LastSeenPrivacyChangeEvent extends UserEvent {
   final int? currentValue;
   const LastSeenPrivacyChangeEvent({
     required this.currentValue,
   });
-   @override
-  List<Object> get props => [currentValue??1];
+  @override
+  List<Object> get props => [currentValue ?? 1];
 }
-class ProfilePhotoPrivacyChangeEvent extends UserEvent{
+
+class ProfilePhotoPrivacyChangeEvent extends UserEvent {
   final int? currentValue;
   const ProfilePhotoPrivacyChangeEvent({
     required this.currentValue,
   });
-   @override
-  List<Object> get props => [currentValue??1];
+  @override
+  List<Object> get props => [currentValue ?? 1];
 }
-class AboutPrivacyChangeEvent extends UserEvent{
+
+class AboutPrivacyChangeEvent extends UserEvent {
   final int? currentValue;
   const AboutPrivacyChangeEvent({
     required this.currentValue,
   });
-   @override
-  List<Object> get props => [currentValue??1];
+  @override
+  List<Object> get props => [currentValue ?? 1];
 }
-class StatusPrivacyChangeEvent extends UserEvent{
+
+class StatusPrivacyChangeEvent extends UserEvent {
   final int? currentValue;
   const StatusPrivacyChangeEvent({
     required this.currentValue,
   });
-   @override
-  List<Object> get props => [currentValue??1];
+  @override
+  List<Object> get props => [currentValue ?? 1];
 }
 
-class ProfileImageShowCheckerEvent extends UserEvent {
+class UserPrivacyCheckerEvent extends UserEvent {
   final String? receiverID;
- const ProfileImageShowCheckerEvent({
+  const UserPrivacyCheckerEvent({
     this.receiverID,
   });
   @override
-  List<Object> get props => [receiverID??''];
+  List<Object> get props => [receiverID ?? ''];
 }
-
-class OnlineStatusShowCheckerEvent extends UserEvent {
-  final String? receiverID;
- const OnlineStatusShowCheckerEvent({
-    this.receiverID,
+class CheckIsCurrentUserDisabled extends UserEvent {
+  final String? userId;
+ const CheckIsCurrentUserDisabled({
+    required this.userId,
   });
   @override
-  List<Object> get props => [receiverID??''];
-}
-class AboutShowCheckerEvent extends UserEvent {
-  final String? receiverID;
- const AboutShowCheckerEvent({
-    this.receiverID,
-  });
-  @override
-  List<Object> get props => [receiverID??''];
+  List<Object> get props => [userId??""];
 }

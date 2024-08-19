@@ -465,7 +465,7 @@ class CommonDBFunctions {
   static setWallpaper({
     required ChatModel? chatModel,
     required GroupModel? groupModel,
-    required File? wallpaperFile,
+    required File wallpaperFile,
     required For forWhich,
   }) async {
     log("Inside wallpaper function");
@@ -475,7 +475,7 @@ class CommonDBFunctions {
     if (chatModel != null && forWhich == For.notAll) {
       final wallpaperUrl = await saveUserFileToDataBaseStorage(
           ref: "WallPaper/$currentUserId${chatModel.chatID}",
-          file: wallpaperFile!);
+          file: wallpaperFile);
       final ChatModel updatedChatModel = chatModel.copyWith(
         chatWallpaper: wallpaperUrl,
       );

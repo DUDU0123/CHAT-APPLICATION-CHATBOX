@@ -97,7 +97,7 @@ Widget statusTileWidget({
                     ? lightLinearGradientColorOne
                     : darkLinearGradientColorOne,
                 centerImageUrl: snapshot.data?.userProfileImage ??
-                    "https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg",
+                    "https://static.vecteezy.com/system/resources/previews/007/296/443/original/user-icon-person-icon-client-symbol-profile-icon-vector.jpg",
               );
             }),
         if (isCurrentUser!)

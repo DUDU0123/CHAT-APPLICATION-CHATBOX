@@ -120,10 +120,10 @@ class CommonBlueGradientContainerWidget extends StatelessWidget {
                     UserModel updateUser =
                         fieldTypeSettings == FieldTypeSettings.name
                             ? currentUser.copyWith(
-                                userName: controller?.text,
+                                userName: controller?.text.trim(),
                               )
                             : currentUser.copyWith(
-                                userAbout: controller?.text,
+                                userAbout: controller?.text.trim(),
                               );
                     context
                         .read<UserBloc>()

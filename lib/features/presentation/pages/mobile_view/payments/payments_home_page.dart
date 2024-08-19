@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:official_chatbox_application/config/service_keys/razorpay_key.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
-import 'package:official_chatbox_application/core/utils/snackbar.dart';
-import 'package:official_chatbox_application/features/data/models/contact_model/contact_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/contact/contact_bloc.dart';
-import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/user_details/user_profile_container_widget.dart';
+import 'package:official_chatbox_application/features/presentation/pages/mobile_view/payments/payment_history_page.dart';
+import 'package:official_chatbox_application/features/presentation/pages/mobile_view/payments/send_money_page.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat_home/chat_tile_widgets.dart';
-import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_field_common.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
-import 'package:official_chatbox_application/features/presentation/widgets/info_page_widgets.dart/info_page_small_widgets.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class PaymentsHomePage extends StatelessWidget {
   const PaymentsHomePage({super.key});
@@ -33,7 +28,7 @@ class PaymentsHomePage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>const PaymentHistoryPage(),
+                  builder: (context) => const PaymentHistoryPage(),
                 ),
               );
             },
@@ -95,173 +90,143 @@ class PaymentsHomePage extends StatelessWidget {
     );
   }
 }
+// class SendMoneyPage extends StatefulWidget {
+//   const SendMoneyPage({
+//     super.key,
+//     required this.contact,
+//   });
+//   final ContactModel contact;
 
-class SendMoneyPage extends StatefulWidget {
-  const SendMoneyPage({
-    super.key,
-    required this.contact,
-  });
-  final ContactModel contact;
+//   @override
+//   State<SendMoneyPage> createState() => _SendMoneyPageState();
+// }
 
-  @override
-  State<SendMoneyPage> createState() => _SendMoneyPageState();
-}
+// class _SendMoneyPageState extends State<SendMoneyPage> {
+//   late Razorpay razorPay;
+//   TextEditingController amountController = TextEditingController();
+//   @override
+//   void initState() {
+//     super.initState();
+//     razorPay = Razorpay();
+//     razorPay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlePaymentSuccessResponse);
+//     razorPay.on(Razorpay.EVENT_PAYMENT_ERROR, handlePaymentErrorResponse);
+//     razorPay.on(Razorpay.EVENT_EXTERNAL_WALLET, handleExternalWalletSelected);
+//   }
 
-class _SendMoneyPageState extends State<SendMoneyPage> {
-  late Razorpay razorPay;
-  TextEditingController amountController = TextEditingController();
-  @override
-  void initState() {
-    super.initState();
-    razorPay = Razorpay();
-    razorPay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlePaymentSuccessResponse);
-    razorPay.on(Razorpay.EVENT_PAYMENT_ERROR, handlePaymentErrorResponse);
-    razorPay.on(Razorpay.EVENT_EXTERNAL_WALLET, handleExternalWalletSelected);
-  }
+//   @override
+//   void dispose() {
+//     super.dispose();
+//     razorPay.clear();
+//   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    razorPay.clear();
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const TextWidgetCommon(text: "Enter amount"),
+//       ),
+// body: Padding(
+//   padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 40.h),
+//   child: Column(
+//     children: [
+//       widget.contact.userProfilePhotoOnChatBox != null
+//           ? userProfileImageShowWidget(
+//               context: context,
+//               imageUrl: widget.contact.userProfilePhotoOnChatBox!)
+//           : nullImageReplaceWidget(containerRadius: 50, context: context),
+//       TextWidgetCommon(
+//         text:
+//             "Send money to ${widget.contact.userContactName ?? widget.contact.userContactNumber}",
+//         fontWeight: FontWeight.bold,
+//         fontSize: 20.sp,
+//       ),
+//       kHeight20,
+//       TextFieldCommon(
+//         hintText: "Enter amount",
+//         keyboardType: TextInputType.number,
+//         style: TextStyle(
+//           color: Theme.of(context).colorScheme.onPrimary,
+//           fontSize: 18.sp,
+//           fontWeight: FontWeight.w500,
+//         ),
+//         textAlign: TextAlign.center,
+//         controller: amountController,
+//         border: OutlineInputBorder(
+//           borderRadius: BorderRadius.circular(10.sp),
+//           borderSide: BorderSide(
+//             color: buttonSmallTextColor,
+//           ),
+//         ),
+//       )
+//     ],
+//   ),
+// ),
+//   floatingActionButton: FloatingActionButton.extended(
+//     onPressed: () {
+//       if (amountController.text.isNotEmpty) {
+//         int amount = int.parse(amountController.text);
+//         if (amount <= 20000) {
+//           openCheckOut(
+//             contactModel: widget.contact,
+//             amountToSend: amount,
+//             razorPay: razorPay,
+//             context: context,
+//           );
+//         } else {
+//           commonSnackBarWidget(
+//               context: context, contentText: "Amount exceeded");
+//         }
+//       } else {
+//         commonSnackBarWidget(
+//             context: context, contentText: "Please enter an amount");
+//       }
+//     },
+//     label: const TextWidgetCommon(
+//       text: "Done",
+//     ),
+//   ),
+// );
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const TextWidgetCommon(text: "Enter amount"),
-      ),
-      body: Padding(
-        padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 40.h),
-        child: Column(
-          children: [
-            widget.contact.userProfilePhotoOnChatBox != null
-                ? userProfileImageShowWidget(
-                    context: context,
-                    imageUrl: widget.contact.userProfilePhotoOnChatBox!)
-                : nullImageReplaceWidget(containerRadius: 50, context: context),
-            TextWidgetCommon(
-              text:
-                  "Send money to ${widget.contact.userContactName ?? widget.contact.userContactNumber}",
-              fontWeight: FontWeight.bold,
-              fontSize: 20.sp,
-            ),
-            kHeight20,
-            TextFieldCommon(
-              hintText: "Enter amount",
-              keyboardType: TextInputType.number,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-              controller: amountController,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.sp),
-                borderSide: BorderSide(
-                  color: buttonSmallTextColor,
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          if (amountController.text.isNotEmpty) {
-            int amount = int.parse(amountController.text);
-            if (amount <= 20000) {
-              openCheckOut(
-                contactModel: widget.contact,
-                amountToSend: amount,
-                razorPay: razorPay,
-                context: context,
-              );
-            } else {
-              commonSnackBarWidget(
-                  context: context, contentText: "Amount exceeded");
-            }
-          } else {
-            commonSnackBarWidget(
-                context: context, contentText: "Please enter an amount");
-          }
-        },
-        label: const TextWidgetCommon(
-          text: "Done",
-        ),
-      ),
-    );
-  }
+//   void handlePaymentSuccessResponse(PaymentSuccessResponse response) {
+//     commonSnackBarWidget(
+//         context: context,
+//         contentText: "Payment Successful: ${response.paymentId}");
+//   }
 
-  void handlePaymentSuccessResponse(PaymentSuccessResponse response) {
-    commonSnackBarWidget(
-        context: context,
-        contentText: "Payment Successful: ${response.paymentId}");
-  }
+//   void handlePaymentErrorResponse(PaymentFailureResponse response) {
+//     commonSnackBarWidget(
+//         context: context,
+//         contentText: "Payment Unsuccessful: ${response.message}");
+//   }
 
-  void handlePaymentErrorResponse(PaymentFailureResponse response) {
-    commonSnackBarWidget(
-        context: context,
-        contentText: "Payment Unsuccessful: ${response.message}");
-  }
+//   void handleExternalWalletSelected(ExternalWalletResponse response) {
+//     commonSnackBarWidget(
+//         context: context,
+//         contentText: "Payment Wallet selected: ${response.walletName}");
+//   }
+// }
 
-  void handleExternalWalletSelected(ExternalWalletResponse response) {
-    commonSnackBarWidget(
-        context: context,
-        contentText: "Payment Wallet selected: ${response.walletName}");
-  }
-}
+// void openCheckOut({
+//   required ContactModel contactModel,
+//   required int amountToSend,
+//   required Razorpay razorPay,
+//   required BuildContext context,
+// }) {
+//   var options = {
+//     'key': RazorPayFields.razorpayKey,
+//     'amount': amountToSend * 100,
+//     'name': contactModel.userContactName,
+//     'description': 'Payment to ${contactModel.userContactName}',
+//     'prefill': {
+//       'contact': contactModel.userContactNumber,
+//       'email': 'test@razorpay.com',
+//     },
+//   };
+//   try {
+//     razorPay.open(options);
+//   } catch (e) {
+//     commonSnackBarWidget(context: context, contentText: "Error occured: $e");
+//   }
+// }
 
-void openCheckOut({
-  required ContactModel contactModel,
-  required int amountToSend,
-  required Razorpay razorPay,
-  required BuildContext context,
-}) {
-  var options = {
-    'key': RazorPayFields.razorpayKey,
-    'amount': amountToSend * 100,
-    'name': contactModel.userContactName,
-    'description': 'Payment to ${contactModel.userContactName}',
-    'prefill': {
-      'contact': contactModel.userContactNumber,
-      'email': 'test@razorpay.com',
-    },
-  };
-  try {
-    razorPay.open(options);
-  } catch (e) {
-    commonSnackBarWidget(context: context, contentText: "Error occured: $e");
-  }
-}
-
-class PaymentHistoryPage extends StatelessWidget {
-  const PaymentHistoryPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const TextWidgetCommon(text: "Payment History"),
-      ),
-      body: ListView.separated(
-        padding: EdgeInsets.symmetric(vertical: 10.h),
-        itemCount: 10,
-        separatorBuilder: (context, index) => kHeight10,
-        itemBuilder: (context, index) {
-          return ListTile(
-            leading: buildProfileImage(
-              userProfileImage: null,
-              context: context,
-            ),
-            title: const TextWidgetCommon(
-              text: "Name",
-            ),
-            trailing: TextWidgetCommon(text: "\u20B9100", textColor: iconGreyColor, fontSize: 16.sp,),
-          );
-        },
-      ),
-    );
-  }
-}

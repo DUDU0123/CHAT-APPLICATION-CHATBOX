@@ -69,13 +69,3 @@ Future<List<File?>> pickMultipleFileWithAnyExtension() async {
     throw Exception(e);
   }
 }
-// Extracting file extension
-          // String fileExtension = path.extension(file.path);
-          // Append file extension to fileUrl based on the file type
-          // if (fileExtension == '.pdf') {
-          //   fileUrl += '?type=pdf';
-          // } else if (fileExtension == '.docx') {
-          //   fileUrl += '?type=docx';
-          // } else if (fileExtension == '.xlsx') {
-          //   fileUrl += '?type=xlsx';
-          // }

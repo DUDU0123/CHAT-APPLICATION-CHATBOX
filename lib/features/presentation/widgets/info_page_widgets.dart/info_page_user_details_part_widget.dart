@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
@@ -22,6 +23,25 @@ import 'package:official_chatbox_application/features/presentation/widgets/commo
 import 'package:official_chatbox_application/features/presentation/widgets/dialog_widgets/data_edit_dialog_box.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/info_page_widgets.dart/info_page_small_widgets.dart';
 
+commonUserProfileImageShowingBigCircularContainer({
+  required BuildContext context,
+  required String userProfileImage,
+}) {
+  userProfileImageShowWidget(
+    context: context,
+    imageUrl: userProfileImage,
+    radius: 80,
+    onTap: () {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                PhotoViewSection(imageToShow: userProfileImage),
+          ));
+    },
+  );
+}
+
 Widget infoPageUserDetailsPart({
   required BuildContext context,
   required UserModel? receiverData,
@@ -43,10 +63,9 @@ Widget infoPageUserDetailsPart({
           children: [
             receiverData?.userProfileImage != null && !isGroup
                 ? isShowableProfileImage
-                    ? userProfileImageShowWidget(
+                    ? commonUserProfileImageShowingBigCircularContainer(
                         context: context,
-                        imageUrl: receiverData!.userProfileImage!,
-                        radius: 80,
+                        userProfileImage: receiverData!.userProfileImage!,
                       )
                     : nullImageReplaceWidget(
                         containerRadius: 150, context: context)
@@ -60,20 +79,10 @@ Widget infoPageUserDetailsPart({
                             return nullImageReplaceWidget(
                                 containerRadius: 150, context: context);
                           }
-                          return userProfileImageShowWidget(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => PhotoViewSection(
-                                        imageToShow:
-                                            snapshot.data!.groupProfileImage!),
-                                  ));
-                            },
+                          return commonUserProfileImageShowingBigCircularContainer(
                             context: context,
-                            imageUrl:
+                            userProfileImage:
                                 snapshot.data!.groupProfileImage ?? '',
-                            radius: 80,
                           );
                         })
                     : nullImageReplaceWidget(

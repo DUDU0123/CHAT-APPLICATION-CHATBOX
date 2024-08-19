@@ -16,7 +16,7 @@ import 'package:official_chatbox_application/features/presentation/widgets/info_
 
 StreamBuilder<UserModel?> messageContainerUserDetails(
     {required MessageModel message, required BuildContext context,}) {
-      context.read<UserBloc>().add(ProfileImageShowCheckerEvent(
+      context.read<UserBloc>().add(UserPrivacyCheckerEvent(
           receiverID: message.senderID));
   return StreamBuilder<UserModel?>(
       stream: CommonDBFunctions.getOneUserDataFromDataBaseAsStream(

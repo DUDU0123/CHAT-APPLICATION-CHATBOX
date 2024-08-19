@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
-import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
-import 'package:official_chatbox_application/core/utils/privacy_methods.dart';
 import 'package:official_chatbox_application/features/data/models/blocked_user_model/blocked_user_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/privacy/blocked_contacts_page.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_appbar_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_list_tile.dart';
-import 'package:official_chatbox_application/features/presentation/widgets/dialog_widgets/radio_button_dialogbox_widget.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/settings/privacy_widgets/about_privacy_listtile.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/settings/privacy_widgets/last_seen_online_list_tile.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/settings/privacy_widgets/profile_photo_privacy_list_tile.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/settings/privacy_widgets/status_privacy_listtile.dart';
 
 class PrivacySettings extends StatefulWidget {
   const PrivacySettings({super.key});
@@ -48,210 +49,24 @@ class _PrivacySettingsState extends State<PrivacySettings> {
               final privacySettingMap = userModel?.privacySettings;
               return Column(
                 children: [
-                  commonListTile(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return RadioButtonDialogBox(
-                            radioOneTitle: "Everyone",
-                            radioTwoTitle: "My contacts",
-                            radioThreeTitle: "Nobody",
-                            dialogBoxTitle: "Last seen and Online",
-                            groupValue: privacySettingMap != null
-                                ? PrivacyMethods.typeIntGiver(
-                                    groupValueString:
-                                        privacySettingMap[userDbLastSeenOnline],
-                                  )
-                                : 1,
-                            radioOneOnChanged: (value) {
-                              context.read<UserBloc>().add(
-                                  LastSeenPrivacyChangeEvent(
-                                      currentValue: value));
-
-                              Navigator.pop(context);
-                            },
-                            radioTwoOnChanged: (value) {
-                              context.read<UserBloc>().add(
-                                  LastSeenPrivacyChangeEvent(
-                                      currentValue: value));
-
-                              Navigator.pop(context);
-                            },
-                            radioThreeOnChanged: (value) {
-                              context.read<UserBloc>().add(
-                                    LastSeenPrivacyChangeEvent(
-                                      currentValue: value,
-                                    ),
-                                  );
-                              Navigator.pop(context);
-                            },
-                          );
-                        },
-                      );
-                    },
-                    title: "Last seen and online",
-                    subtitle: privacySettingMap != null
-                        ? privacySettingMap[userDbLastSeenOnline]
-                        : "Everyone",
-                    isSmallTitle: true,
+                  lastSeenOnlinePrivacyListTile(
                     context: context,
+                    privacySettingMap: privacySettingMap,
                   ),
                   kHeight10,
-                  commonListTile(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return RadioButtonDialogBox(
-                            radioOneTitle: "Everyone",
-                            radioTwoTitle: "My contacts",
-                            radioThreeTitle: "Nobody",
-                            dialogBoxTitle: "Profile photo",
-                            groupValue: privacySettingMap != null
-                                ? PrivacyMethods.typeIntGiver(
-                                    groupValueString: privacySettingMap[
-                                        userDbProfilePhotoPrivacy],
-                                  )
-                                : 1,
-                            radioOneOnChanged: (value) {
-                              context.read<UserBloc>().add(
-                                    ProfilePhotoPrivacyChangeEvent(
-                                      currentValue: value,
-                                    ),
-                                  );
-                              Navigator.pop(context);
-                            },
-                            radioTwoOnChanged: (value) {
-                              context.read<UserBloc>().add(
-                                    ProfilePhotoPrivacyChangeEvent(
-                                      currentValue: value,
-                                    ),
-                                  );
-                              Navigator.pop(context);
-                            },
-                            radioThreeOnChanged: (value) {
-                              context.read<UserBloc>().add(
-                                    ProfilePhotoPrivacyChangeEvent(
-                                      currentValue: value,
-                                    ),
-                                  );
-                              Navigator.pop(context);
-                            },
-                          );
-                        },
-                      );
-                    },
-                    title: "Profile photo",
-                    subtitle: privacySettingMap != null
-                        ? privacySettingMap[userDbProfilePhotoPrivacy]
-                        : "Everyone",
-                    isSmallTitle: true,
+                  profilePhotoPrivacyListTile(
                     context: context,
+                    privacySettingMap: privacySettingMap,
                   ),
                   kHeight10,
-                  commonListTile(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return RadioButtonDialogBox(
-                            radioOneTitle: "Everyone",
-                            radioTwoTitle: "My contacts",
-                            radioThreeTitle: "Nobody",
-                            dialogBoxTitle: "About",
-                            groupValue: privacySettingMap != null
-                                ? PrivacyMethods.typeIntGiver(
-                                    groupValueString:
-                                        privacySettingMap[userDbAboutPrivacy],
-                                  )
-                                : 1,
-                            radioOneOnChanged: (value) {
-                              context.read<UserBloc>().add(
-                                    AboutPrivacyChangeEvent(
-                                      currentValue: value,
-                                    ),
-                                  );
-                              Navigator.pop(context);
-                            },
-                            radioTwoOnChanged: (value) {
-                              context.read<UserBloc>().add(
-                                    AboutPrivacyChangeEvent(
-                                      currentValue: value,
-                                    ),
-                                  );
-                              Navigator.pop(context);
-                            },
-                            radioThreeOnChanged: (value) {
-                              context.read<UserBloc>().add(
-                                    AboutPrivacyChangeEvent(
-                                      currentValue: value,
-                                    ),
-                                  );
-                              Navigator.pop(context);
-                            },
-                          );
-                        },
-                      );
-                    },
-                    title: "About",
-                    subtitle: privacySettingMap != null
-                        ? privacySettingMap[userDbAboutPrivacy]
-                        : "Everyone",
-                    isSmallTitle: true,
+                  aboutPrivacyListTile(
                     context: context,
+                    privacySettingMap: privacySettingMap,
                   ),
                   kHeight10,
-                  commonListTile(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return RadioButtonDialogBox(
-                            radioOneTitle: "Everyone",
-                            radioTwoTitle: "My contacts",
-                            radioThreeTitle: "Nobody",
-                            dialogBoxTitle: "Status",
-                            groupValue: privacySettingMap != null
-                                ? PrivacyMethods.typeIntGiver(
-                                    groupValueString:
-                                        privacySettingMap[userDbStatusPrivacy],
-                                  )
-                                : 1,
-                            radioOneOnChanged: (value) {
-                              context.read<UserBloc>().add(
-                                    StatusPrivacyChangeEvent(
-                                      currentValue: value,
-                                    ),
-                                  );
-                              Navigator.pop(context);
-                            },
-                            radioTwoOnChanged: (value) {
-                              context.read<UserBloc>().add(
-                                    StatusPrivacyChangeEvent(
-                                      currentValue: value,
-                                    ),
-                                  );
-                              Navigator.pop(context);
-                            },
-                            radioThreeOnChanged: (value) {
-                              context.read<UserBloc>().add(
-                                    StatusPrivacyChangeEvent(
-                                      currentValue: value,
-                                    ),
-                                  );
-                              Navigator.pop(context);
-                            },
-                          );
-                        },
-                      );
-                    },
-                    title: "Status",
-                    subtitle: privacySettingMap != null
-                        ? privacySettingMap[userDbStatusPrivacy]
-                        : "Everyone",
-                    isSmallTitle: true,
+                  statusPrivacyListTile(
                     context: context,
+                    privacySettingMap: privacySettingMap,
                   ),
                   kHeight10,
                   BlocBuilder<UserBloc, UserState>(

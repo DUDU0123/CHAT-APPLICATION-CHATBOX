@@ -7,6 +7,7 @@ import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
+
 class ChatData {
   final FirebaseFirestore firestore;
   final FirebaseAuth firebaseAuth;
@@ -248,6 +249,26 @@ class ChatData {
       return false;
     } catch (e) {
       log("From mute chat catch: ${e.toString()}");
+      return false;
+    }
+  }
+
+  // report account
+  Future<bool> reportAccount({
+    required UserModel userModel,
+  }) async {
+    try {
+      final reportedDoc =
+          await firestore.collection(reportedUsersCollection).add(
+                userModel.toJson(),
+              );
+      final reportedDocId = reportedDoc.id;
+      return true;
+    } on FirebaseException catch (e) {
+      log("From report account firebase: ${e.message}");
+      return false;
+    } catch (e) {
+      log("From report account catch: ${e.toString()}");
       return false;
     }
   }

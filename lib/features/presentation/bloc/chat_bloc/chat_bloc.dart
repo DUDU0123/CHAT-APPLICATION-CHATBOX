@@ -3,8 +3,11 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/message_model/message_model.dart';
+import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/domain/repositories/chat_repo/chat_repo.dart';
 part 'chat_event.dart';
 part 'chat_state.dart';
@@ -21,6 +24,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<PickImageEvent>(pickImageEvent);
     on<ClearAllChatsEvent>(clearAllChatsEvent);
     on<ChatUpdateEvent>(chatUpdateEvent);
+    on<ReportAccountEvent>(reportAccountEvent);
   }
 
   FutureOr<void> createANewChatEvent(
@@ -114,6 +118,25 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         add(GetAllChatsEvent());
       } else {
         emit(const ChatErrorState(errormessage: "Cannot update data"));
+      }
+    } catch (e) {
+      emit(ChatErrorState(errormessage: e.toString()));
+    }
+  }
+
+  Future<FutureOr<void>> reportAccountEvent(
+      ReportAccountEvent event, Emitter<ChatState> emit) async {
+    try {
+      final value = await chatRepo.reportAccount(userModel: event.userModel);
+      log(name: "reported user", value.toString());
+      if (value) {
+        commonSnackBarWidget(
+          context: event.context,
+          contentText: "Reported successfully"
+        );
+        add(GetAllChatsEvent());
+      } else {
+        emit(const ChatErrorState(errormessage: "Unable to report user"));
       }
     } catch (e) {
       emit(ChatErrorState(errormessage: e.toString()));

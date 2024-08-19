@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,7 +18,10 @@ import 'package:official_chatbox_application/features/presentation/pages/mobile_
 import 'package:provider/provider.dart';
 
 class RootWidgetPage extends StatelessWidget {
-  const RootWidgetPage({super.key, required this.navigatorKey,});
+  const RootWidgetPage({
+    super.key,
+    required this.navigatorKey,
+  });
   final GlobalKey<NavigatorState> navigatorKey;
 
   @override
@@ -59,7 +64,7 @@ class RootWidgetPage extends StatelessWidget {
       "bottomNav_Navigator": (context) => const NavigatorBottomnavPage(),
       "/search_page": (context) => SearchPage(),
       "/settings_page": (context) => const SettingsPage(),
-      "/chat_home":(context)=> ChatHomePage(),
+      "/chat_home": (context) => ChatHomePage(),
     };
   } //routes provider method end
 }

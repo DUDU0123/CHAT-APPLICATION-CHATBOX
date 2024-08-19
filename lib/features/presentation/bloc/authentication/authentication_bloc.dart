@@ -6,6 +6,9 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
+import 'package:official_chatbox_application/core/utils/app_methods.dart';
+import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
+import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/domain/repositories/authentication_repo/authentication_repo.dart';
 import 'package:official_chatbox_application/features/domain/repositories/user_repo/user_repository.dart';
@@ -80,10 +83,7 @@ class AuthenticationBloc
         log("Has Match");
         authenticationRepo.createAccountInChatBoxUsingPhoneNumber(
             context: event.context,
-            phoneNumber: event.phoneNumberWithCountryCode!
-            //  ??
-            //     "+91${event.phoneNumberWithCountryCode}",
-            );
+            phoneNumber: event.phoneNumberWithCountryCode!);
         emit(OtpSentState());
       } else {
         log("Else COndition inside try");
@@ -106,11 +106,21 @@ class AuthenticationBloc
           otpCode: event.otpCode,
           onSuccess: () {},
         );
+        final userData = await CommonDBFunctions.getOneUserDataFromDBFuture(
+            userId: userCredential.user?.uid);
+        if (userData != null) {
+          if (userData.isDisabled != null) {
+            if (userData.isDisabled!) {
+              AppMethods.pop();
+            }
+          }
+        }
         UserModel userModel = UserModel(
             createdAt: DateTime.now().millisecondsSinceEpoch.toString(),
             id: userCredential.user?.uid,
             phoneNumber: userCredential.user?.phoneNumber,
             lastActiveTime: "Online",
+            isDisabled: userData?.isDisabled,
             privacySettings: const {
               userDbLastSeenOnline: 'Everyone',
               userDbProfilePhotoPrivacy: 'Everyone',

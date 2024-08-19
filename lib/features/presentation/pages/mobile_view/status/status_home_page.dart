@@ -82,34 +82,25 @@ class _StatusHomePageState extends State<StatusHomePage> {
                         return emptyShowWidget(
                             context: context, text: "No status");
                       }
-                      final otherUsersStatuses = snapshot.data!
-                          .where((status) =>
-                              status.statusUploaderId !=
-                                  firebaseAuth.currentUser?.uid &&
-                              (status.statusList?.isNotEmpty ?? false))
-                          .toList();
-
-                      // final otherUsersStatusees =
-                      //     snapshot.data!.where((status) {
-                      //   final privacySettings = context
-                      //       .watch<UserBloc>()
-                      //       .state
-                      //       .userPrivacySettings?[status.statusUploaderId];
-                      //   final isShowableStatus =
-                      //       privacySettings?[userDbStatusPrivacy] ??
-                      //           false;
-                      //   return status.statusUploaderId !=
-                      //           firebaseAuth.currentUser?.uid &&
-                      //       (status.statusList?.isNotEmpty ?? false) &&
-                      //       isShowableStatus;
-                      // }).toList();
+                      final otherUsersStatuses =
+                          snapshot.data!.where((status) {
+                        final privacySettings = context
+                            .watch<UserBloc>()
+                            .state
+                            .userPrivacySettings?[status.statusUploaderId];
+                        final isShowableStatus =
+                            privacySettings?[userDbStatusPrivacy] ??
+                                false;
+                        return status.statusUploaderId !=
+                                firebaseAuth.currentUser?.uid &&
+                            (status.statusList?.isNotEmpty ?? false) &&
+                            isShowableStatus;
+                      }).toList();
 
                       if (otherUsersStatuses.isEmpty) {
                         return emptyShowWidget(
                             context: context, text: "No status");
                       }
-                      //               final userID =  ?? widget.receiverID;
-                      // final privacySettings = state.userPrivacySettings?[userID] ?? {};
 
                       for (var statusmodel in otherUsersStatuses) {
                         CommonDBFunctions.updateStatusListInStatusModelInDB(

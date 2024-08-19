@@ -32,6 +32,8 @@ const statusCollection = 'statuses';
 const callsCollection = 'calls';
 const blockedUsersCollection = 'blocked_users';
 const aiChatMessagesCollection = 'ai_chat_messages_collection';
+const paymentHistoryCollection = 'payment_history';
+const reportedUsersCollection = 'reported_users';
 
 // messageDb fields name
 const dbMessageID = 'message_id';
@@ -114,12 +116,6 @@ const dbUserContactNumber = 'userContactNumber';
 const dbIsChatBoxUser = 'isChatBoxUser';
 const dbContactId = 'contact_id';
 
-// broadcast db field name
-const broadcastId = 'broadcast_id';
-const broadcastAdminId = 'broadcast_admin_id';
-const broadcastName = 'broadcast_name';
-const broadcastProfilePhoto = 'broadcast_profile_photo';
-const broadcastMembersId = 'broadcast_members_id';
 
 // call db field name
 const dbCallId = 'call_id';
@@ -137,6 +133,14 @@ const dbCallEndTime = 'call_end_time';
 const dbCallStatus = 'call_status';
 const dbCallReceiverName = 'call_receiver_name';
 const dbReceiverImage = 'call_receiver_image';
+
+// payment db field name
+const paymentDBId = 'id';
+const paymentTransactionId = 'transaction_id';
+const paymentReceiverName = 'payment_receiver_name';
+const paymentReceiverPhoneNumber = 'payment_receiver_phone_number';
+const paymentReceiverProfileImage = 'payment_receiver_profile_image';
+const paymentAmountSended = 'payment_amount_sended';
 
 // database storage folder name or file name
 const usersProfileImageFolder = "profile_images/";

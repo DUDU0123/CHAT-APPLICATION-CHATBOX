@@ -22,14 +22,17 @@ class ThemeSetDialogBox extends StatelessWidget {
           radioOneOnChanged: (value) {
             themeManager.selectedThemeValue = value!;
             themeManager.setSystemDefaultTheme();
+            Navigator.pop(context);
           },
           radioTwoOnChanged: (value) {
             themeManager.selectedThemeValue = value!;
             themeManager.setLightTheme();
+            Navigator.pop(context);
           },
           radioThreeOnChanged: (value) {
             themeManager.selectedThemeValue = value!;
             themeManager.setDarkTheme();
+            Navigator.pop(context);
           },
         );
       },

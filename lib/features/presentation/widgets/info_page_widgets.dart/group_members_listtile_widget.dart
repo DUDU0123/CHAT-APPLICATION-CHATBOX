@@ -21,7 +21,7 @@ Widget groupMemberListTileWidget({
   required GroupModel groupData,
 }) {
   context.read<UserBloc>().add(
-      ProfileImageShowCheckerEvent(receiverID: groupMemberSnapshot.data?.id));
+      UserPrivacyCheckerEvent(receiverID: groupMemberSnapshot.data?.id));
 
   final String? groupMemberName =
       groupMemberSnapshot.data?.id == firebaseAuth.currentUser?.uid

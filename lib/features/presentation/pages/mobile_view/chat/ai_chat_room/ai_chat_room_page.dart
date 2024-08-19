@@ -12,7 +12,7 @@ import 'package:official_chatbox_application/core/utils/emoji_select.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
 import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/data/models/message_model/message_model.dart';
-import 'package:official_chatbox_application/features/presentation/bloc/bloc/boxai_bloc.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/box_ai/boxai_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chat/ai_chat_room/inner_pages/ai_chat_info_page.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat/different_message_widgets.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_field_common.dart';

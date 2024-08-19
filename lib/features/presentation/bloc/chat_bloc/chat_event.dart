@@ -86,3 +86,13 @@ class ChatUpdateEvent extends ChatEvent {
   @override
   List<Object> get props => [chatModel];
 }
+class ReportAccountEvent extends ChatEvent {
+  final UserModel userModel;
+  final BuildContext context;
+  const ReportAccountEvent({
+    required this.userModel,
+    required this.context,
+  });
+  @override
+  List<Object> get props => [userModel,];
+}

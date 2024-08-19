@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,7 +17,8 @@ class WallpaperSelectPage extends StatefulWidget {
   const WallpaperSelectPage({
     super.key,
     this.groupModel,
-    this.chatModel, this.pageTypeEnum,
+    this.chatModel,
+    this.pageTypeEnum,
   });
   final GroupModel? groupModel;
   final ChatModel? chatModel;
@@ -91,30 +91,41 @@ class _WallpaperSelectPageState extends State<WallpaperSelectPage> {
                     wallpaperButtonWidget(
                         buttonName: "Set for All",
                         onPressed: () async {
-                          CommonDBFunctions.setWallpaper(
-                            forWhich: For.all,
-                            chatModel: widget.chatModel,
-                            groupModel: widget.groupModel,
-                            wallpaperFile: state.pickedFile,
-                          );
-                          commonSnackBarWidget(
+                          if (state.pickedFile != null) {
+                            CommonDBFunctions.setWallpaper(
+                              forWhich: For.all,
+                              chatModel: widget.chatModel,
+                              groupModel: widget.groupModel,
+                              wallpaperFile: state.pickedFile!,
+                            );
+                            commonSnackBarWidget(
                               context: context,
-                              contentText: "Wallpaper set for all chats");
+                              contentText: "Wallpaper set for all chats",
+                            );
+                          }
                         }),
-                     widget.pageTypeEnum!=PageTypeEnum.chatSetting?kWidth10:zeroMeasureWidget,
-                  widget.pageTypeEnum!=PageTypeEnum.chatSetting?  wallpaperButtonWidget(
-                        buttonName: "Set for this",
-                        onPressed: () async {
-                          CommonDBFunctions.setWallpaper(
-                            forWhich: For.notAll,
-                            chatModel: widget.chatModel,
-                            groupModel: widget.groupModel,
-                            wallpaperFile: state.pickedFile,
-                          );
-                          commonSnackBarWidget(
-                              context: context,
-                              contentText: "Wallpaper set for only this chat");
-                        }):zeroMeasureWidget,
+                    widget.pageTypeEnum != PageTypeEnum.chatSetting
+                        ? kWidth10
+                        : zeroMeasureWidget,
+                    widget.pageTypeEnum != PageTypeEnum.chatSetting
+                        ? wallpaperButtonWidget(
+                            buttonName: "Set for this",
+                            onPressed: () async {
+                              if (state.pickedFile != null) {
+                                CommonDBFunctions.setWallpaper(
+                                  forWhich: For.notAll,
+                                  chatModel: widget.chatModel,
+                                  groupModel: widget.groupModel,
+                                  wallpaperFile: state.pickedFile!,
+                                );
+                                commonSnackBarWidget(
+                                  context: context,
+                                  contentText:
+                                      "Wallpaper set for only this chat",
+                                );
+                              }
+                            })
+                        : zeroMeasureWidget,
                   ],
                 );
               },

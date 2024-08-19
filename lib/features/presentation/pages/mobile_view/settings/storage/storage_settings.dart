@@ -19,6 +19,16 @@ class StorageSettings extends StatefulWidget {
 class _StorageSettingsState extends State<StorageSettings> {
   @override
   Widget build(BuildContext context) {
+    final double appStorage =
+        double.parse(Provider.of<CommonProvider>(context).appStorage);
+    final double deviceFreeStorage =
+        Provider.of<CommonProvider>(context).deviceFreeStorage;
+
+    // Total storage (used + free)
+    final double totalStorage = appStorage + deviceFreeStorage;
+
+    // Calculate the percentage of used storage
+    final double usedStoragePercentage = appStorage / totalStorage;
     return Scaffold(
       appBar: AppBar(
         title: const TextWidgetCommon(text: "Manage storage"),
@@ -48,13 +58,27 @@ class _StorageSettingsState extends State<StorageSettings> {
                   ],
                 ),
                 kHeight10,
-                Container(
-                  width: screenWidth(context: context),
-                  height: 15.h,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100.sp),
-                    color: buttonSmallTextColor,
-                  ),
+                Stack(
+                  children: [
+                    Container(
+                      width: screenWidth(context: context),
+                      height: 15.h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100.sp),
+                        color: buttonSmallTextColor
+                            .withOpacity(0.2), // Background color
+                      ),
+                    ),
+                    Container(
+                      width:
+                          screenWidth(context: context) * usedStoragePercentage,
+                      height: 15.h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100.sp),
+                        color: buttonSmallTextColor, // Progress bar color
+                      ),
+                    ),
+                  ],
                 ),
                 kHeight10,
                 Row(
@@ -70,8 +94,7 @@ class _StorageSettingsState extends State<StorageSettings> {
                     ),
                     kWidth10,
                     TextWidgetCommon(
-                      text:
-                          "ChatBox (${Provider.of<CommonProvider>(context).appStorage} MB)",
+                      text: "ChatBox ($appStorage MB)",
                       textColor: iconGreyColor,
                     )
                   ],

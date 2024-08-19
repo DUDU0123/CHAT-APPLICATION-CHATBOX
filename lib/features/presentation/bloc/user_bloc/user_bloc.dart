@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
+import 'package:official_chatbox_application/core/utils/app_methods.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/image_picker_method.dart';
 import 'package:official_chatbox_application/core/utils/privacy_methods.dart';
@@ -37,8 +38,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<LastSeenPrivacyChangeEvent>(lastSeenPrivacyChangeEvent);
     on<ProfilePhotoPrivacyChangeEvent>(profilePhotoPrivacyChangeEvent);
     on<AboutPrivacyChangeEvent>(aboutPrivacyChangeEvent);
+    on<StatusPrivacyChangeEvent>(statusPrivacyChangeEvent);
     // privacy checking event
-    on<ProfileImageShowCheckerEvent>(profileImageShowCheckerEvent);
+    on<UserPrivacyCheckerEvent>(userPrivacyCheckerEvent);
+    on<CheckIsCurrentUserDisabled>(checkIsCurrentUserDisabled);
   }
 
   Future<FutureOr<void>> getCurrentUserData(
@@ -272,13 +275,12 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         statusGroupValue: state.statusPrivacyGroupValue,
       );
       emit(state.copyWith(
-        blockedUsersList: state.blockedUsersList,
-        currentUserData: state.currentUserData,
-        profilePhotoPrivacyGroupValue: event.currentValue,
-        aboutPrivacyGroupValue: state.aboutPrivacyGroupValue,
-        lastSeenPrivacyGroupValue: state.lastSeenPrivacyGroupValue,
-        statusPrivacyGroupValue: state.statusPrivacyGroupValue
-      ));
+          blockedUsersList: state.blockedUsersList,
+          currentUserData: state.currentUserData,
+          profilePhotoPrivacyGroupValue: event.currentValue,
+          aboutPrivacyGroupValue: state.aboutPrivacyGroupValue,
+          lastSeenPrivacyGroupValue: state.lastSeenPrivacyGroupValue,
+          statusPrivacyGroupValue: state.statusPrivacyGroupValue));
     } catch (e) {
       emit(CurrentUserErrorState(message: e.toString()));
     }
@@ -316,20 +318,19 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         aboutGroupValue: state.aboutPrivacyGroupValue,
       );
       emit(state.copyWith(
-        blockedUsersList: state.blockedUsersList,
-        currentUserData: state.currentUserData,
-        aboutPrivacyGroupValue: state.aboutPrivacyGroupValue,
-        lastSeenPrivacyGroupValue: state.lastSeenPrivacyGroupValue,
-        profilePhotoPrivacyGroupValue: state.profilePhotoPrivacyGroupValue,
-        statusPrivacyGroupValue: event.currentValue
-      ));
+          blockedUsersList: state.blockedUsersList,
+          currentUserData: state.currentUserData,
+          aboutPrivacyGroupValue: state.aboutPrivacyGroupValue,
+          lastSeenPrivacyGroupValue: state.lastSeenPrivacyGroupValue,
+          profilePhotoPrivacyGroupValue: state.profilePhotoPrivacyGroupValue,
+          statusPrivacyGroupValue: event.currentValue));
     } catch (e) {
       emit(CurrentUserErrorState(message: e.toString()));
     }
   }
 
-  Future<FutureOr<void>> profileImageShowCheckerEvent(
-      ProfileImageShowCheckerEvent event, Emitter<UserState> emit) async {
+  Future<FutureOr<void>> userPrivacyCheckerEvent(
+      UserPrivacyCheckerEvent event, Emitter<UserState> emit) async {
     try {
       final isShowableProfileImage =
           await PrivacyMethods.isShowableProfileImage(
@@ -340,7 +341,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
               receiverID: event.receiverID);
       final isShowableAbout =
           await PrivacyMethods.isShowableAbout(receiverID: event.receiverID);
-          final isShowableStatus =
+      final isShowableStatus =
           await PrivacyMethods.isShowableAbout(receiverID: event.receiverID);
       final updatedPrivacySettings =
           Map<String, Map<String, bool?>>.from(state.userPrivacySettings ?? {});
@@ -356,6 +357,23 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         ),
       );
       log("Updated privacy settings: $updatedPrivacySettings");
+    } catch (e) {
+      emit(CurrentUserErrorState(message: e.toString()));
+    }
+  }
+
+  FutureOr<void> checkIsCurrentUserDisabled(
+      CheckIsCurrentUserDisabled event, Emitter<UserState> emit) async {
+    try {
+      final user = await CommonDBFunctions.getOneUserDataFromDBFuture(
+          userId: event.userId);
+      if (user != null) {
+        if (user.isDisabled != null) {
+          if (user.isDisabled!) {
+            exit(0);
+          }
+        }
+      }
     } catch (e) {
       emit(CurrentUserErrorState(message: e.toString()));
     }

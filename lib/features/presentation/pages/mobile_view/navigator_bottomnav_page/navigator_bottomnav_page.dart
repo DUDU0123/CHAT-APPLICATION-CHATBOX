@@ -6,13 +6,16 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/config/notification_service/notification_service.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
+import 'package:official_chatbox_application/core/utils/app_methods.dart';
 import 'package:official_chatbox_application/core/utils/get_appbar_title.dart';
 import 'package:official_chatbox_application/core/utils/network_status_methods.dart';
+import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/data/repositories/auth_repo_impl/authentication_repo_impl.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/group/group_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/status/status_bloc.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/calls/call_home_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chat/chat_home_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/group/group_home_page.dart';
@@ -28,7 +31,8 @@ class NetworkStatusService {
   StreamSubscription? _subscription;
 
   NetworkStatusService() {
-    _subscription = _connectivity.onConnectivityChanged.listen(_controller.add as void Function(List<ConnectivityResult> event)?);
+    _subscription = _connectivity.onConnectivityChanged.listen(
+        _controller.add as void Function(List<ConnectivityResult> event)?);
   }
 
   Stream<ConnectivityResult> get status => _controller.stream;
@@ -52,9 +56,12 @@ class NavigatorBottomnavPage extends StatefulWidget {
 
 class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
   final pages = [
-     ChatHomePage(),
+    ChatHomePage(),
     const GroupHomePage(),
-    StatusHomePage(currentUserId: AuthenticationRepoImpl(firebaseAuth: firebaseAuth).getCurrentUserId(firebaseAuth.currentUser?.uid),),
+    StatusHomePage(
+      currentUserId: AuthenticationRepoImpl(firebaseAuth: firebaseAuth)
+          .getCurrentUserId(firebaseAuth.currentUser?.uid),
+    ),
     const CallHomePage(),
   ];
 
@@ -68,6 +75,16 @@ class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (context.watch<UserBloc>().state.currentUserData != null) {
+      if (context.watch<UserBloc>().state.currentUserData!.isDisabled != null) {
+        if (firebaseAuth.currentUser != null &&
+            context.watch<UserBloc>().state.currentUserData!.isDisabled!) {
+          AppMethods.pop();
+          
+        }
+      }
+    }
+
     NetworkStatusMethods.initialize();
     final bottomNavBloc = BlocProvider.of<BottomNavBloc>(context);
     return Scaffold(
@@ -104,9 +121,9 @@ class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
               onPageChanged: (index) {
                 if (index == 0) {
                   context.read<ChatBloc>().add(GetAllChatsEvent());
-                }else if(index==1){
+                } else if (index == 1) {
                   context.read<GroupBloc>().add(GetAllGroupsEvent());
-                }else if(index==2){
+                } else if (index == 2) {
                   context.read<StatusBloc>().add(StatusLoadEvent());
                 }
                 bottomNavBloc.add(

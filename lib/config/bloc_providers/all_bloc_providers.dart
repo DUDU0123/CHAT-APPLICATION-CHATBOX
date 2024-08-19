@@ -20,7 +20,7 @@ import 'package:official_chatbox_application/features/data/repositories/message_
 import 'package:official_chatbox_application/features/data/repositories/status_repository_impl/status_repository_impl.dart';
 import 'package:official_chatbox_application/features/data/repositories/user_repository_impl/user_repository_impl.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/authentication/authentication_bloc.dart';
-import 'package:official_chatbox_application/features/presentation/bloc/bloc/boxai_bloc.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/box_ai/boxai_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/call/call_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';

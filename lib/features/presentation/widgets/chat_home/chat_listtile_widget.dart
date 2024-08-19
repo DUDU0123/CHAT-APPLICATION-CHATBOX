@@ -49,7 +49,7 @@ class _ChatListTileWidgetState extends State<ChatListTileWidget> {
   @override
   void initState() {
     if (widget.chatModel != null) {
-      context.read<UserBloc>().add(ProfileImageShowCheckerEvent(
+      context.read<UserBloc>().add(UserPrivacyCheckerEvent(
           receiverID: widget.chatModel?.receiverID));
     }
     super.initState();
