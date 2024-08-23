@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/date_provider.dart';
+import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
 import 'package:official_chatbox_application/features/data/models/status_model/status_model.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:story_view/controller/story_controller.dart';
@@ -14,6 +15,7 @@ List<StoryItem?> buildStatusItems({
   required StoryController controller,
   required StatusModel statusModel,
   required BuildContext context,
+  required String currentUserId,
 }) {
   return statusModel.statusList != null
       ? statusModel.statusList!
@@ -22,11 +24,14 @@ List<StoryItem?> buildStatusItems({
             try {
               videoDuration = TimeProvider.parseDuration(status.statusDuration ?? '0:00:30');
             } catch (e) {
-              videoDuration = const Duration(seconds: 30); // Default to 30 seconds if parsing fails
+              videoDuration = const Duration(seconds: 30);
             }
             switch (status.statusType) {
               case StatusType.video:
                 return StoryItem.pageVideo(
+                  loadingWidget: commonAnimationWidget(context: context, isTextNeeded: false),
+                  errorWidget: emptyShowWidget(context: context, text: "Unable to load video"),
+                  shown: status.viewers!=null? status.viewers!.contains(currentUserId):false,
                   status.statusContent ?? "",
                   controller: controller,
                   caption: TextWidgetCommon(
@@ -42,6 +47,9 @@ List<StoryItem?> buildStatusItems({
                 );
               case StatusType.image:
                 return StoryItem.pageImage(
+                  loadingWidget: commonAnimationWidget(context: context, isTextNeeded: false),
+                  errorWidget: emptyShowWidget(context: context, text: "Unable to load photo"),
+                  shown: status.viewers!=null? status.viewers!.contains(currentUserId):false,
                   url: status.statusContent ?? '',
                   controller: controller,
                   imageFit: BoxFit.contain,
@@ -59,6 +67,7 @@ List<StoryItem?> buildStatusItems({
               case StatusType.text:
               log("${status.statusContent}");
                 return StoryItem.text(
+                  shown: status.viewers!=null? status.viewers!.contains(currentUserId):false,
                   title: status.statusContent ?? '',
                   backgroundColor: status.textStatusBgColor ?? kBlack,
                   duration: const Duration(seconds: 10),

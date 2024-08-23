@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:official_chatbox_application/config/notification_service/notification_service.dart';
+import 'package:official_chatbox_application/config/service_keys/firebase_keys.dart';
 import 'package:official_chatbox_application/config/service_keys/gemini_api_key.dart';
 import 'package:official_chatbox_application/core/service/locator.dart';
 import 'package:official_chatbox_application/features/presentation/root_widget_page.dart';
@@ -31,17 +32,6 @@ Future<void> main() async {
   Gemini.init(apiKey: GeminiFields.geminiApiKey);
   ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
   initializeServiceLocator();
-  if (kIsWeb) {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-          apiKey: "AIzaSyA1ICAy3Bl-2_GRxiVp9yMxxwnGxBekgdM",
-          authDomain: "new-chat-box-social-app.firebaseapp.com",
-          projectId: "new-chat-box-social-app",
-          storageBucket: "new-chat-box-social-app.appspot.com",
-          messagingSenderId: "641647769517",
-          appId: "1:641647769517:web:9295d158eb1662e7705324"),
-    );
-  }
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

@@ -1,13 +1,17 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
+import 'package:official_chatbox_application/features/data/models/blocked_user_model/blocked_user_model.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/group/group_bloc.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/dialog_widgets/normal_dialogbox_widget.dart';
 
@@ -105,6 +109,89 @@ StreamBuilder<ChatModel?> chatMuteIconWidget(
           return zeroMeasureWidget;
         }
       });
+}
+
+StreamBuilder<List<BlockedUserModel>> blockMenu({
+  required ChatModel? chatModel,
+}) {
+  return StreamBuilder<List<BlockedUserModel>>(
+    stream: CommonDBFunctions.getAllBlockedUsers(),
+    builder: (context, snapshot) {
+      final blockList = snapshot.data;
+      final isBlocker = blockList
+          ?.any((blockedUser) => blockedUser.userId == chatModel?.receiverID);
+      return TextWidgetCommon(
+        text: isBlocker != null
+            ? isBlocker
+                ? "Unblock"
+                : "Block"
+            : "Block",
+      );
+    },
+  );
+}
+
+Future<dynamic> blockUnblockUserMethod({
+  required BuildContext context,
+  required ChatModel? chatModel,
+}) {
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return StreamBuilder<List<BlockedUserModel>>(
+          stream: CommonDBFunctions.getAllBlockedUsers(),
+          builder: (context, snapshot) {
+            String? blockedUserId;
+            final blockList = snapshot.data;
+            final isBlocked = blockList?.any((blockedUser) {
+              blockedUserId = blockedUser.id;
+              return blockedUser.userId == chatModel?.receiverID;
+            });
+            return alertDialog(
+              context: context,
+              title: isBlocked != null
+                  ? isBlocked
+                      ? "Unblock"
+                      : "Block"
+                  : "Block",
+              content: TextWidgetCommon(
+                text:
+                    "Do you want to ${isBlocked != null ? isBlocked ? "Unblock" : "Block" : "Block"} this chat?",
+                fontSize: 16.sp,
+              ),
+              onPressed: () async {
+                if (isBlocked != null) {
+                  if (isBlocked) {
+                    if (blockedUserId != null) {
+                      log("Inside remove block $blockedUserId");
+                      context.read<UserBloc>().add(
+                            RemoveBlockedUserEvent(
+                              blockedUserId: blockedUserId!,
+                            ),
+                          );
+                    }
+                  } else {
+                    BlockedUserModel blockedUserModel = BlockedUserModel(
+                      userId: chatModel?.receiverID,
+                    );
+                    context.read<UserBloc>().add(
+                          BlockUserEvent(
+                              blockedUserModel: blockedUserModel,
+                              chatId: chatModel?.chatID),
+                        );
+                  }
+                }
+                Navigator.pop(context);
+              },
+              actionButtonName: isBlocked != null
+                  ? isBlocked
+                      ? "Unblock"
+                      : "Block"
+                  : "Block",
+            );
+          });
+    },
+  );
 }
 
 Future<dynamic> chatNotficationMuteUnMuteMethod({

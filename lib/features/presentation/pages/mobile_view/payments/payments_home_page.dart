@@ -25,12 +25,12 @@ class PaymentsHomePage extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const PaymentHistoryPage(),
-                ),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => const PaymentHistoryPage(),
+              //   ),
+              // );
             },
             icon: Icon(
               Icons.history,
@@ -63,13 +63,13 @@ class PaymentsHomePage extends StatelessWidget {
                   itemCount: state.contactList!.length,
                   itemBuilder: (context, index) => ListTile(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SendMoneyPage(
-                              contact: state.contactList![index],
-                            ),
-                          ));
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //       builder: (context) => SendMoneyPage(
+                      //         contact: state.contactList![index],
+                      //       ),
+                      //     ));
                     },
                     leading: buildProfileImage(
                       userProfileImage:
@@ -90,143 +90,3 @@ class PaymentsHomePage extends StatelessWidget {
     );
   }
 }
-// class SendMoneyPage extends StatefulWidget {
-//   const SendMoneyPage({
-//     super.key,
-//     required this.contact,
-//   });
-//   final ContactModel contact;
-
-//   @override
-//   State<SendMoneyPage> createState() => _SendMoneyPageState();
-// }
-
-// class _SendMoneyPageState extends State<SendMoneyPage> {
-//   late Razorpay razorPay;
-//   TextEditingController amountController = TextEditingController();
-//   @override
-//   void initState() {
-//     super.initState();
-//     razorPay = Razorpay();
-//     razorPay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlePaymentSuccessResponse);
-//     razorPay.on(Razorpay.EVENT_PAYMENT_ERROR, handlePaymentErrorResponse);
-//     razorPay.on(Razorpay.EVENT_EXTERNAL_WALLET, handleExternalWalletSelected);
-//   }
-
-//   @override
-//   void dispose() {
-//     super.dispose();
-//     razorPay.clear();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const TextWidgetCommon(text: "Enter amount"),
-//       ),
-// body: Padding(
-//   padding: EdgeInsets.only(left: 15.w, right: 15.w, top: 40.h),
-//   child: Column(
-//     children: [
-//       widget.contact.userProfilePhotoOnChatBox != null
-//           ? userProfileImageShowWidget(
-//               context: context,
-//               imageUrl: widget.contact.userProfilePhotoOnChatBox!)
-//           : nullImageReplaceWidget(containerRadius: 50, context: context),
-//       TextWidgetCommon(
-//         text:
-//             "Send money to ${widget.contact.userContactName ?? widget.contact.userContactNumber}",
-//         fontWeight: FontWeight.bold,
-//         fontSize: 20.sp,
-//       ),
-//       kHeight20,
-//       TextFieldCommon(
-//         hintText: "Enter amount",
-//         keyboardType: TextInputType.number,
-//         style: TextStyle(
-//           color: Theme.of(context).colorScheme.onPrimary,
-//           fontSize: 18.sp,
-//           fontWeight: FontWeight.w500,
-//         ),
-//         textAlign: TextAlign.center,
-//         controller: amountController,
-//         border: OutlineInputBorder(
-//           borderRadius: BorderRadius.circular(10.sp),
-//           borderSide: BorderSide(
-//             color: buttonSmallTextColor,
-//           ),
-//         ),
-//       )
-//     ],
-//   ),
-// ),
-//   floatingActionButton: FloatingActionButton.extended(
-//     onPressed: () {
-//       if (amountController.text.isNotEmpty) {
-//         int amount = int.parse(amountController.text);
-//         if (amount <= 20000) {
-//           openCheckOut(
-//             contactModel: widget.contact,
-//             amountToSend: amount,
-//             razorPay: razorPay,
-//             context: context,
-//           );
-//         } else {
-//           commonSnackBarWidget(
-//               context: context, contentText: "Amount exceeded");
-//         }
-//       } else {
-//         commonSnackBarWidget(
-//             context: context, contentText: "Please enter an amount");
-//       }
-//     },
-//     label: const TextWidgetCommon(
-//       text: "Done",
-//     ),
-//   ),
-// );
-//   }
-
-//   void handlePaymentSuccessResponse(PaymentSuccessResponse response) {
-//     commonSnackBarWidget(
-//         context: context,
-//         contentText: "Payment Successful: ${response.paymentId}");
-//   }
-
-//   void handlePaymentErrorResponse(PaymentFailureResponse response) {
-//     commonSnackBarWidget(
-//         context: context,
-//         contentText: "Payment Unsuccessful: ${response.message}");
-//   }
-
-//   void handleExternalWalletSelected(ExternalWalletResponse response) {
-//     commonSnackBarWidget(
-//         context: context,
-//         contentText: "Payment Wallet selected: ${response.walletName}");
-//   }
-// }
-
-// void openCheckOut({
-//   required ContactModel contactModel,
-//   required int amountToSend,
-//   required Razorpay razorPay,
-//   required BuildContext context,
-// }) {
-//   var options = {
-//     'key': RazorPayFields.razorpayKey,
-//     'amount': amountToSend * 100,
-//     'name': contactModel.userContactName,
-//     'description': 'Payment to ${contactModel.userContactName}',
-//     'prefill': {
-//       'contact': contactModel.userContactNumber,
-//       'email': 'test@razorpay.com',
-//     },
-//   };
-//   try {
-//     razorPay.open(options);
-//   } catch (e) {
-//     commonSnackBarWidget(context: context, contentText: "Error occured: $e");
-//   }
-// }
-

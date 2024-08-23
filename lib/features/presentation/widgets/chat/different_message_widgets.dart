@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,13 +7,13 @@ import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/chat_asset_send_methods.dart';
+import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/date_provider.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/message_model/message_model.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chat/camera_photo_pick/asset_show_page.dart';
-import 'package:official_chatbox_application/features/presentation/widgets/chat/message_container_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/dialog_widgets/normal_dialogbox_widget.dart';
 import 'package:provider/provider.dart';
@@ -84,7 +83,7 @@ Widget documentMessageWidget({
 }) {
   return GestureDetector(
     onTap: () async {
-      if (await checkAssetExists(message.message!)) {
+      if (await CommonDBFunctions.checkAssetExists(message.message!)) {
         openDocument(url: message.message ?? '');
       } else {
        if (mounted) {
@@ -139,7 +138,7 @@ Widget photoMessageShowWidget({
       children: [
         GestureDetector(
           onTap: () async {
-            if (await checkAssetExists(message.message!)) {
+            if (await CommonDBFunctions.checkAssetExists(message.message!)) {
               if (mounted) {
                 Navigator.push(
                 context,
@@ -224,7 +223,7 @@ Widget videoMessageShowWidget({
       children: [
         GestureDetector(
           onTap: () async {
-            if (await checkAssetExists(message.message!)) {
+            if (await CommonDBFunctions.checkAssetExists(message.message!)) {
               if (mounted) {
                 Navigator.push(
                 context,

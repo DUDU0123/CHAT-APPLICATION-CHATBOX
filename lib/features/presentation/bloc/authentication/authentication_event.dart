@@ -13,7 +13,9 @@ class CountrySelectedEvent extends AuthenticationEvent {
     required this.selectedCountry,
   });
   @override
-  List<Object> get props => [selectedCountry,];
+  List<Object> get props => [
+        selectedCountry,
+      ];
 }
 
 class OtpSentEvent extends AuthenticationEvent {
@@ -24,7 +26,7 @@ class OtpSentEvent extends AuthenticationEvent {
     required this.context,
   });
   @override
-  List<Object> get props => [phoneNumberWithCountryCode??'+91', context];
+  List<Object> get props => [phoneNumberWithCountryCode ?? '+91', context];
 }
 
 class CreateUserEvent extends AuthenticationEvent {
@@ -39,7 +41,12 @@ class CreateUserEvent extends AuthenticationEvent {
     required this.phoneNumber,
   });
   @override
-  List<Object> get props => [context, verificationId, otpCode, phoneNumber,];
+  List<Object> get props => [
+        context,
+        verificationId,
+        otpCode,
+        phoneNumber,
+      ];
 }
 
 class ResendOtpEvent extends AuthenticationEvent {
@@ -52,18 +59,25 @@ class ResendOtpEvent extends AuthenticationEvent {
     this.forceResendingToken,
   });
   @override
-  List<Object> get props => [phoneNumberWithCountryCode??"", context, forceResendingToken??0];
+  List<Object> get props =>
+      [phoneNumberWithCountryCode ?? "", context, forceResendingToken ?? 0];
 }
 
-class CheckUserLoggedInEvent extends AuthenticationEvent{}
+class CheckUserLoggedInEvent extends AuthenticationEvent {}
 
 class UserPermanentDeleteEvent extends AuthenticationEvent {
   final String phoneNumberWithCountryCode;
-  final  BuildContext context;
+  final BuildContext context;
+  final bool mounted;
   const UserPermanentDeleteEvent({
     required this.phoneNumberWithCountryCode,
     required this.context,
+    required this.mounted,
   });
   @override
-  List<Object> get props => [phoneNumberWithCountryCode];
+  List<Object> get props => [
+        phoneNumberWithCountryCode,
+        context,
+        mounted,
+      ];
 }

@@ -10,7 +10,6 @@ import 'package:official_chatbox_application/features/data/models/chat_model/cha
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/message_model/message_model.dart';
 
-
 class MessageData {
   final FirebaseFirestore firestore;
   final FirebaseAuth firebaseAuth;
@@ -151,6 +150,7 @@ class MessageData {
       throw Exception(e.toString());
     }
   }
+
   Future<String?> sendAssetMessage({
     String? chatID,
     String? groupID,
@@ -198,38 +198,6 @@ class MessageData {
     }
 
     String messageStatus = MessageStatus.none.name;
-
-    // Determine the message type and last message string
-    // switch (message.messageType) {
-    //   case MessageType.audio:
-    //     messageType = 'audio';
-    //     lastMessage = '🎧Audio';
-    //     break;
-    //   case MessageType.contact:
-    //     messageType = 'contact';
-    //     lastMessage = '📞Contact';
-    //     break;
-    //   case MessageType.document:
-    //     messageType = 'document';
-    //     lastMessage = '📄Doc';
-    //     break;
-    //   case MessageType.photo:
-    //     messageType = 'photo';
-    //     lastMessage = '📷Photo';
-    //     break;
-    //   case MessageType.video:
-    //     messageType = 'video';
-    //     lastMessage = '🎥Video';
-    //     break;
-    //   case MessageType.location:
-    //     messageType = 'location';
-    //     lastMessage = '📌Location';
-    //     break;
-    //   default:
-    //     lastMessage = message.message ?? '';
-    //     messageType = 'text';
-    // }
-
     // Listen to receiver's network status and chat state
     FirebaseFirestore.instance
         .collection(usersCollection)
@@ -239,15 +207,15 @@ class MessageData {
       if (receiverSnapshot.exists) {
         final receiverData = receiverSnapshot.data();
         bool userNetworkStatus = receiverData![userDbNetworkStatus] ?? false;
-
-        bool isChatOpen = await FirebaseFirestore.instance
+        bool isChatOpen = 
+        await FirebaseFirestore.instance
             .collection(usersCollection)
             .doc(chatModel?.receiverID)
             .collection(chatsCollection)
             .doc(chatModel?.chatID)
             .get()
             .then((doc) => doc[isUserChatOpen] ?? false);
-        log("Is chat open: $isChatOpen");
+        log("Is chat open::::: $isChatOpen");
 
         // Get the current message status
         String currentMessageStatus = await FirebaseFirestore.instance
@@ -262,18 +230,19 @@ class MessageData {
 
         // Only update the status if it's not already 'read'
         if (currentMessageStatus != MessageStatus.read.name) {
-          if (userNetworkStatus && isChatOpen) {
-            messageStatus = MessageStatus.read.name;
-          } else if (userNetworkStatus && !isChatOpen) {
-            messageStatus = MessageStatus.delivered.name;
-          } else if (!userNetworkStatus) {
-            messageStatus = MessageStatus.sent.name;
-          }
+        
+            if (userNetworkStatus && isChatOpen) {
+              messageStatus = MessageStatus.read.name;
+            } else if (userNetworkStatus && !isChatOpen) {
+              messageStatus = MessageStatus.delivered.name;
+            } else if (!userNetworkStatus) {
+              messageStatus = MessageStatus.sent.name;
+            }
         } else {
           messageStatus = MessageStatus.read.name;
         }
 
-        // getting the messages collection of sender chat
+        // // getting the messages collection of sender chat
         final senderMessagesSnapshot = await FirebaseFirestore.instance
             .collection(usersCollection)
             .doc(chatModel?.senderID)
@@ -290,7 +259,7 @@ class MessageData {
             .collection(messagesCollection)
             .get();
 
-        // sender message snapshot editing message status
+        // // sender message snapshot editing message status
         if (senderMessagesSnapshot.docs.isNotEmpty) {
           final batch = FirebaseFirestore.instance.batch();
 
@@ -354,7 +323,7 @@ class MessageData {
           // isIncoming: message.senderID == chatModel?.receiverID,
         });
 
-        // // Update receiver's chat document
+        // // // Update receiver's chat document
         await FirebaseFirestore.instance
             .collection(usersCollection)
             .doc(chatModel?.receiverID)
@@ -622,23 +591,26 @@ class MessageData {
     try {
       for (var messageID in messageIdList) {
         String currentUserId = firebaseAuth.currentUser!.uid;
-        isGroup
-            ? await firestore
-                .collection(usersCollection)
-                .doc(currentUserId)
-                .collection(groupsCollection)
-                .doc(groupModel?.groupID)
-                .collection(messagesCollection)
-                .doc(messageID)
-                .delete()
-            : await firestore
-                .collection(usersCollection)
-                .doc(currentUserId)
-                .collection(chatsCollection)
-                .doc(chatModel?.chatID)
-                .collection(messagesCollection)
-                .doc(messageID)
-                .delete();
+        if (isGroup) {
+          await firestore
+              .collection(usersCollection)
+              .doc(currentUserId)
+              .collection(groupsCollection)
+              .doc(groupModel?.groupID)
+              .collection(messagesCollection)
+              .doc(messageID)
+              .delete();
+        } else {
+          await firestore
+              .collection(usersCollection)
+              .doc(currentUserId)
+              .collection(chatsCollection)
+              .doc(chatModel?.chatID)
+              .collection(messagesCollection)
+              .doc(messageID)
+              .delete();
+          log("Complete chat: ");
+        }
       }
       return true;
     } on FirebaseException catch (e) {

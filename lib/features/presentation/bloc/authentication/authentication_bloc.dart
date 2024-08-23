@@ -12,6 +12,7 @@ import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/domain/repositories/authentication_repo/authentication_repo.dart';
 import 'package:official_chatbox_application/features/domain/repositories/user_repo/user_repository.dart';
+import 'package:official_chatbox_application/features/presentation/pages/mobile_view/wrapper/wrapper_page.dart';
 
 part 'authentication_event.dart';
 part 'authentication_state.dart';
@@ -44,16 +45,27 @@ class AuthenticationBloc
         if (event.phoneNumberWithCountryCode.toString().replaceAll(' ', '') ==
             currentUser.phoneNumber) {
           emit(AuthenticationLoadingState());
-          await userRepository.deleteUserInDataBase(
-            userId: currentUser.id!,
-            fullPathToFile: "$usersProfileImageFolder${currentUser.id}",
-            context: event.context,
-            phoneNumber: event.phoneNumberWithCountryCode,
-          );
+          if (event.mounted) {
+            await userRepository.deleteUserInDataBase(
+              userId: currentUser.id!,
+              fullPathToFile: "$usersProfileImageFolder${currentUser.id}",
+              context: event.context,
+              phoneNumber: event.phoneNumberWithCountryCode,
+            );
+          }
           final bool userAuthStatus =
               await authenticationRepo.getUserAthStatus();
-
-          emit(AuthenticationInitial(isUserSignedIn: userAuthStatus));
+          log("Auth status after deletion: $userAuthStatus");
+          if (event.mounted) {
+            Navigator.pushAndRemoveUntil(
+              event.context,
+              MaterialPageRoute(
+                builder: (context) => const WrapperPage(),
+              ),
+              (route) => false,
+            );
+          }
+          emit(state.copyWith(isUserSignedIn: userAuthStatus));
         } else {
           emit(AuthenticationErrorState(
               message: "Entered phone number is not correct"));
@@ -142,7 +154,9 @@ class AuthenticationBloc
       CheckUserLoggedInEvent event, Emitter<AuthenticationState> emit) async {
     try {
       final bool userAuthStatus = await authenticationRepo.getUserAthStatus();
-      emit(AuthenticationInitial(isUserSignedIn: userAuthStatus));
+      // emit(AuthenticationInitial(isUserSignedIn: userAuthStatus));
+      emit(AuthenticationState(isUserSignedIn: userAuthStatus));
+
     } catch (e) {
       emit(AuthenticationErrorState(message: e.toString()));
     }

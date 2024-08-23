@@ -9,6 +9,7 @@ import 'package:official_chatbox_application/features/data/models/group_model/gr
 import 'package:official_chatbox_application/features/data/models/message_model/message_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/message/message_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat/message_container_user_details.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/swipe_to_reply_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/message/audio_message_content_show_widget.dart';
 
 Widget audioMessageWidget({
@@ -39,13 +40,10 @@ Widget audioMessageWidget({
     }
   });
 
-  return Dismissible(
-    confirmDismiss: (direction) async {
-      await Future.delayed(const Duration(milliseconds: 2));
+  return SwipeToReplyWidget(
+    onSwipeReply: () {
       onSwipeMethod(message: message);
-      return false;
     },
-    key: UniqueKey(),
     child: Container(
       height: null,
       width: screenWidth(context: context) / 1.26,

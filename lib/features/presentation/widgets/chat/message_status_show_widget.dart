@@ -62,23 +62,6 @@ Widget messageStatusShowWidget({
                           )
             : zeroMeasureWidget,
         kWidth2,
-        // Icon(
-        //   Icons.push_pin_rounded,
-        //   color: iconGreyColor,
-        //   size: 12.sp,
-        // ),
-        // kWidth2,
-        // Icon(
-        //   Icons.star,
-        //   color: iconGreyColor,
-        //   size: 12.sp,
-        // ),
-        // kWidth2,
-        // Icon(
-        //   Icons.done_all,
-        //   color: iconGreyColor,
-        //   size: 12.sp,
-        // )
       ],
     ),
   );

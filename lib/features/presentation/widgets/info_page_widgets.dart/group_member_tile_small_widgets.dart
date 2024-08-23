@@ -1,8 +1,8 @@
 import 'dart:developer';
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
@@ -66,8 +66,7 @@ Widget commonContainerChip(
 Widget infoPageCommonGroupList({
   required UserModel? receiverData,
 }) {
-  return
-   ListView.separated(
+  return ListView.separated(
     physics: const NeverScrollableScrollPhysics(),
     shrinkWrap: true,
     itemBuilder: (context, index) {
@@ -83,10 +82,19 @@ Widget infoPageCommonGroupList({
                   message:
                       "Some Error Occured ${snapshot.error} ${snapshot.stackTrace}");
             }
-            return commonGroupDataShowWidgetInChatInfo(
-              context: context,
-              groupData: snapshot.data,
-            );
+            if (snapshot.data != null) {
+              if (snapshot.data!.groupMembers!
+                  .contains(firebaseAuth.currentUser?.uid)) {
+                return commonGroupDataShowWidgetInChatInfo(
+                  context: context,
+                  groupData: snapshot.data,
+                );
+              } else {
+                return zeroMeasureWidget;
+              }
+            } else {
+              return zeroMeasureWidget;
+            }
           });
     },
     separatorBuilder: (context, index) => kHeight5,

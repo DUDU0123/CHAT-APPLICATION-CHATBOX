@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,25 +22,6 @@ import 'package:official_chatbox_application/features/presentation/widgets/commo
 import 'package:official_chatbox_application/features/presentation/widgets/dialog_widgets/data_edit_dialog_box.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/info_page_widgets.dart/info_page_small_widgets.dart';
 
-commonUserProfileImageShowingBigCircularContainer({
-  required BuildContext context,
-  required String userProfileImage,
-}) {
-  userProfileImageShowWidget(
-    context: context,
-    imageUrl: userProfileImage,
-    radius: 80,
-    onTap: () {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                PhotoViewSection(imageToShow: userProfileImage),
-          ));
-    },
-  );
-}
-
 Widget infoPageUserDetailsPart({
   required BuildContext context,
   required UserModel? receiverData,
@@ -50,7 +30,7 @@ Widget infoPageUserDetailsPart({
   required String? receiverContactName,
   required TextEditingController groupNameEditController,
 }) {
-  final isShowableProfileImage = context
+    final isShowableProfileImage = context
           .watch<UserBloc>()
           .state
           .userPrivacySettings?[receiverData?.id]?[userDbProfilePhotoPrivacy] ??
@@ -62,13 +42,20 @@ Widget infoPageUserDetailsPart({
         Stack(
           children: [
             receiverData?.userProfileImage != null && !isGroup
-                ? isShowableProfileImage
-                    ? commonUserProfileImageShowingBigCircularContainer(
-                        context: context,
-                        userProfileImage: receiverData!.userProfileImage!,
-                      )
-                    : nullImageReplaceWidget(
-                        containerRadius: 150, context: context)
+                ? isShowableProfileImage? userProfileImageShowWidget(
+                  onTap: () {
+                    Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PhotoViewSection(
+                                        imageToShow:
+                                            receiverData.userProfileImage!),
+                                  ));
+                  },
+                    context: context,
+                    imageUrl: receiverData!.userProfileImage!,
+                    radius: 80,
+                  ):nullImageReplaceWidget(containerRadius: 150, context: context)
                 : groupData?.groupProfileImage != null
                     ? StreamBuilder<GroupModel?>(
                         stream: CommonDBFunctions.getOneGroupDataByStream(
@@ -79,10 +66,21 @@ Widget infoPageUserDetailsPart({
                             return nullImageReplaceWidget(
                                 containerRadius: 150, context: context);
                           }
-                          return commonUserProfileImageShowingBigCircularContainer(
+                          return userProfileImageShowWidget(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PhotoViewSection(
+                                        imageToShow:
+                                            snapshot.data!.groupProfileImage!),
+                                  ));
+                            },
                             context: context,
-                            userProfileImage:
+                            imageUrl:
+                                //  groupData!.groupProfileImage!,
                                 snapshot.data!.groupProfileImage ?? '',
+                            radius: 80,
                           );
                         })
                     : nullImageReplaceWidget(
@@ -98,14 +96,11 @@ Widget infoPageUserDetailsPart({
                         )
                       : null,
                   builder: (context, snapshot) {
-                    bool isAdmin = snapshot.data != null
-                        ? snapshot.data!.groupAdmins!
-                            .contains(firebaseAuth.currentUser?.uid)
-                        : false;
-                    bool isEditable = snapshot.data != null
-                        ? snapshot.data!.membersPermissions!
-                            .contains(MembersGroupPermission.editGroupSettings)
-                        : false;
+                 
+                    bool isAdmin = snapshot.data!=null?snapshot.data!.groupAdmins!
+                        .contains(firebaseAuth.currentUser?.uid):false;
+                    bool isEditable = snapshot.data!=null?snapshot.data!.membersPermissions!
+                        .contains(MembersGroupPermission.editGroupSettings):false;
                     if (isEditable || isAdmin) {
                       return CameraIconButton(
                         onPressed: () async {
@@ -137,14 +132,10 @@ Widget infoPageUserDetailsPart({
                   )
                 : null,
             builder: (context, snapshot) {
-              bool isAdmin = snapshot.data != null
-                  ? snapshot.data!.groupAdmins!
-                      .contains(firebaseAuth.currentUser?.uid)
-                  : false;
-              bool isEditable = snapshot.data != null
-                  ? snapshot.data!.membersPermissions!
-                      .contains(MembersGroupPermission.editGroupSettings)
-                  : false;
+              bool isAdmin = snapshot.data!=null?snapshot.data!.groupAdmins!
+                  .contains(firebaseAuth.currentUser?.uid):false;
+              bool isEditable = snapshot.data!=null?snapshot.data!.membersPermissions!
+                  .contains(MembersGroupPermission.editGroupSettings):false;
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,

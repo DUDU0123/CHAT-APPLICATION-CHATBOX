@@ -33,6 +33,7 @@ migrate_working_dir/
 gemini_api_key.dart
 razorpay_key.dart
 zego_fields.dart
+firebase_keys.dart
 
 # Symbolication related
 app.*.symbols

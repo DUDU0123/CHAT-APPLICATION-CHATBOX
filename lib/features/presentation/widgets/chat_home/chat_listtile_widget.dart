@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
+import 'package:official_chatbox_application/features/data/data_sources/message_data/message_data.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/message/message_bloc.dart';
@@ -62,7 +63,7 @@ class _ChatListTileWidgetState extends State<ChatListTileWidget> {
         final userID = widget.chatModel?.receiverID ?? widget.receiverID;
         final privacySettings = state.userPrivacySettings?[userID] ?? {};
         final isShowableProfileImage =
-            privacySettings[userDbProfilePhotoPrivacy] ?? false;
+            (privacySettings[userDbProfilePhotoPrivacy] ?? false);
         return GestureDetector(
           onTap: () {
             context.read<MessageBloc>().add(GetAllMessageEvent(

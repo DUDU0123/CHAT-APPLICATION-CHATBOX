@@ -125,6 +125,8 @@ class MessageRepoImpl extends MessageRepo {
       messageIdList: messageIdList,
       isGroup: isGroup,
       userID: userID,
+      chatModel: chatModel,
+      groupModel: groupModel,
     );
   }
 }

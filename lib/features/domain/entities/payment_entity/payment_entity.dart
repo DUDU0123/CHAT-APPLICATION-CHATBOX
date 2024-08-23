@@ -3,17 +3,13 @@ import 'package:equatable/equatable.dart';
 class PaymentEntity extends Equatable {
   final String? id;
   final String? transactionID;
-  final String? receiverName;
-  final String? recieverPhoneNumber;
   final String? amountSended;
-  final String? receiverProfileImage;
+  final String? receiverID;
   const PaymentEntity({
     this.id,
     this.transactionID,
-    this.receiverName,
-    this.recieverPhoneNumber,
+    this.receiverID,
     this.amountSended,
-    this.receiverProfileImage,
   });
 
   @override
@@ -21,10 +17,8 @@ class PaymentEntity extends Equatable {
     return [
       id,
       transactionID,
-      receiverName,
-      recieverPhoneNumber,
       amountSended,
-      receiverProfileImage,
+      receiverID,
     ];
   }
 }

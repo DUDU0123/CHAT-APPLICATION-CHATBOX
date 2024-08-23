@@ -2,7 +2,8 @@ part of 'authentication_bloc.dart';
 
 class AuthenticationState extends Equatable {
   final Country? country;
-   Country selectedCountry = Country(
+  final bool isUserSignedIn;
+  Country selectedCountry = Country(
     phoneCode: "+91",
     countryCode: "IN",
     e164Sc: 0,
@@ -14,9 +15,24 @@ class AuthenticationState extends Equatable {
     displayNameNoCountryCode: "IN",
     e164Key: "",
   );
-   AuthenticationState({this.country});
+  AuthenticationState({
+    this.country,
+    this.isUserSignedIn = false,
+  });
+  AuthenticationState copyWith({
+    Country? country,
+    bool? isUserSignedIn,
+  }) {
+    return AuthenticationState(
+        country: country ?? this.country,
+        isUserSignedIn: isUserSignedIn ?? this.isUserSignedIn);
+  }
+
   @override
-  List<Object> get props => [country??selectedCountry,];
+  List<Object> get props => [
+        country ?? selectedCountry,
+        isUserSignedIn,
+      ];
 }
 
 class AuthenticationInitial extends AuthenticationState {
@@ -25,16 +41,20 @@ class AuthenticationInitial extends AuthenticationState {
     required this.isUserSignedIn,
   });
   @override
-  List<Object> get props => [isUserSignedIn,];
+  List<Object> get props => [
+        isUserSignedIn,
+      ];
 }
 
 class AuthenticationLoadingState extends AuthenticationState {}
 
-class OtpSentState extends AuthenticationState{}
-class OtpReSentState extends AuthenticationState{}
+class OtpSentState extends AuthenticationState {}
+
+class OtpReSentState extends AuthenticationState {}
+
 class AuthenticationSuccessState extends AuthenticationState {
   final UserModel user;
-   AuthenticationSuccessState({
+  AuthenticationSuccessState({
     required this.user,
   });
   @override
@@ -43,7 +63,7 @@ class AuthenticationSuccessState extends AuthenticationState {
 
 class AuthenticationErrorState extends AuthenticationState {
   final String message;
-   AuthenticationErrorState({
+  AuthenticationErrorState({
     required this.message,
   });
   @override

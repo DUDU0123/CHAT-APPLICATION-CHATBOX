@@ -5,9 +5,7 @@ class PaymentModel extends PaymentEntity {
   const PaymentModel({
     super.id,
     super.transactionID,
-    super.receiverName,
-    super.receiverProfileImage,
-    super.recieverPhoneNumber,
+    super.receiverID,
     super.amountSended,
   });
 
@@ -17,10 +15,8 @@ class PaymentModel extends PaymentEntity {
     return PaymentModel(
       id: map[paymentDBId] as String?,
       transactionID: map[paymentTransactionId] as String?,
-      receiverName: map[paymentReceiverName] as String?,
-      recieverPhoneNumber: map[paymentReceiverPhoneNumber] as String?,
       amountSended: map[paymentAmountSended] as String?,
-      receiverProfileImage: map[paymentReceiverProfileImage] as String?,
+      receiverID: map[paymentReceiverId] as String?,
     );
   }
 
@@ -28,28 +24,22 @@ class PaymentModel extends PaymentEntity {
     return {
       paymentDBId: id,
       paymentTransactionId: transactionID,
-      paymentReceiverName: receiverName,
-      paymentReceiverPhoneNumber: recieverPhoneNumber,
       paymentAmountSended: amountSended,
-      paymentReceiverProfileImage: receiverProfileImage,
+      paymentReceiverId: receiverID,
     };
   }
 
   PaymentModel copyWith({
     String? id,
     String? transactionID,
-    String? receiverName,
-    String? recieverPhoneNumber,
+    String? receiverID,
     String? amountSended,
-    String? receiverProfileImage,
   }) {
     return PaymentModel(
       id: id ?? this.id,
       transactionID: transactionID ?? this.transactionID,
-      receiverName: receiverName ?? this.receiverName,
-      recieverPhoneNumber: recieverPhoneNumber ?? this.recieverPhoneNumber,
+      receiverID: receiverID ?? this.receiverID,
       amountSended: amountSended ?? this.amountSended,
-      receiverProfileImage: receiverProfileImage ?? this.receiverProfileImage,
     );
   }
 }

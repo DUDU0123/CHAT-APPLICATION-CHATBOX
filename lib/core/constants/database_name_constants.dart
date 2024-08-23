@@ -137,9 +137,7 @@ const dbReceiverImage = 'call_receiver_image';
 // payment db field name
 const paymentDBId = 'id';
 const paymentTransactionId = 'transaction_id';
-const paymentReceiverName = 'payment_receiver_name';
-const paymentReceiverPhoneNumber = 'payment_receiver_phone_number';
-const paymentReceiverProfileImage = 'payment_receiver_profile_image';
+const paymentReceiverId = 'payment_receiver_id';
 const paymentAmountSended = 'payment_amount_sended';
 
 // database storage folder name or file name

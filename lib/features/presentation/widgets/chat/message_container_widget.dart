@@ -14,36 +14,10 @@ import 'package:official_chatbox_application/features/presentation/widgets/chat/
 import 'package:official_chatbox_application/features/presentation/widgets/chat/different_message_widgets.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat/message_container_user_details.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat/message_status_show_widget.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/swipe_to_reply_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/message/reply_message_small_widgets.dart';
 import 'package:video_player/video_player.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-
-Future<bool> checkAssetExists(String url) async {
-  try {
-    // Extract the path from the URL
-    Uri uri = Uri.parse(url);
-    String path = uri.path;
-    // Remove the initial "/v0/b/<bucket-name>/o/" part
-    path = path.replaceFirst(RegExp(r'^/v0/b/[^/]+/o/'), '');
-    // Decode the URL-encoded path
-    path = Uri.decodeFull(path);
-
-    // Get a reference to the file
-    final ref = FirebaseStorage.instance.ref(path);
-
-    // Try to fetch the metadata
-    await ref.getMetadata();
-
-    // If we reach here, the file exists
-    return true;
-  } catch (e) {
-    // If we get here, the file doesn't exist or there was an error
-    print('Error checking asset: $e');
-    return false;
-  }
-}
-
 class MessageContainerWidget extends StatefulWidget {
   const MessageContainerWidget({
     super.key,
@@ -77,7 +51,6 @@ class _MessageContainerWidgetState extends State<MessageContainerWidget> {
     if (widget.message.message == null) {
       return zeroMeasureWidget;
     }
-  
 
     return Align(
       alignment: checkIsIncomingMessage(
@@ -98,14 +71,10 @@ class _MessageContainerWidgetState extends State<MessageContainerWidget> {
                   groupModel: widget.groupModel,
                   isGroup: widget.isGroup,
                 )
-              : Dismissible(
-                  confirmDismiss: (direction) async {
-                    
-                    await Future.delayed(const Duration(milliseconds: 2));
+              : SwipeToReplyWidget(
+                  onSwipeReply: () {
                     widget.onSwipeMethod(message: widget.message);
-                    return false;
                   },
-                  key: UniqueKey(),
                   child: Column(
                     children: [
                       Container(
@@ -179,7 +148,7 @@ class _MessageContainerWidgetState extends State<MessageContainerWidget> {
                                 : zeroMeasureWidget,
                             widget.isGroup
                                 ? messageContainerUserDetails(
-                                  context: context,
+                                    context: context,
                                     message: widget.message,
                                   )
                                 : zeroMeasureWidget,
@@ -190,7 +159,7 @@ class _MessageContainerWidgetState extends State<MessageContainerWidget> {
                                 : widget.message.messageType ==
                                         MessageType.photo
                                     ? photoMessageShowWidget(
-                                      mounted: mounted,
+                                        mounted: mounted,
                                         isGroup: widget.isGroup,
                                         groupModel: widget.groupModel,
                                         receiverID: widget.receiverID,
@@ -204,7 +173,7 @@ class _MessageContainerWidgetState extends State<MessageContainerWidget> {
                                         ?
                                         //  zeroMeasureWidget
                                         videoMessageShowWidget(
-                                          mounted: mounted,
+                                            mounted: mounted,
                                             isGroup: widget.isGroup,
                                             groupModel: widget.groupModel,
                                             receiverID: widget.receiverID,
@@ -223,8 +192,8 @@ class _MessageContainerWidgetState extends State<MessageContainerWidget> {
                                             : widget.message.messageType ==
                                                     MessageType.document
                                                 ? documentMessageWidget(
-                                                  mounted: mounted,
-                                                   context: context,
+                                                    mounted: mounted,
+                                                    context: context,
                                                     message: widget.message,
                                                   )
                                                 : widget.message.messageType ==

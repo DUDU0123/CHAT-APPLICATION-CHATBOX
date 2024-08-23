@@ -218,11 +218,11 @@ class UserData {
         return;
       } else {
         log('Firebase exception: $e');
-        throw Exception("Error while deleting user data: $e");
+        return;
       }
     } catch (e) {
       log('Error while deleting user file: $e');
-      throw Exception("Error while deleting user data: $e");
+      return;
     }
   }
 

@@ -6,6 +6,7 @@ import 'package:official_chatbox_application/core/constants/database_name_consta
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
+import 'package:official_chatbox_application/features/data/models/report_model/report_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 
 class ChatData {
@@ -255,14 +256,23 @@ class ChatData {
 
   // report account
   Future<bool> reportAccount({
-    required UserModel userModel,
+    required ReportModel reportModel,
   }) async {
     try {
       final reportedDoc =
           await firestore.collection(reportedUsersCollection).add(
-                userModel.toJson(),
+                reportModel.toJson(),
               );
       final reportedDocId = reportedDoc.id;
+      final updatedReportModel = reportModel.copyWith(
+        docId: reportedDocId,
+      );
+      await firestore
+          .collection(reportedUsersCollection)
+          .doc(reportedDocId)
+          .update(
+            updatedReportModel.toJson(),
+          );
       return true;
     } on FirebaseException catch (e) {
       log("From report account firebase: ${e.message}");

@@ -3,20 +3,26 @@ part of 'chat_bloc.dart';
 class ChatState extends Equatable {
   final Stream<List<ChatModel>>? chatList;
   final File? pickedFile;
+  final bool? isBlockedUser;
   final String? message;
   const ChatState({
     this.chatList,
     this.pickedFile,
+    this.isBlockedUser,
     this.message,
   });
 
   ChatState copyWith({
     Stream<List<ChatModel>>? chatList,
-    File? pickedFile,String? message,
+    File? pickedFile,
+    String? message,
+    bool? isBlockedUser,
   }) {
     return ChatState(
       chatList: chatList ?? this.chatList,
-      pickedFile: pickedFile ?? this.pickedFile,message: message ?? this.message
+      pickedFile: pickedFile ?? this.pickedFile,
+      message: message ?? this.message,
+      isBlockedUser: isBlockedUser ?? this.isBlockedUser,
     );
   }
 
@@ -24,6 +30,8 @@ class ChatState extends Equatable {
   List<Object> get props => [
         chatList ?? [],
         pickedFile ?? File(''),
+        isBlockedUser ?? false,
+        message ?? ''
       ];
 }
 

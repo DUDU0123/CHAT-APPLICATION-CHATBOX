@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
@@ -45,6 +44,7 @@ class _StatusShowPageState extends State<StatusShowPage> {
           if (widget.statusModel.statusList != null &&
               widget.statusModel.statusList!.isNotEmpty)
             StoryView(
+
               onComplete: () {
                 Navigator.pop(context);
               },
@@ -69,6 +69,7 @@ class _StatusShowPageState extends State<StatusShowPage> {
                     .toString());
               },
               storyItems: buildStatusItems(
+                currentUserId: widget.currentUserId!,
                 controller: controller,
                 statusModel: widget.statusModel,
                 context: context,

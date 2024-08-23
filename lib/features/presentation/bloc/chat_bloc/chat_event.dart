@@ -33,32 +33,6 @@ class DeletAChatEvent extends ChatEvent {
         chatModel ?? const ChatModel(),
       ];
 }
-
-class MessageSentEvent extends ChatEvent {
-  final String chatId;
-  final MessageModel message;
-  const MessageSentEvent({
-    required this.chatId,
-    required this.message,
-  });
-  @override
-  List<Object> get props => [
-        chatId,
-        message,
-      ];
-}
-
-class GetOneMessageEvent extends ChatEvent {}
-
-class GetAllMessageEvent extends ChatEvent {
-  final String chatId;
-  const GetAllMessageEvent({
-    required this.chatId,
-  });
-  @override
-  List<Object> get props => [chatId];
-}
-
 class ClearChatEvent extends ChatEvent {
   final String chatId;
   const ClearChatEvent({
@@ -78,21 +52,39 @@ class PickImageEvent extends ChatEvent {
 }
 
 class ClearAllChatsEvent extends ChatEvent {}
+
 class ChatUpdateEvent extends ChatEvent {
   final ChatModel chatModel;
   const ChatUpdateEvent({
-   required this.chatModel,
+    required this.chatModel,
   });
   @override
   List<Object> get props => [chatModel];
 }
+
 class ReportAccountEvent extends ChatEvent {
-  final UserModel userModel;
+  final ReportModel reportModel;
   final BuildContext context;
   const ReportAccountEvent({
-    required this.userModel,
+    required this.reportModel,
     required this.context,
   });
   @override
-  List<Object> get props => [userModel,];
+  List<Object> get props => [
+        reportModel,
+      ];
+}
+
+class CheckIsBlockedUserEvent extends ChatEvent {
+  final String? currentUserId;
+  final String? receiverID;
+  const CheckIsBlockedUserEvent({
+    required this.currentUserId,
+    required this.receiverID,
+  });
+  @override
+  List<Object> get props => [
+        currentUserId??'',
+        receiverID??"",
+      ];
 }

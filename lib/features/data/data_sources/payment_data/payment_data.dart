@@ -9,6 +9,32 @@ class PaymentData {
   PaymentData({
     required this.firebaseFirestore,
   });
+  Stream<List<PaymentModel>>? getAllPaymentHistory() {
+    try {
+      final currentUserId = firebaseAuth.currentUser?.uid;
+      return firebaseFirestore
+          .collection(usersCollection)
+          .doc(currentUserId)
+          .collection(paymentHistoryCollection)
+          .snapshots()
+          .map((paymentHistorySnapshot) {
+        return paymentHistorySnapshot.docs
+            .map(
+              (paymentHistoryDoc) => PaymentModel.fromJson(
+                map: paymentHistoryDoc.data(),
+              ),
+            )
+            .toList();
+      });
+    } on FirebaseException catch (e) {
+      log("Payment history get firebase error: ${e.message}");
+      return null;
+    } catch (e) {
+      log("Payment history get error: ${e.toString()}");
+      return null;
+    }
+  }
+
   Future<bool> addToPaymentHistory({
     required PaymentModel paymentModel,
   }) async {
@@ -44,6 +70,3 @@ class PaymentData {
     }
   }
 }
-
-
-

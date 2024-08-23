@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/contact_methods.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
-import 'package:official_chatbox_application/features/data/models/blocked_user_model/blocked_user_model.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
+import 'package:official_chatbox_application/features/data/models/report_model/report_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/group/group_bloc.dart';
-import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chat/chat_info_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/media_show_page.dart/media_show_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/wallpaper/wallpaper_select_page.dart';
@@ -52,15 +52,16 @@ PopupMenuButton<dynamic> commonAppBarMenuItemHoldWidget({
               );
             },
           ),
-          PopupMenuItem(
-            child: chatMuteMenu(chatModel: chatModel),
-            onTap: () {
-              chatNotficationMuteUnMuteMethod(
-                context: context,
-                chatModel: chatModel,
-              );
-            },
-          ),
+          if (chatModel?.receiverID != firebaseAuth.currentUser?.uid)
+            PopupMenuItem(
+              child: chatMuteMenu(chatModel: chatModel),
+              onTap: () {
+                chatNotficationMuteUnMuteMethod(
+                  context: context,
+                  chatModel: chatModel,
+                );
+              },
+            ),
           commonPopUpMenuItem(
             context: context,
             menuText: "Wallpaper",
@@ -98,38 +99,50 @@ PopupMenuButton<dynamic> commonAppBarMenuItemHoldWidget({
               );
             },
           ),
-          PopupMenuItem(
-            child: const Text("Report"),
-            onTap: () {},
-          ),
-          PopupMenuItem(
-            child: const Text("Block"),
-            onTap: () async {
-              final receiverModel =
-                  await CommonDBFunctions.getOneUserDataFromDBFuture(
-                      userId: chatModel?.receiverID);
-              if (mounted) {
-                normalDialogBoxWidget(
-                  context: context,
-                  title: "Block ${receiverModel?.contactName ?? receiverModel?.userName ?? receiverModel?.phoneNumber}",
-                  subtitle:
-                      "Do you want to block ${receiverModel?.contactName ?? receiverModel?.userName ?? receiverModel?.phoneNumber}?",
-                  onPressed: () {
-                    BlockedUserModel blockedUserModel = BlockedUserModel(
-                      userId: chatModel?.receiverID,
-                    );
-                    context.read<UserBloc>().add(
-                          BlockUserEvent(
-                              blockedUserModel: blockedUserModel,
-                              chatId: chatModel?.chatID),
+          if (chatModel?.receiverID != firebaseAuth.currentUser?.uid)
+            PopupMenuItem(
+              child: const Text("Report"),
+              onTap: () async {
+                final receiverModel =
+                    await CommonDBFunctions.getOneUserDataFromDBFuture(
+                        userId: chatModel?.receiverID);
+                if (mounted) {
+                  normalDialogBoxWidget(
+                    context: context,
+                    title:
+                        "Report ${receiverModel?.contactName ?? receiverModel?.userName ?? receiverModel?.phoneNumber}",
+                    subtitle:
+                        "Do you want to report ${receiverModel?.contactName ?? receiverModel?.userName ?? receiverModel?.phoneNumber}?",
+                    onPressed: () {
+                      if (receiverModel != null) {
+                        final reportModel = ReportModel(
+                          reportedUserId: receiverModel.id,
                         );
-                    Navigator.pop(context);
-                  },
-                  actionButtonName: "Block",
+                        context.read<ChatBloc>().add(
+                              ReportAccountEvent(
+                                reportModel: reportModel,
+                                context: context,
+                              ),
+                            );
+                      }
+
+                      Navigator.pop(context);
+                    },
+                    actionButtonName: "Report",
+                  );
+                }
+              },
+            ),
+          if (chatModel?.receiverID != firebaseAuth.currentUser?.uid)
+            PopupMenuItem(
+              child: blockMenu(chatModel: chatModel),
+              onTap: () async {
+                blockUnblockUserMethod(
+                  context: context,
+                  chatModel: chatModel,
                 );
-              }
-            },
-          ),
+              },
+            ),
         ];
       }
       if (pageType == PageTypeEnum.groupMessageInsidePage) {
@@ -212,12 +225,7 @@ PopupMenuButton<dynamic> commonAppBarMenuItemHoldWidget({
           ),
         ];
       }
-      return [
-        const PopupMenuItem(child: Text("Broadcast list info")),
-        const PopupMenuItem(child: Text("Broadcast list media")),
-        const PopupMenuItem(child: Text("Wallpaper")),
-        const PopupMenuItem(child: Text("Clear chat")),
-      ];
+      return [];
     },
   );
 }

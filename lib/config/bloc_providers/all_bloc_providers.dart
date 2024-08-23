@@ -8,6 +8,7 @@ import 'package:official_chatbox_application/features/data/data_sources/chat_dat
 import 'package:official_chatbox_application/features/data/data_sources/contact_data/contact_data.dart';
 import 'package:official_chatbox_application/features/data/data_sources/group_data/group_data.dart';
 import 'package:official_chatbox_application/features/data/data_sources/message_data/message_data.dart';
+import 'package:official_chatbox_application/features/data/data_sources/payment_data/payment_data.dart';
 import 'package:official_chatbox_application/features/data/data_sources/status_data/status_data.dart';
 import 'package:official_chatbox_application/features/data/data_sources/user_data/user_data.dart';
 import 'package:official_chatbox_application/features/data/repositories/ai_repo_impl/ai_repository_impl.dart';
@@ -17,6 +18,7 @@ import 'package:official_chatbox_application/features/data/repositories/chat_rep
 import 'package:official_chatbox_application/features/data/repositories/contact_repository_impl/contact_repo_impl.dart';
 import 'package:official_chatbox_application/features/data/repositories/group_repo_impl/group_repo_impl.dart';
 import 'package:official_chatbox_application/features/data/repositories/message_repo_impl/message_repo_impl.dart';
+import 'package:official_chatbox_application/features/data/repositories/payment_repo_impl/payment_repository_impl.dart';
 import 'package:official_chatbox_application/features/data/repositories/status_repository_impl/status_repository_impl.dart';
 import 'package:official_chatbox_application/features/data/repositories/user_repository_impl/user_repository_impl.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/authentication/authentication_bloc.dart';
@@ -28,6 +30,7 @@ import 'package:official_chatbox_application/features/presentation/bloc/contact/
 import 'package:official_chatbox_application/features/presentation/bloc/group/group_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/media/media_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/message/message_bloc.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/payment/payment_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/status/status_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:provider/single_child_widget.dart';
@@ -212,5 +215,14 @@ class AppBlocProvider {
         ),
       )..add(GetAllAIChatMessages()),
     ),
+    // BlocProvider(
+    //   create: (context) => PaymentBloc(
+    //     paymentRepository: PaymentRepositoryImpl(
+    //       paymentData: PaymentData(
+    //         firebaseFirestore: fireStore,
+    //       ),
+    //     ),
+    //   ),
+    // ),
   ];
 }

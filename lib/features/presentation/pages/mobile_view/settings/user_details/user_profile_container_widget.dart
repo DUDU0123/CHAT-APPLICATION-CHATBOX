@@ -102,6 +102,10 @@ Widget nullImageReplaceWidget(
                 contact,
                 width: 100.w,
                 height: 100.h,
+                colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.onPrimary,
+                  BlendMode.srcIn,
+                ),
               ),
             ),
             containerRadius >= 160

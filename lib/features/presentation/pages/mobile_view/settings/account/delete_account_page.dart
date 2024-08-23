@@ -7,15 +7,20 @@ import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
 import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/authentication/authentication_bloc.dart';
-import 'package:official_chatbox_application/features/presentation/pages/mobile_view/splash_screen/splash_screen.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_appbar_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_button_container.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 
 import '../../../../widgets/common_widgets/phone_number_recieve_field.dart';
 
-class DeleteAccountPage extends StatelessWidget {
+class DeleteAccountPage extends StatefulWidget {
   DeleteAccountPage({super.key});
+
+  @override
+  State<DeleteAccountPage> createState() => _DeleteAccountPageState();
+}
+
+class _DeleteAccountPageState extends State<DeleteAccountPage> {
   TextEditingController phoneNumberController = TextEditingController();
 
   @override
@@ -30,15 +35,6 @@ class DeleteAccountPage extends StatelessWidget {
       ),
       body: BlocConsumer<AuthenticationBloc, AuthenticationState>(
           listener: (context, state) {
-        if (state is AuthenticationInitial) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const SplashScreen(),
-            ),
-            (route) => false,
-          );
-        }
         if (state is AuthenticationErrorState) {
           commonSnackBarWidget(context: context, contentText: state.message);
         }
@@ -81,6 +77,7 @@ class DeleteAccountPage extends StatelessWidget {
                             : "+91 $mobileNumber";
                     authBloc.add(
                       UserPermanentDeleteEvent(
+                          mounted: mounted,
                           context: context,
                           phoneNumberWithCountryCode: phoneNumber),
                     );

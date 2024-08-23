@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:official_chatbox_application/config/service_keys/firebase_keys.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -50,19 +51,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyA1ICAy3Bl-2_GRxiVp9yMxxwnGxBekgdM',
-    appId: '1:641647769517:web:9295d158eb1662e7705324',
-    messagingSenderId: '641647769517',
-    projectId: 'new-chat-box-social-app',
-    authDomain: 'new-chat-box-social-app.firebaseapp.com',
-    storageBucket: 'new-chat-box-social-app.appspot.com',
+    apiKey: firebaseApiKey,
+    appId: firebaseAppId,
+    messagingSenderId: firebaseMessagingSenderId,
+    projectId: firebaseProjectId,
+    authDomain: firebaseAuthDomain,
+    storageBucket: firebaseStorageBucket,
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyD8CWmruGdefuxcppoC1kjQ2VPX1iQ_4Vc',
-    appId: '1:641647769517:android:65fcb8c943eb88ff705324',
-    messagingSenderId: '641647769517',
-    projectId: 'new-chat-box-social-app',
-    storageBucket: 'new-chat-box-social-app.appspot.com',
+    apiKey: androidApiKey,
+    appId: androidAppId,
+    messagingSenderId: androidMessagingSenderId,
+    projectId: androidProjectId,
+    storageBucket: androidStorageBucket,
   );
 }

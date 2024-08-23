@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
+import 'package:official_chatbox_application/features/data/models/blocked_user_model/blocked_user_model.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/contact_model/contact_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
@@ -32,6 +33,45 @@ class CommonDBFunctions {
     } catch (e, stackTrace) {
       log('Error while saving file to storage: $e', stackTrace: stackTrace);
       throw Exception("Error while saving file to storage: $e");
+    }
+  }
+
+  static Future<bool> checkIfIsBlocked({
+    required String? receiverId,
+    required String? currentUserId,
+  }) async {
+    try {
+      log("CurrentUser id:: $currentUserId");
+      final blockedUserDoc = await fireStore
+          .collection(usersCollection)
+          .doc(receiverId)
+          .collection(blockedUsersCollection)
+          .where('blocked_user_id', isEqualTo: currentUserId)
+          .get();
+
+      return blockedUserDoc.docs.isNotEmpty;
+    } catch (e) {
+      log('Error checking blocked status: $e');
+      return false;
+    }
+  }
+
+  static Stream<List<BlockedUserModel>>? getAllBlockedUsers({String? userId}) {
+    try {
+      return fireStore
+          .collection(usersCollection)
+          .doc(userId??firebaseAuth.currentUser?.uid)
+          .collection(blockedUsersCollection)
+          .snapshots()
+          .map((blockSnap) {
+        return blockSnap.docs
+            .map((blocDoc) => BlockedUserModel.fromJson(map: blocDoc.data()))
+            .toList();
+      });
+    } on FirebaseAuthException catch (e) {
+      return null;
+    } catch (e, stackTrace) {
+      return null;
     }
   }
 
@@ -190,6 +230,31 @@ class CommonDBFunctions {
     }
   }
 
+  static Future<bool> checkAssetExists(String url) async {
+    try {
+      // Extract the path from the URL
+      Uri uri = Uri.parse(url);
+      String path = uri.path;
+      // Remove the initial "/v0/b/<bucket-name>/o/" part
+      path = path.replaceFirst(RegExp(r'^/v0/b/[^/]+/o/'), '');
+      // Decode the URL-encoded path
+      path = Uri.decodeFull(path);
+
+      // Get a reference to the file
+      final ref = FirebaseStorage.instance.ref(path);
+
+      // Try to fetch the metadata
+      await ref.getMetadata();
+
+      // If we reach here, the file exists
+      return true;
+    } catch (e) {
+      // If we get here, the file doesn't exist or there was an error
+      print('Error checking asset: $e');
+      return false;
+    }
+  }
+
   // get all messages of a one to one chat as stream
   static Stream<MessageModel> getMessageStreamChatsCollection(
       String chatID, String messageID) {
@@ -209,11 +274,11 @@ class CommonDBFunctions {
   // this method will update isChatOpen parameter when user open one chat and close it
   static void updateChatOpenStatus(String userId, String chatId, bool isOpen) {
     FirebaseFirestore.instance
-        .collection('users')
+        .collection(usersCollection)
         .doc(userId)
-        .collection('chats')
+        .collection(chatsCollection)
         .doc(chatId)
-        .update({'isChatOpen': isOpen});
+        .update({isUserChatOpen: isOpen});
   }
 
   // listen to a chat doc
@@ -232,8 +297,9 @@ class CommonDBFunctions {
         if (chat.isChatOpen ?? false) {
           // Handle the case when the chat is opened
           log(
-              name: "Checking chat open or not",
-              'Chat is opened by the receiver ${chat.isChatOpen}');
+            name: "Checking chat open or not",
+            'Chat is opened by the receiver ${chat.isChatOpen}',
+          );
         }
       }
     });
@@ -296,45 +362,48 @@ class CommonDBFunctions {
       return null;
     }
   }
-  static Future<void> updateStatusListInStatusModelInDB({required String? userId,}) async {
-    try {
-         final currentUser = firebaseAuth.currentUser?.uid;
-        final now = DateTime.now();
-        final cutoffTime = now.subtract(const Duration(hours: 24));
 
-        if (currentUser == null) {
-          debugPrint("No current user found.");
-          return;
-        }
-        final statusCollectionSnap = await fireStore
-            .collection(usersCollection)
-            .doc(userId)
-            .collection(statusCollection)
-            .get();
-        if (statusCollectionSnap.docs.isEmpty) {
+  static Future<void> updateStatusListInStatusModelInDB({
+    required String? userId,
+  }) async {
+    try {
+      final currentUser = firebaseAuth.currentUser?.uid;
+      final now = DateTime.now();
+      final cutoffTime = now.subtract(const Duration(hours: 24));
+
+      if (currentUser == null) {
+        debugPrint("No current user found.");
+        return;
+      }
+      final statusCollectionSnap = await fireStore
+          .collection(usersCollection)
+          .doc(userId)
+          .collection(statusCollection)
+          .get();
+      if (statusCollectionSnap.docs.isEmpty) {
         debugPrint("No statuses found for the current user.");
         return;
       }
 
-        final StatusModel statusModel =
-            StatusModel.fromJson(map: statusCollectionSnap.docs.first.data());
-        if (statusModel.statusList == null) {
-          debugPrint("No statuses in the status list.");
-          return;
-        }
-        final updatedStatusList = statusModel.statusList?.where((uploadedStatus) {
-          final statusTime = DateTime.parse(uploadedStatus.statusUploadedTime!);
-          return statusTime.isAfter(cutoffTime);
-        });
-        await fireStore
-            .collection(usersCollection)
-            .doc(currentUser)
-            .collection(statusCollection)
-            .doc(statusModel.statusId)
-            .update({
-          dbStatusContentList:
-              updatedStatusList?.map((status) => status.toJson()).toList(),
-        });
+      final StatusModel statusModel =
+          StatusModel.fromJson(map: statusCollectionSnap.docs.first.data());
+      if (statusModel.statusList == null) {
+        debugPrint("No statuses in the status list.");
+        return;
+      }
+      final updatedStatusList = statusModel.statusList?.where((uploadedStatus) {
+        final statusTime = DateTime.parse(uploadedStatus.statusUploadedTime!);
+        return statusTime.isAfter(cutoffTime);
+      });
+      await fireStore
+          .collection(usersCollection)
+          .doc(currentUser)
+          .collection(statusCollection)
+          .doc(statusModel.statusId)
+          .update({
+        dbStatusContentList:
+            updatedStatusList?.map((status) => status.toJson()).toList(),
+      });
       // final now = DateTime.now();
       // final cutoffTime = now.subtract(const Duration(hours: 24));
 

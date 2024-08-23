@@ -16,6 +16,7 @@ import 'package:official_chatbox_application/core/utils/small_common_widgets.dar
 import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/message/message_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat/attachment_list_container_vertical.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat/chat_room_appbar_widget.dart';
@@ -60,6 +61,14 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   void initState() {
     super.initState();
     CallMethods.onUserLogin(currentUser: firebaseAuth.currentUser);
+    if (widget.chatModel != null) {
+      context.read<ChatBloc>().add(
+            CheckIsBlockedUserEvent(
+              currentUserId: firebaseAuth.currentUser?.uid,
+              receiverID: widget.chatModel?.receiverID,
+            ),
+          );
+    }
     !widget.isGroup
         ? CommonDBFunctions.updateChatOpenStatus(
             widget.chatModel?.receiverID ?? '',
@@ -159,7 +168,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
               )),
               widget.isGroup &&
                       (!widget.groupModel!.membersPermissions!
-                              .contains(MembersGroupPermission.sendMessages) ||
+                              .contains(MembersGroupPermission.sendMessages) &&
                           !widget.groupModel!.groupAdmins!
                               .contains(firebaseAuth.currentUser?.uid)) &&
                       widget.groupModel!.groupMembers!
@@ -172,33 +181,83 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                       ? messageSendRestrictingWidget(
                           context: context,
                           text: "You're no longer a member in this group")
-                      : Column(
-                          children: [
-                            ChatBarWidget(
-                              isChatBoxAI: false,
-                              replyMessage: Provider.of<CommonProvider>(context)
-                                  .replyMessage,
-                              onCancelReply: () {
-                                cancelReply(context: context);
+                      : widget.chatModel != null
+                          ?FutureBuilder<Map<String, bool>>(
+                              future: Future.wait([
+                                CommonDBFunctions.checkIfIsBlocked(
+                                  receiverId: widget.chatModel?.receiverID,
+                                  currentUserId: firebaseAuth.currentUser?.uid,
+                                ),
+                                CommonDBFunctions.checkIfIsBlocked(
+                                  receiverId: firebaseAuth.currentUser?.uid,
+                                  currentUserId: widget.chatModel?.receiverID,
+                                ),
+                              ]).then((results) {
+                                return {
+                                  "isReceiverBlocked": results[
+                                      0], // True if receiver blocked the sender
+                                  "isSenderBlocked": results[
+                                      1], // True if sender is blocked by the receiver
+                                };
+                              }),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData ||
+                                    snapshot.data == null) {
+                                  return chatMessageBar(
+                                    focusNode: focusNode,
+                                    recorder: recorder,
+                                    messageController: messageController,
+                                    isGroup: widget.isGroup,
+                                    context: context,
+                                    scrollController: scrollController,
+                                    chatModel: widget.chatModel,
+                                    groupModel: widget.groupModel,
+                                    receiverContactName: widget.userName,
+                                  );
+                                }
+
+                                final isReceiverBlocked =
+                                    snapshot.data!['isReceiverBlocked'] ??
+                                        false;
+                                final isSenderBlocked =
+                                    snapshot.data!['isSenderBlocked'] ?? false;
+
+                                if (isSenderBlocked) {
+                                  return messageSendRestrictingWidget(
+                                    context: context,
+                                    text: "You blocked this chat",
+                                  );
+                                } else if (isReceiverBlocked) {
+                                  return messageSendRestrictingWidget(
+                                    context: context,
+                                    text: "You are blocked",
+                                  );
+                                } else {
+                                  return chatMessageBar(
+                                    focusNode: focusNode,
+                                    recorder: recorder,
+                                    messageController: messageController,
+                                    isGroup: widget.isGroup,
+                                    context: context,
+                                    scrollController: scrollController,
+                                    chatModel: widget.chatModel,
+                                    groupModel: widget.groupModel,
+                                    receiverContactName: widget.userName,
+                                  );
+                                }
                               },
+                            )
+                          : chatMessageBar(
                               focusNode: focusNode,
-                              isGroup: widget.isGroup,
-                              groupModel: widget.groupModel,
-                              receiverContactName: widget.userName,
                               recorder: recorder,
+                              messageController: messageController,
+                              isGroup: widget.isGroup,
+                              context: context,
                               scrollController: scrollController,
                               chatModel: widget.chatModel,
-                              isImojiButtonClicked: false,
-                              messageController: messageController,
+                              groupModel: widget.groupModel,
+                              receiverContactName: widget.userName,
                             ),
-                            Provider.of<CommonProvider>(context)
-                                    .isEmojiPickerOpened
-                                ? emojiSelect(
-                                    textEditingController: messageController,
-                                  )
-                                : zeroMeasureWidget,
-                          ],
-                        ),
             ],
           ),
           Positioned(
@@ -243,4 +302,41 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       ),
     );
   }
+}
+
+Widget chatMessageBar({
+  required FocusNode focusNode,
+  required FlutterSoundRecorder recorder,
+  required TextEditingController messageController,
+  required bool isGroup,
+  required BuildContext context,
+  GroupModel? groupModel,
+  String? receiverContactName,
+  required ScrollController scrollController,
+  ChatModel? chatModel,
+}) {
+  return Column(
+    children: [
+      ChatBarWidget(
+        replyMessage: Provider.of<CommonProvider>(context).replyMessage,
+        onCancelReply: () {
+          cancelReply(context: context);
+        },
+        focusNode: focusNode,
+        isGroup: isGroup,
+        groupModel: groupModel,
+        receiverContactName: receiverContactName,
+        recorder: recorder,
+        scrollController: scrollController,
+        chatModel: chatModel,
+        isImojiButtonClicked: false,
+        messageController: messageController,
+      ),
+      Provider.of<CommonProvider>(context).isEmojiPickerOpened
+          ? emojiSelect(
+              textEditingController: messageController,
+            )
+          : zeroMeasureWidget,
+    ],
+  );
 }

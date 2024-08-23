@@ -22,7 +22,6 @@ class ChatBarWidget extends StatefulWidget {
   ChatBarWidget({
     super.key,
     required this.messageController,
-    required this.isChatBoxAI,
     required this.isImojiButtonClicked,
     this.chatModel,
     required this.scrollController,
@@ -36,7 +35,6 @@ class ChatBarWidget extends StatefulWidget {
   });
   final TextEditingController messageController;
   bool isImojiButtonClicked;
-  final bool isChatBoxAI;
   final ScrollController scrollController;
   final FlutterSoundRecorder recorder;
   final ChatModel? chatModel;

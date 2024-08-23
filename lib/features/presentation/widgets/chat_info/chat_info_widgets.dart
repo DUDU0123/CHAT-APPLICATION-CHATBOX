@@ -104,8 +104,8 @@ Widget membersListOrGroupListWidget({
               : null,
           builder: (context, snapshot) {
             return TextWidgetCommon(
-              text: receiverData != null
-                  ? "Groups in common (${receiverData.userGroupIdList?.length})"
+              text: receiverData != null 
+                  ?receiverData.id!=firebaseAuth.currentUser?.uid? "Groups in common (${receiverData.userGroupIdList?.length})":''
                   : groupData!.adminsPermissions!
                               .contains(AdminsGroupPermission.viewMembers) &&
                           !groupData.groupAdmins!
@@ -118,7 +118,7 @@ Widget membersListOrGroupListWidget({
             );
           }),
       kHeight15,
-      if (receiverData != null)
+      if (receiverData != null  && receiverData.id!=firebaseAuth.currentUser?.uid)
         infoPageCommonGroupList(
           receiverData: receiverData,
         ),

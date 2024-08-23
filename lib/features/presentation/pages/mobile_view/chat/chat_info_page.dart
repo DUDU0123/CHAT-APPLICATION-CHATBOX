@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
+import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/contact_methods.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
+import 'package:official_chatbox_application/features/data/models/blocked_user_model/blocked_user_model.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
+import 'package:official_chatbox_application/features/data/models/report_model/report_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/select_contacts/select_contact_page.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat_home/chat_tile_actions_on_longpress_method.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat_info/chat_info_widgets.dart';
@@ -158,13 +163,23 @@ class ChatInfoPage extends StatelessWidget {
               groupData: groupData,
             ),
             kHeight20,
-            chatModel != null
-                ? infoPageListTileWidget(
-                    chatModel: chatModel,
-                    context: context,
-                    receiverData: receiverData,
-                    isFirstTile: true,
-                  )
+            chatModel != null &&
+                    chatModel?.receiverID != firebaseAuth.currentUser?.uid
+                ? StreamBuilder<List<BlockedUserModel>>(
+                    stream: CommonDBFunctions.getAllBlockedUsers(),
+                    builder: (context, snapshot) {
+                      final blockList = snapshot.data;
+                      final isBlocker = blockList?.any((blockedUser) =>
+                          blockedUser.userId == chatModel?.receiverID);
+                      return infoPageListTileWidget(
+                        isBlockTile: true,
+                        context: context,
+                        icon: Icons.block,
+                        tileText:
+                            "${isBlocker != null ? isBlocker ? 'Unblock' : 'Block' : 'Block'} ${receiverData?.contactName ?? receiverData?.phoneNumber}",
+                        chatModel: chatModel,
+                      );
+                    })
                 : zeroMeasureWidget,
             // for group
             groupData != null
@@ -206,12 +221,33 @@ class ChatInfoPage extends StatelessWidget {
                     : zeroMeasureWidget
                 : zeroMeasureWidget,
             // for one-to-one chat
-            chatModel != null
+            chatModel != null &&
+                    chatModel?.receiverID != firebaseAuth.currentUser?.uid
                 ? infoPageListTileWidget(
+                    isBlockTile: false,
                     context: context,
-                    isFirstTile: false,
+                    icon: Icons.report_gmailerrorred_outlined,
+                    dialogTitle:
+                        "Report ${receiverData?.contactName ?? receiverData?.phoneNumber}",
+                    dialogSubTitle:
+                        "Do you want to report ${receiverData?.contactName ?? receiverData?.phoneNumber}",
+                    actionButtonName: "Report",
+                    tileText:
+                        "Report ${receiverData?.contactName ?? receiverData?.phoneNumber}",
                     chatModel: chatModel,
-                    receiverData: receiverData,
+                    onPressed: () {
+                      if (receiverData != null) {
+                        final reportModel = ReportModel(
+                          reportedUserId: receiverData?.id,
+                        );
+                        context.read<ChatBloc>().add(ReportAccountEvent(
+                              reportModel: reportModel,
+                              context: context,
+                            ));
+                      }
+
+                      Navigator.pop(context);
+                    },
                   )
                 : zeroMeasureWidget,
           ],
