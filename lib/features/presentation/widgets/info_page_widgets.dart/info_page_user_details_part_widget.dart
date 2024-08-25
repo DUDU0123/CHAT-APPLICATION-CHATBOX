@@ -56,8 +56,7 @@ Widget infoPageUserDetailsPart({
                     imageUrl: receiverData!.userProfileImage!,
                     radius: 80,
                   ):nullImageReplaceWidget(containerRadius: 150, context: context)
-                : groupData?.groupProfileImage != null
-                    ? StreamBuilder<GroupModel?>(
+                : StreamBuilder<GroupModel?>(
                         stream: CommonDBFunctions.getOneGroupDataByStream(
                             userID: firebaseAuth.currentUser!.uid,
                             groupID: groupData?.groupID ?? ''),
@@ -82,9 +81,7 @@ Widget infoPageUserDetailsPart({
                                 snapshot.data!.groupProfileImage ?? '',
                             radius: 80,
                           );
-                        })
-                    : nullImageReplaceWidget(
-                        containerRadius: 150, context: context),
+                        }),
             Positioned(
               bottom: 0,
               right: 0,

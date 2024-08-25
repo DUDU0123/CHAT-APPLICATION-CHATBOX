@@ -1,12 +1,10 @@
-import 'dart:convert';
-
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
+import 'package:official_chatbox_application/core/utils/call_methods.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
@@ -15,18 +13,20 @@ import 'package:official_chatbox_application/features/presentation/widgets/chat_
 import 'package:official_chatbox_application/features/presentation/widgets/chat_home/searchbar_chat_home.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 
-class ChatHomePage extends StatelessWidget {
-  ChatHomePage({super.key});
-  Map payload = {};
+class ChatHomePage extends StatefulWidget {
+  const ChatHomePage({super.key});
+
+  @override
+  State<ChatHomePage> createState() => _ChatHomePageState();
+}
+
+class _ChatHomePageState extends State<ChatHomePage> {
+  @override
+  void initState() {
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
-    final data = ModalRoute.of(context)?.settings.arguments;
-    if (data is RemoteMessage) {
-      payload = data.data;
-    }
-    if (data is NotificationResponse) {
-      payload = jsonDecode(data.payload!);
-    }
     return Scaffold(
       body: CustomScrollView(
         slivers: [

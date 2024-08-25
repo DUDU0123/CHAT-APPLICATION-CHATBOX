@@ -13,14 +13,14 @@ import 'package:official_chatbox_application/features/presentation/widgets/commo
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 
 Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
-  required BuildContext context,
+  required BuildContext rootContext,
   ChatModel? chatModel,
   GroupModel? groupModel,
   required String? receiverContactName,
   required bool isGroup,
 }) {
   return showDialog(
-    context: context,
+    context: rootContext,
     builder: (context) => AlertDialog(
       title: const TextWidgetCommon(
         text: "Take",
@@ -40,6 +40,7 @@ Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
                 context,
                 MaterialPageRoute(
                   builder: (context) => FileShowPage(
+                    rootContext: rootContext,
                     fileType: FileType.video,
                     fileToShow: file,
                     pageType: PageTypeEnum.messagingPage,
@@ -61,6 +62,7 @@ Future<dynamic> videoOrPhotoTakeFromCameraSourceMethod({
                 context,
                 MaterialPageRoute(
                   builder: (context) => FileShowPage(
+                    rootContext: rootContext,
                     fileType: FileType.image,
                     fileToShow: file,
                     pageType: PageTypeEnum.messagingPage,

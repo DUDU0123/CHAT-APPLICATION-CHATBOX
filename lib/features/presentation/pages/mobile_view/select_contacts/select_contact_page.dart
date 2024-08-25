@@ -32,6 +32,7 @@ class SelectContactPage extends StatefulWidget {
     this.isStatus,
     this.messageType,
     this.messageContent,
+    this.rootContext,
   });
   final ChatModel? chatModel;
   final String? receiverContactName;
@@ -44,6 +45,7 @@ class SelectContactPage extends StatefulWidget {
   final bool? isStatus;
   final MessageType? messageType;
   final String? messageContent;
+  final BuildContext? rootContext;
   @override
   State<SelectContactPage> createState() => _SelectContactPageState();
 }
@@ -64,7 +66,7 @@ class _SelectContactPageState extends State<SelectContactPage> {
     log("${context.watch<ContactBloc>().state.contactList?.length}Length");
     if (context.watch<ContactBloc>().state.contactList?.length == 0 ||
         context.watch<ContactBloc>().state.contactList?.length == null) {
-      context.read<ContactBloc>().add(GetContactsEvent());
+      context.read<ContactBloc>().add(GetContactsEvent(context: context));
     }
     return Scaffold(
       appBar: AppBar(
@@ -136,7 +138,9 @@ class _SelectContactPageState extends State<SelectContactPage> {
                 }
                 if (state is ContactsLoadingState) {
                   return commonAnimationWidget(
-                      context: context, isTextNeeded: true, text: "Loading");
+                    context: context,
+                    isTextNeeded: false,
+                  );
                 }
                 if (state.contactList == null) {
                   return zeroMeasureWidget;
@@ -232,6 +236,7 @@ class _SelectContactPageState extends State<SelectContactPage> {
       floatingActionButton: BlocBuilder<ContactBloc, ContactState>(
         builder: (context, state) {
           return FloatingDoneNavigateButton(
+            rootContext: widget.rootContext,
             messageType: widget.messageType,
             messageContent: widget.messageContent,
             isStatus: widget.isStatus ?? false,

@@ -50,7 +50,6 @@ class PrivacyMethods {
     final currentUserId = firebaseAuth.currentUser?.uid;
 
     if (receiverID == null || currentUserId == null) {
-      log("Receiver ID or Current User ID is null");
       return false;
     }
 
@@ -63,7 +62,6 @@ class PrivacyMethods {
           ?.any((blockedUser) => blockedUser.userId == currentUserId);
 
       if (isCurrentUserBlockedByReceiver == true) {
-        log("Current user is blocked by the receiver");
         return true; // Block exists
       }
 
@@ -75,7 +73,6 @@ class PrivacyMethods {
           ?.any((blockedUser) => blockedUser.userId == receiverID);
 
       if (isReceiverBlockedByCurrentUser == true) {
-        log("Receiver is blocked by the current user");
         return true; // Block exists
       }
       return false;
@@ -88,25 +85,20 @@ class PrivacyMethods {
   static Future<bool> isShowableProfileImage(
       {required String? receiverID}) async {
     if (receiverID == null) {
-      log("Receiver ID is null");
       return false;
     }
     final isBlockedResult = await isBlocked(receiverID: receiverID);
     if (isBlockedResult) {
-      log("User is blocked, online last seen is not showable");
       return false; // Return false if either user is blocked
     }
     final receiverData =
         await CommonDBFunctions.getOneUserDataFromDBFuture(userId: receiverID);
-    log("Fetched receiver data: ${receiverData.toString()}");
     final privacySetting =
         receiverData?.privacySettings?[userDbProfilePhotoPrivacy];
-    log("Profile photo privacy setting: $privacySetting");
     if (privacySetting == 'Nobody') {
       return false;
     } else if (privacySetting == 'My contacts') {
       final isUserInContacts = await _isUserInContacts(receiverID);
-      log("Is User in Contacts: $isUserInContacts");
       return isUserInContacts;
     } else {
       return true;
@@ -116,26 +108,21 @@ class PrivacyMethods {
   static Future<bool> isShowableOnlineLastSeen(
       {required String? receiverID}) async {
     if (receiverID == null) {
-      log("Receiver ID is null");
       return false;
     }
     final isBlockedResult = await isBlocked(receiverID: receiverID);
     if (isBlockedResult) {
-      log("User is blocked, online last seen is not showable");
       return false; // Return false if either user is blocked
     }
 
     final receiverData =
         await CommonDBFunctions.getOneUserDataFromDBFuture(userId: receiverID);
     final privacySetting = receiverData?.privacySettings?[userDbLastSeenOnline];
-    log("Fetched receiver data: ${receiverData.toString()}");
-    log("Last seen privacy setting: $privacySetting");
 
     if (privacySetting == 'Nobody') {
       return false;
     } else if (privacySetting == 'My contacts') {
       final isUserInContacts = await _isUserInContacts(receiverID);
-      log("Is User in Contacts: $isUserInContacts");
       return isUserInContacts;
     } else {
       return true;
@@ -144,21 +131,16 @@ class PrivacyMethods {
 
   static Future<bool> isShowableAbout({required String? receiverID}) async {
     if (receiverID == null) {
-      log("Receiver ID is null");
       return false;
     }
     final isBlockedResult = await isBlocked(receiverID: receiverID);
     if (isBlockedResult) {
-      log("User is blocked, online last seen is not showable");
       return false; // Return false if either user is blocked
     }
 
     final receiverData =
         await CommonDBFunctions.getOneUserDataFromDBFuture(userId: receiverID);
     final privacySetting = receiverData?.privacySettings?[userDbAboutPrivacy];
-
-    log("Fetched receiver data: ${receiverData.toString()}");
-    log("Fetched About Privacy Setting: $privacySetting");
 
     if (privacySetting == 'Nobody') {
       return false;
@@ -173,21 +155,16 @@ class PrivacyMethods {
 
   static Future<bool> isShowableStatus({required String? receiverID}) async {
     if (receiverID == null) {
-      log("Receiver ID is null");
       return false;
     }
     final isBlockedResult = await isBlocked(receiverID: receiverID);
     if (isBlockedResult) {
-      log("User is blocked, online last seen is not showable");
       return false; // Return false if either user is blocked
     }
 
     final receiverData =
         await CommonDBFunctions.getOneUserDataFromDBFuture(userId: receiverID);
     final privacySetting = receiverData?.privacySettings?[userDbStatusPrivacy];
-
-    log("Fetched receiver data: ${receiverData.toString()}");
-    log("Fetched About Privacy Setting: $privacySetting");
 
     if (privacySetting == 'Nobody') {
       return false;

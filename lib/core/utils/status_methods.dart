@@ -72,7 +72,7 @@ class StatusMethods {
   static void shareStatusToAnyChat({
     required List<ContactModel>? selectedContactList,
     required UploadedStatusModel? uploadedStatusModel,
-    required MessageBloc messageBloc,
+    required MessageBloc messageBloc,required BuildContext context,
   }) async {
     log("Status: $uploadedStatusModel");
     log("vIDEO uRL: ${uploadedStatusModel?.statusContent}");
@@ -102,6 +102,7 @@ class StatusMethods {
           senderID: firebaseAuth.currentUser?.uid,
         );
         messageBloc.add(MessageSentEvent(
+          context: context,
           chatModel: chatModel,
           receiverID: contact.chatBoxUserId!,
           currentUserId: firebaseAuth.currentUser!.uid,

@@ -2,25 +2,34 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
+import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/features/data/models/call_model/call_model.dart';
-import 'package:official_chatbox_application/features/data/repositories/call_repo_impl/call_repository_impl.dart';
+import 'package:official_chatbox_application/features/domain/repositories/call_repo/call_repository.dart';
+import 'package:official_chatbox_application/main.dart';
 part 'call_event.dart';
 part 'call_state.dart';
 
 class CallBloc extends Bloc<CallEvent, CallState> {
-  final CallRepositoryImpl callRepository;
+  final CallRepository callRepository;
   CallBloc({
     required this.callRepository,
   }) : super(CallInitial()) {
     on<CallInfoSaveEvent>(callInfoSaveEvent);
     on<GetAllCallLogEvent>(getAllCallLogEvent);
     on<DeleteACallLogEvent>(deleteACallLogEvent);
+    on<GetCurrentCallIdAndCallersId>(getCurrentCallIdAndCallersId);
+    on<UpdateCallStatusEvent>(updateCallStatusEvent);
   }
 
   FutureOr<void> callInfoSaveEvent(
       CallInfoSaveEvent event, Emitter<CallState> emit) {
     try {
-      callRepository.saveCallInfo(callModel: event.callModel);
+      callRepository.saveCallInfo(
+        callModel: event.callModel,
+        context: event.context,
+      );
     } catch (e) {
       emit(CallErrorState(errorMessage: e.toString()));
     }
@@ -44,6 +53,44 @@ class CallBloc extends Bloc<CallEvent, CallState> {
         callModelId: event.callId,
       );
       log("Deleted: $value");
+      add(GetAllCallLogEvent());
+    } catch (e) {
+      emit(CallErrorState(errorMessage: e.toString()));
+    }
+  }
+
+  FutureOr<void> getCurrentCallIdAndCallersId(
+      GetCurrentCallIdAndCallersId event, Emitter<CallState> emit) {
+    try {
+      log("Callers ${event.callId}and ${event.callersId} callid getting");
+      callID = event.callId;
+      callersID = event.callersId;
+      emit(
+        state.copyWith(
+          callId: event.callId,
+          callersId: event.callersId,
+        ),
+      );
+    } catch (e) {
+      emit(CallErrorState(errorMessage: e.toString()));
+    }
+  }
+
+  Future<FutureOr<void>> updateCallStatusEvent(
+      UpdateCallStatusEvent event, Emitter<CallState> emit) async {
+    try {
+
+      for (var callerID in event.callersId) {
+        log("Data updating");
+        await fireStore
+            .collection(usersCollection)
+            .doc(callerID)
+            .collection(callsCollection)
+            .doc(event.callId)
+            .update({
+          dbCallStatus: event.callStatus,
+        });
+      }
       add(GetAllCallLogEvent());
     } catch (e) {
       emit(CallErrorState(errorMessage: e.toString()));

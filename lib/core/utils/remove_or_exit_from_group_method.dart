@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:official_chatbox_application/features/data/data_sources/group_data/group_data.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/group/group_bloc.dart';
@@ -31,6 +32,9 @@ void removeOrExitFromGroupMethod({
       }
       log("Also outside");
       updatedGroupMembers.remove(groupMemberSnapshot.data?.id);
+      if (groupMemberSnapshot.data!=null && groupData.groupID!=null) {
+         GroupData.unsubscribeUserFromGroupTopic(groupMemberSnapshot.data!.id!, groupData.groupID!);
+      }
       final updatedGroupData = groupData.copyWith(
         groupMembers: updatedGroupMembers.toList(),
         groupAdmins: updatedGroupAdmins.toList(),

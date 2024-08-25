@@ -104,6 +104,7 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
           event.context,
           MaterialPageRoute(
             builder: (context) => FileShowPage(
+              rootContext: event.context,
               pageType: PageTypeEnum.chatStatus,
               statusModel: event.statusModel,
               fileType: FileType.image,
@@ -116,6 +117,7 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
           event.context,
           MaterialPageRoute(
             builder: (context) => FileShowPage(
+              rootContext: event.context,
               pageType: PageTypeEnum.chatStatus,
               statusModel: event.statusModel,
               fileType: FileType.video,

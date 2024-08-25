@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/config/common_provider/common_provider.dart';
 import 'package:official_chatbox_application/config/theme/theme_constants.dart';
 import 'package:official_chatbox_application/config/theme/theme_manager.dart';
+import 'package:official_chatbox_application/core/utils/network_status_methods.dart';
 import 'package:official_chatbox_application/features/presentation/pages/main_page/main_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chat/chat_home_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chatbox_welcome/chatbox_welcome_page.dart';
@@ -35,11 +37,12 @@ class RootWidgetPage extends StatelessWidget {
           create: (_) => CommonProvider(),
         ),
       ],
+      
       child: ScreenUtilInit(builder: (context, child) {
         final themeManager = Provider.of<ThemeManager>(context);
         return MultiBlocProvider(
           providers: AppBlocProvider.allBlocProviders,
-          child: MaterialApp(
+          child: GetMaterialApp(
             navigatorKey: navigatorKey,
             debugShowCheckedModeBanner: false,
             themeMode: themeManager.themeMode,

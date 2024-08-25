@@ -60,7 +60,6 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   @override
   void initState() {
     super.initState();
-    CallMethods.onUserLogin(currentUser: firebaseAuth.currentUser);
     if (widget.chatModel != null) {
       context.read<ChatBloc>().add(
             CheckIsBlockedUserEvent(

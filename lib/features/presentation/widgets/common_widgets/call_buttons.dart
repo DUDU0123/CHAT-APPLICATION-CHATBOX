@@ -33,11 +33,14 @@ Widget callButtonsMethods({
           callerId: firebaseAuth.currentUser?.uid,
           chatModelId: chatModel.chatID,
           callrecieversId: [chatModel.receiverID!],
-          callStatus: 'initiated',
+          callStatus: 'not_accepted',
           receiverName: receiverTitle,
           receiverImage: receiverImage,
         );
-        callBloc.add(CallInfoSaveEvent(callModel: callModel));
+        callBloc.add(CallInfoSaveEvent(
+          callModel: callModel,
+          context: context,
+        ));
       },
       callID: chatModel.chatID,
       icon: ButtonIcon(
@@ -80,11 +83,14 @@ Widget callButtonsMethods({
           callerId: firebaseAuth.currentUser?.uid,
           chatModelId: groupModel.groupID,
           callrecieversId: groupModel.groupMembers,
-          callStatus: 'initiated',
+          callStatus: 'not_accepted',
           receiverImage: receiverImage,
           receiverName: receiverTitle,
         );
-        callBloc.add(CallInfoSaveEvent(callModel: callModel));
+        callBloc.add(CallInfoSaveEvent(
+          callModel: callModel,
+          context: context,
+        ));
       },
       callID: groupModel.groupID,
       icon: ButtonIcon(

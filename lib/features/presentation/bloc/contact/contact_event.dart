@@ -7,7 +7,14 @@ sealed class ContactEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GetContactsEvent extends ContactEvent {}
+class GetContactsEvent extends ContactEvent {
+  final BuildContext context;
+  const GetContactsEvent({
+    required this.context,
+  });
+  @override
+  List<Object> get props => [context];
+}
 
 class SelectUserEvent extends ContactEvent {
   final ContactModel contact;

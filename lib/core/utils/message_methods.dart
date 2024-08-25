@@ -111,78 +111,91 @@ class MessageMethods {
     }
   }
 
+  static void sendMessage({
+    required BuildContext context,
+    required ChatModel? chatModel,
+    required TextEditingController messageController,
+    required ScrollController scrollController,
+    required String? receiverContactName,
+    required bool isGroup,
+    GroupModel? groupModel,
+    MessageModel? replyToMessage,
+  }) {
+    MessageModel message;
+    if (!isGroup) {
+      message = MessageModel(
+        replyToMessage: replyToMessage,
+        messageId: DateTime.now().millisecondsSinceEpoch.toString(),
+        senderID: chatModel?.senderID,
+        receiverID: chatModel?.receiverID,
+        messageTime: DateTime.now().toString(),
+        isPinnedMessage: false,
+        isStarredMessage: false,
+        isDeletedMessage: false,
+        isEditedMessage: false,
+        message: messageController.text,
+        messageType: MessageType.text,
+        messageStatus: MessageStatus.sent,
+      );
+    } else {
+      message = MessageModel(
+        replyToMessage: replyToMessage,
+        senderID: firebaseAuth.currentUser?.uid,
+        messageTime: DateTime.now().toString(),
+        isPinnedMessage: false,
+        isStarredMessage: false,
+        isDeletedMessage: false,
+        isEditedMessage: false,
+        message: messageController.text,
+        messageType: MessageType.text,
+        messageStatus: MessageStatus.sent,
+      );
+    }
 
- static void sendMessage({
-  required BuildContext context,
-  required ChatModel? chatModel,
-  required TextEditingController messageController,
-  required ScrollController scrollController,
-  required String? receiverContactName,
-  required bool isGroup,
-  GroupModel? groupModel,
-  MessageModel? replyToMessage,
-}) {
-  MessageModel message;
-  if (!isGroup) {
-    message = MessageModel(
-      replyToMessage: replyToMessage,
-      messageId: DateTime.now().millisecondsSinceEpoch.toString(),
-      senderID: chatModel?.senderID,
-      receiverID: chatModel?.receiverID,
-      messageTime: DateTime.now().toString(),
-      isPinnedMessage: false,
-      isStarredMessage: false,
-      isDeletedMessage: false,
-      isEditedMessage: false,
-      message: messageController.text,
-      messageType: MessageType.text,
-      messageStatus: MessageStatus.sent,
+    scrollController.animateTo(
+      scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 100),
+      curve: Curves.easeOut,
     );
-  } else {
-    message = MessageModel(
-      replyToMessage: replyToMessage,
-      senderID: firebaseAuth.currentUser?.uid,
-      messageTime: DateTime.now().toString(),
-      isPinnedMessage: false,
-      isStarredMessage: false,
-      isDeletedMessage: false,
-      isEditedMessage: false,
-      message: messageController.text,
-      messageType: MessageType.text,
-      messageStatus: MessageStatus.sent,
-    );
+    context.read<MessageBloc>().add(
+          MessageSentEvent(
+            context: context,
+            isGroup: isGroup,
+            groupModel: groupModel,
+            currentUserId: firebaseAuth.currentUser?.uid ?? '',
+            receiverContactName: receiverContactName ?? '',
+            receiverID: chatModel?.receiverID ?? '',
+            chatModel: chatModel,
+            message: message,
+          ),
+        );
+        log("Chatmodel id : ${chatModel?.chatID}");
+    // String? id;
+    // if (chatModel != null) {
+    //   id = chatModel.chatID;
+    // } else {
+    //   id = groupModel?.groupID;
+    // }
+    //  log("ID NULL: $id ");
+    // if (id != null) {
+    //   log("ID NULL: $id ");
+    //   context.read<MessageBloc>().add(
+    //         SendNotifcationEvent(
+    //           id: id,
+    //           messageToSend: message,
+    //           receiverID: chatModel!.receiverID!,
+    //         ),
+    //       );
+    // }
+    messageController.clear();
   }
 
-  scrollController.animateTo(
-    scrollController.position.maxScrollExtent,
-    duration: const Duration(milliseconds: 100),
-    curve: Curves.easeOut,
-  );
-  context.read<MessageBloc>().add(
-        MessageSentEvent(
-          isGroup: isGroup,
-          groupModel: groupModel,
-          currentUserId: firebaseAuth.currentUser?.uid ?? '',
-          receiverContactName: receiverContactName ?? '',
-          receiverID: chatModel?.receiverID ?? '',
-          chatModel: chatModel,
-          message: message,
-        ),
-      );
-  messageController.clear();
-}
-
-
-
-
-
-
-
-static void shareMessage({
+  static void shareMessage({
     required List<ContactModel>? selectedContactList,
     required MessageBloc messageBloc,
     required MessageType messageType,
     required String messageContent,
+    required BuildContext context,
   }) async {
     for (var contact in selectedContactList!) {
       if (contact.chatBoxUserId != null && firebaseAuth.currentUser != null) {
@@ -207,6 +220,7 @@ static void shareMessage({
           senderID: firebaseAuth.currentUser?.uid,
         );
         messageBloc.add(MessageSentEvent(
+          context: context,
           chatModel: chatModel,
           receiverID: contact.chatBoxUserId!,
           currentUserId: firebaseAuth.currentUser!.uid,
@@ -220,5 +234,4 @@ static void shareMessage({
       }
     }
   }
-
 }

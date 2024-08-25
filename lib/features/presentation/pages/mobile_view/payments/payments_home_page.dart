@@ -5,8 +5,6 @@ import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/contact/contact_bloc.dart';
-import 'package:official_chatbox_application/features/presentation/pages/mobile_view/payments/payment_history_page.dart';
-import 'package:official_chatbox_application/features/presentation/pages/mobile_view/payments/send_money_page.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat_home/chat_tile_widgets.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 
@@ -17,7 +15,7 @@ class PaymentsHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     if (context.watch<ContactBloc>().state.contactList?.length == 0 ||
         context.watch<ContactBloc>().state.contactList?.length == null) {
-      context.read<ContactBloc>().add(GetContactsEvent());
+      context.read<ContactBloc>().add(GetContactsEvent(context: context));
     }
     return Scaffold(
       appBar: AppBar(

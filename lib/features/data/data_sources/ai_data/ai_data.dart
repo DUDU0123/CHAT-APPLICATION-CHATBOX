@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:developer';
-
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
+import 'package:official_chatbox_application/core/service/dialog_helper.dart';
 import 'package:official_chatbox_application/features/data/models/message_model/message_model.dart';
 
 class AIData {
@@ -85,9 +86,22 @@ class AIData {
       return true;
     } on FirebaseException catch (e) {
       log("Chat AI messaging Firebase error: ${e.message}");
+      if (e.code == 'unavailable') {
+        DialogHelper.showDialogMethod(
+          title: "Network Error",
+          contentText: "Please check your network connection",
+        );
+      }
+      return false;
+    }on SocketException catch (e) {
+      DialogHelper.showDialogMethod(
+        title: "Network Error",
+        contentText: "Please check your network connection",
+      );
       return false;
     } catch (e) {
-      log("Chat AI messaging error: $e");
+      DialogHelper.showSnackBar(
+          title: "Error Occured", contentText: e.toString());
       return false;
     }
   }
@@ -147,9 +161,21 @@ class AIData {
       });
     } on FirebaseException catch (e) {
       log("Chat AI get message Firebase error: ${e.message}");
+      if (e.code == 'unavailable') {
+        DialogHelper.showDialogMethod(
+          title: "Network Error",
+          contentText: "Please check your network connection",
+        );
+      }
       return null;
+    }on SocketException catch (e) {
+      DialogHelper.showDialogMethod(
+        title: "Network Error",
+        contentText: "Please check your network connection",
+      );
     } catch (e) {
-      log("Chat AI get message error: $e");
+      DialogHelper.showSnackBar(
+          title: "Error Occured", contentText: e.toString());
       return null;
     }
   }
@@ -167,10 +193,22 @@ class AIData {
           .delete();
       return true;
     } on FirebaseException catch (e) {
-      log("Chat AI delete message Firebase error: ${e.message}");
+      if (e.code == 'unavailable') {
+        DialogHelper.showDialogMethod(
+          title: "Network Error",
+          contentText: "Please check your network connection",
+        );
+      }
+      return false;
+    }on SocketException catch (e) {
+      DialogHelper.showDialogMethod(
+        title: "Network Error",
+        contentText: "Please check your network connection",
+      );
       return false;
     } catch (e) {
-      log("Chat AI delete message error: $e");
+      DialogHelper.showSnackBar(
+          title: "Error Occured", contentText: e.toString());
       return true;
     }
   }
@@ -189,9 +227,23 @@ class AIData {
       return true;
     } on FirebaseException catch (e) {
       log("Chat AI clear chat Firebase error: ${e.message}");
+      if (e.code == 'unavailable') {
+        DialogHelper.showDialogMethod(
+          title: "Network Error",
+          contentText: "Please check your network connection",
+        );
+      }
+      return false;
+    }on SocketException catch (e) {
+      DialogHelper.showDialogMethod(
+        title: "Network Error",
+        contentText: "Please check your network connection",
+      );
       return false;
     } catch (e) {
       log("Chat AI clear chat error: $e");
+      DialogHelper.showSnackBar(
+          title: "Error Occured", contentText: e.toString());
       return false;
     }
   }

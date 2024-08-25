@@ -30,7 +30,7 @@ class FileShowPage extends StatefulWidget {
       this.chatModel,
       this.groupModel,
       this.receiverContactName,
-      this.isGroup});
+      this.isGroup, required this.rootContext});
   final File? fileToShow;
   final FileType fileType;
   final StatusModel? statusModel;
@@ -39,6 +39,7 @@ class FileShowPage extends StatefulWidget {
   final GroupModel? groupModel;
   final String? receiverContactName;
   final bool? isGroup;
+  final BuildContext rootContext;
 
   @override
   State<FileShowPage> createState() => _FileShowPageState();
@@ -221,7 +222,7 @@ class _FileShowPageState extends State<FileShowPage> {
                               widget.isGroup != null) {
                             context.read<MessageBloc>().add(
                                   VideoMessageSendEvent(
-                                    
+                                    context: widget.rootContext,
                                     messageCaption: fileCaptionController.text,
                                     videoFile: widget.fileToShow,
                                     isGroup: widget.isGroup!,
@@ -237,6 +238,7 @@ class _FileShowPageState extends State<FileShowPage> {
                           } else {
                             context.read<MessageBloc>().add(
                                   PhotoMessageSendEvent(
+                                    context: widget.rootContext,
                                     messageCaption: fileCaptionController.text,
                                     imageFile: widget.fileToShow,
                                     isGroup: widget.isGroup!,

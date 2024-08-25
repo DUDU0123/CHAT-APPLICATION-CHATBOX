@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
@@ -8,6 +9,8 @@ import 'package:official_chatbox_application/core/utils/common_db_functions.dart
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/report_model/report_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
+
+import '../../../../core/service/dialog_helper.dart';
 
 class ChatData {
   final FirebaseFirestore firestore;
@@ -32,6 +35,12 @@ class ChatData {
       return chatSnapshot.exists;
     } on FirebaseException catch (e) {
       log("From Chat Data: 47: ${e.message}");
+      if (e.code == 'unavailable') {
+        DialogHelper.showDialogMethod(
+          title: "Network Error",
+          contentText: "Please check your network connection",
+        );
+      }
       throw Exception(e.message);
     } catch (e) {
       log(e.toString());
@@ -112,10 +121,18 @@ class ChatData {
       });
     } on FirebaseException catch (e) {
       log("Firebase Auth exception: ${e.message}");
-      throw Exception("Error while creating chat: ${e.message}");
+      if (e.code == 'unavailable') {
+        DialogHelper.showDialogMethod(
+          title: "Network Error",
+          contentText: "Please check your network connection",
+        );
+      }
+      DialogHelper.showSnackBar(
+          title: "Error Occured", contentText: e.message.toString());
     } catch (e, stackTrace) {
       log("Error while creating chat: $e", stackTrace: stackTrace);
-      throw Exception("Error while creating chat: $e");
+      DialogHelper.showSnackBar(
+          title: "Error Occured", contentText: e.toString());
     }
   }
 
@@ -134,6 +151,12 @@ class ChatData {
               .toList());
     } on FirebaseException catch (e) {
       log("From Chat Data: 107: ${e.message}");
+      if (e.code == 'unavailable') {
+        DialogHelper.showDialogMethod(
+          title: "Network Error",
+          contentText: "Please check your network connection",
+        );
+      }
       throw Exception(e.message);
     } catch (e) {
       log("Status error: ${e.toString()}");
@@ -154,10 +177,21 @@ class ChatData {
           .delete();
     } on FirebaseException catch (e) {
       log("From Chat Data: 220: ${e.message}");
-      throw Exception(e.message);
+      if (e.code == 'unavailable') {
+        DialogHelper.showDialogMethod(
+          title: "Network Error",
+          contentText: "Please check your network connection",
+        );
+      }
+    } on SocketException catch (e) {
+      DialogHelper.showDialogMethod(
+        title: "Network Error",
+        contentText: "Please check your network connection",
+      );
     } catch (e) {
       log(e.toString());
-      throw Exception(e.toString());
+      DialogHelper.showSnackBar(
+          title: "Error Occured", contentText: e.toString());
     }
   }
 
@@ -181,8 +215,21 @@ class ChatData {
       await batch.commit();
     } on FirebaseException catch (e) {
       log("From new group creation firebase: ${e.toString()}");
+      if (e.code == 'unavailable') {
+        DialogHelper.showDialogMethod(
+          title: "Network Error",
+          contentText: "Please check your network connection",
+        );
+      }
+    } on SocketException catch (e) {
+      DialogHelper.showDialogMethod(
+        title: "Network Error",
+        contentText: "Please check your network connection",
+      );
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
+      DialogHelper.showSnackBar(
+          title: "Error Occured", contentText: e.toString());
     }
   }
 
@@ -223,9 +270,23 @@ class ChatData {
       return true;
     } on FirebaseException catch (e) {
       log("From new group creation firebase: ${e.toString()}");
+      if (e.code == 'unavailable') {
+        DialogHelper.showDialogMethod(
+          title: "Network Error",
+          contentText: "Please check your network connection",
+        );
+      }
+      return false;
+    } on SocketException catch (e) {
+      DialogHelper.showDialogMethod(
+        title: "Network Error",
+        contentText: "Please check your network connection",
+      );
       return false;
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
+      DialogHelper.showSnackBar(
+          title: "Error Occured", contentText: e.toString());
       return false;
     }
   }
@@ -247,6 +308,18 @@ class ChatData {
       return true;
     } on FirebaseException catch (e) {
       log("From mute chat firebase: ${e.toString()}");
+      if (e.code == 'unavailable') {
+        DialogHelper.showDialogMethod(
+          title: "Network Error",
+          contentText: "Please check your network connection",
+        );
+      }
+      return false;
+    } on SocketException catch (e) {
+      DialogHelper.showDialogMethod(
+        title: "Network Error",
+        contentText: "Please check your network connection",
+      );
       return false;
     } catch (e) {
       log("From mute chat catch: ${e.toString()}");
@@ -276,6 +349,18 @@ class ChatData {
       return true;
     } on FirebaseException catch (e) {
       log("From report account firebase: ${e.message}");
+      if (e.code == 'unavailable') {
+        DialogHelper.showDialogMethod(
+          title: "Network Error",
+          contentText: "Please check your network connection",
+        );
+      }
+      return false;
+    } on SocketException catch (e) {
+      DialogHelper.showDialogMethod(
+        title: "Network Error",
+        contentText: "Please check your network connection",
+      );
       return false;
     } catch (e) {
       log("From report account catch: ${e.toString()}");

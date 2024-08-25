@@ -46,8 +46,7 @@ class ContactListPage extends StatelessWidget {
                 if (state is ContactsLoadingState) {
                   return commonAnimationWidget(
                     context: context,
-                    isTextNeeded: true,
-                    text: "Loading contacts...",
+                    isTextNeeded: false,
                     fontSize: 12.sp,
                   );
                 }

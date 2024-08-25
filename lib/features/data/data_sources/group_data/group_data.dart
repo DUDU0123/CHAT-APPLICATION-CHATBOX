@@ -2,9 +2,13 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
+import 'package:official_chatbox_application/core/service/dialog_helper.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
+import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 
 class GroupData {
   final FirebaseAuth firebaseAuth;
@@ -13,6 +17,35 @@ class GroupData {
     required this.firebaseAuth,
     required this.firebaseFirestore,
   });
+  // group subscription for sending notification
+  static Future<void> subscribeUserToGroupTopic(
+      String userId, String groupId) async {
+    try {
+      final userDoc =
+          await fireStore.collection(usersCollection).doc(userId).get();
+      final userData = UserModel.fromJson(map: userDoc.data()!);
+      log('user id:::::${userData.id}');
+      if (userData.fcmToken != null) {
+        await FirebaseMessaging.instance.subscribeToTopic('group_$groupId');
+        log("Subscription done.........");
+      }
+    } catch (e) {
+      log("Error subscribing to group topic: ${e.toString()}");
+    }
+  }
+
+  // group unsubscription for not sending notification
+  static Future<void> unsubscribeUserFromGroupTopic(
+      String userId, String groupId) async {
+    try {
+      await FirebaseMessaging.instance.unsubscribeFromTopic('group_$groupId');
+      log("unSubscription done.........");
+    } catch (e) {
+      log("Error unsubscribing from group topic: ${e.toString()}");
+    }
+  }
+
+// new group create method
   Future<bool?> createNewGroup(
       {required GroupModel newGroupData, required File? groupImageFile}) async {
     try {
@@ -58,12 +91,14 @@ class GroupData {
 
       // iterating through each user id and creating group in their groups collection using the id of the group doc before created
       for (String userID in newGroupData.groupMembers!) {
+        updatedGroupData.groupID != null
+            ? await subscribeUserToGroupTopic(userID, updatedGroupData.groupID!)
+            : null;
         final newDocumentRefernce = firebaseFirestore
             .collection(usersCollection)
             .doc(userID)
             .collection(groupsCollection)
             .doc(groupDocumentID);
-
         final user =
             await CommonDBFunctions.getOneUserDataFromDBFuture(userId: userID);
         if (user != null) {
@@ -86,8 +121,16 @@ class GroupData {
       return true;
     } on FirebaseException catch (e) {
       log("From new group creation firebase: ${e.toString()}");
+      if (e.code == 'unavailable') {
+        DialogHelper.showDialogMethod(
+          title: "Network Error",
+          contentText: "Please check your network connection",
+        );
+      }
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
+      DialogHelper.showSnackBar(
+          title: "Error Occured", contentText: e.toString());
     }
     log("Can't do try ctach");
     return false;
@@ -100,7 +143,8 @@ class GroupData {
       return firebaseFirestore
           .collection(usersCollection)
           .doc(currentser?.uid)
-          .collection(groupsCollection).orderBy(dbGroupLastMessageTime, descending: true)
+          .collection(groupsCollection)
+          .orderBy(dbGroupLastMessageTime, descending: true)
           .snapshots()
           .map((groupSnapShot) {
         return groupSnapShot.docs.map((doc) {
@@ -109,8 +153,16 @@ class GroupData {
       });
     } on FirebaseException catch (e) {
       log("From new group creation firebase: ${e.toString()}");
+      if (e.code == 'unavailable') {
+        DialogHelper.showDialogMethod(
+          title: "Network Error",
+          contentText: "Please check your network connection",
+        );
+      }
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
+      DialogHelper.showSnackBar(
+          title: "Error Occured", contentText: e.toString());
     }
     return null;
   }
@@ -161,12 +213,21 @@ class GroupData {
       return true;
     } on FirebaseException catch (e) {
       log("From new group creation firebase: ${e.toString()}");
+      if (e.code == 'unavailable') {
+        DialogHelper.showDialogMethod(
+          title: "Network Error",
+          contentText: "Please check your network connection",
+        );
+      }
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
+      DialogHelper.showSnackBar(
+          title: "Error Occured", contentText: e.toString());
     }
     return false;
   }
-   Future<bool> removeOrExitFromGroupMethod({
+
+  Future<bool> removeOrExitFromGroupMethod({
     required GroupModel updatedGroupModel,
     required GroupModel oldGroupModel,
   }) async {
@@ -198,8 +259,16 @@ class GroupData {
       return true;
     } on FirebaseException catch (e) {
       log("From new group creation firebase: ${e.toString()}");
+      if (e.code == 'unavailable') {
+        DialogHelper.showDialogMethod(
+          title: "Network Error",
+          contentText: "Please check your network connection",
+        );
+      }
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
+      DialogHelper.showSnackBar(
+          title: "Error Occured", contentText: e.toString());
     }
     return false;
   }
@@ -218,8 +287,16 @@ class GroupData {
       return "Deleted successfully";
     } on FirebaseException catch (e) {
       log("From new group creation firebase: ${e.toString()}");
+      if (e.code == 'unavailable') {
+        DialogHelper.showDialogMethod(
+          title: "Network Error",
+          contentText: "Please check your network connection",
+        );
+      }
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
+      DialogHelper.showSnackBar(
+          title: "Error Occured", contentText: e.toString());
     }
     return "Can't delete";
   }
@@ -227,24 +304,33 @@ class GroupData {
   Future<void> clearGroupChat({required String groupID}) async {
     try {
       final User? currentUser = firebaseAuth.currentUser;
-    final messageCollectionSnapshot = await firebaseFirestore
-        .collection(usersCollection)
-        .doc(currentUser?.uid)
-        .collection(groupsCollection)
-        .doc(groupID)
-        .collection(messagesCollection)
-        .get();
-    final WriteBatch batch = firebaseFirestore.batch();
-    for (final DocumentSnapshot messageDoc in messageCollectionSnapshot.docs) {
-      batch.delete(messageDoc.reference);
-    }
+      final messageCollectionSnapshot = await firebaseFirestore
+          .collection(usersCollection)
+          .doc(currentUser?.uid)
+          .collection(groupsCollection)
+          .doc(groupID)
+          .collection(messagesCollection)
+          .get();
+      final WriteBatch batch = firebaseFirestore.batch();
+      for (final DocumentSnapshot messageDoc
+          in messageCollectionSnapshot.docs) {
+        batch.delete(messageDoc.reference);
+      }
 
-    // Commit the batch
-    await batch.commit();
+      // Commit the batch
+      await batch.commit();
     } on FirebaseException catch (e) {
       log("From new group creation firebase: ${e.toString()}");
+      if (e.code == 'unavailable') {
+        DialogHelper.showDialogMethod(
+          title: "Network Error",
+          contentText: "Please check your network connection",
+        );
+      }
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
+      DialogHelper.showSnackBar(
+          title: "Error Occured", contentText: e.toString());
     }
   }
 }

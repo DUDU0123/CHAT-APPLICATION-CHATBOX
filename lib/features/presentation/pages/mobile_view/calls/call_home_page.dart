@@ -162,10 +162,10 @@ class _CallHomePageState extends State<CallHomePage> {
                                                   firebaseAuth.currentUser?.uid
                                               ? Icons.arrow_forward_outlined
                                               : Icons.arrow_back_outlined,
-                                          color: callModel.isMissedCall != null
-                                              ? !callModel.isMissedCall!
-                                                  ? kGreen
-                                                  : kRed
+                                          color: callModel.callStatus != null
+                                              ? callModel.callStatus=='not_accepted'
+                                                  ? kRed
+                                                  : kGreen
                                               : kRed,
                                           size: 16.sp,
                                         ),

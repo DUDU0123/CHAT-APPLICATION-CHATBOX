@@ -5,6 +5,7 @@ import 'package:official_chatbox_application/config/bloc_providers/all_bloc_prov
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/snackbar.dart';
+import 'package:official_chatbox_application/features/data/data_sources/group_data/group_data.dart';
 import 'package:official_chatbox_application/features/data/models/contact_model/contact_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/group/group_bloc.dart';
@@ -73,6 +74,9 @@ class GroupMethods {
             Set<String>.from(groupModel?.groupMembers ?? []);
         for (var selectedContact in selectedContactList) {
           updatedGroupMembers.add(selectedContact.chatBoxUserId!);
+          if (selectedContact.chatBoxUserId!=null && groupModel!=null) {
+            GroupData.subscribeUserToGroupTopic(selectedContact.chatBoxUserId!, groupModel.groupID!);
+          }
         }
         final updatedGroupData =
             groupModel?.copyWith(groupMembers: updatedGroupMembers.toList());

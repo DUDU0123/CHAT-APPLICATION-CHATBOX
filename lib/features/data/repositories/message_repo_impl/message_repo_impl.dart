@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/features/data/data_sources/message_data/message_data.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
@@ -56,9 +57,10 @@ class MessageRepoImpl extends MessageRepo {
     required String? chatId,
     required MessageModel message,
     required String receiverId,
-    required String receiverContactName,
+    required String receiverContactName,required BuildContext context,
   }) async {
     await messageData.sendMessageToAChat(
+      context: context,
       chatId: chatId,
       message: message,
       receiverContactName: receiverContactName,
@@ -83,8 +85,9 @@ class MessageRepoImpl extends MessageRepo {
 
   @override
   Future<bool> sendMessageToAGroupChat(
-      {required groupID, required MessageModel message}) async {
+      {required groupID, required MessageModel message,  required BuildContext context,}) async {
     return await messageData.sendMessageToAGroup(
+      context: context,
       groupID: groupID,
       message: message,
     );

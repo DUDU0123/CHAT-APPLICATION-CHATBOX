@@ -27,6 +27,7 @@ class ContactMethods {
       receiverContactName != null
           ? context.read<MessageBloc>().add(
                 ContactMessageSendEvent(
+                  context: context,
                   isGroup: isGroup,
                   groupModel: groupModel,
                   receiverID: chatModel?.receiverID,

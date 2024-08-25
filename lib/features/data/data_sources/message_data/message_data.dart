@@ -2,6 +2,8 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
@@ -9,6 +11,7 @@ import 'package:official_chatbox_application/core/utils/common_db_functions.dart
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/message_model/message_model.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/message/message_bloc.dart';
 
 class MessageData {
   final FirebaseFirestore firestore;
@@ -19,8 +22,9 @@ class MessageData {
   });
   // this method is for sending message to a group chat
   Future<bool> sendMessageToAGroup({
-    required groupID,
+    required String groupID,
     required MessageModel message,
+    required BuildContext context,
     // required String userID,
   }) async {
     try {
@@ -52,6 +56,12 @@ class MessageData {
       );
       WriteBatch batch = firestore.batch();
       batch.set(groupMessageDocumentReference, updatedMessageModel.toJson());
+      context.read<MessageBloc>().add(
+              SendGroupTopicNotifcationEvent(
+                groupid: groupData.groupID!,
+                messageToSend: message,
+              ),
+            );
       for (var userId in groupData.groupMembers!) {
         final newDocReference = firestore
             .collection(usersCollection)
@@ -109,6 +119,7 @@ class MessageData {
     required MessageModel message,
     required String receiverId,
     required String receiverContactName,
+    required BuildContext context,
   }) async {
     try {
       final String? currentUserId = firebaseAuth.currentUser?.uid;
@@ -141,6 +152,16 @@ class MessageData {
             .collection(messagesCollection)
             .doc(message.messageId)
             .set(message.toJson());
+      }
+
+      if (chatId != null) {
+        context.read<MessageBloc>().add(
+              SendNotifcationEvent(
+                id: chatId,
+                messageToSend: message,
+                receiverID: message.receiverID!,
+              ),
+            );
       }
     } on FirebaseException catch (e) {
       log("From Chat Data: 241: ${e.message}");
@@ -207,8 +228,7 @@ class MessageData {
       if (receiverSnapshot.exists) {
         final receiverData = receiverSnapshot.data();
         bool userNetworkStatus = receiverData![userDbNetworkStatus] ?? false;
-        bool isChatOpen = 
-        await FirebaseFirestore.instance
+        bool isChatOpen = await FirebaseFirestore.instance
             .collection(usersCollection)
             .doc(chatModel?.receiverID)
             .collection(chatsCollection)
@@ -230,14 +250,13 @@ class MessageData {
 
         // Only update the status if it's not already 'read'
         if (currentMessageStatus != MessageStatus.read.name) {
-        
-            if (userNetworkStatus && isChatOpen) {
-              messageStatus = MessageStatus.read.name;
-            } else if (userNetworkStatus && !isChatOpen) {
-              messageStatus = MessageStatus.delivered.name;
-            } else if (!userNetworkStatus) {
-              messageStatus = MessageStatus.sent.name;
-            }
+          if (userNetworkStatus && isChatOpen) {
+            messageStatus = MessageStatus.read.name;
+          } else if (userNetworkStatus && !isChatOpen) {
+            messageStatus = MessageStatus.delivered.name;
+          } else if (!userNetworkStatus) {
+            messageStatus = MessageStatus.sent.name;
+          }
         } else {
           messageStatus = MessageStatus.read.name;
         }

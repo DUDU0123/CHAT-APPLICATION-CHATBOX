@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
@@ -20,12 +21,14 @@ abstract class MessageRepo {
     required String messageId,
   });
   Future<void> sendMessage({
+    required BuildContext context,
     required String? chatId,
     required MessageModel message,
     required String receiverId,
     required String receiverContactName,
   });
   Future<bool> sendMessageToAGroupChat({
+     required BuildContext context,
     required groupID,
     required MessageModel message,
   });

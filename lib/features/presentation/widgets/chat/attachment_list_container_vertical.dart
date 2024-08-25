@@ -68,7 +68,7 @@ class AttachmentListContainerVertical extends StatelessWidget {
                         isGroup: isGroup,
                         groupModel: groupModel,
                         receiverContactName: receiverContactName,
-                        context: context,
+                        rootContext: rootContext,
                         chatModel: chatModel,
                       );
                       break;
@@ -79,6 +79,7 @@ class AttachmentListContainerVertical extends StatelessWidget {
                           rootContext,
                           MaterialPageRoute(
                             builder: (context) => FileShowPage(
+                              rootContext: rootContext,
                               fileType: FileType.image,
                               fileToShow: file,
                               pageType: PageTypeEnum.messagingPage,
@@ -93,6 +94,7 @@ class AttachmentListContainerVertical extends StatelessWidget {
                     case MediaType.document:
                       context.read<MessageBloc>().add(
                             OpenDeviceFileAndSaveToDbEvent(
+                              context: rootContext,
                               isGroup: isGroup,
                               groupModel: groupModel,
                               receiverID: chatModel?.receiverID ?? '',
@@ -108,6 +110,7 @@ class AttachmentListContainerVertical extends StatelessWidget {
                         context,
                         MaterialPageRoute(builder: (context) {
                           return SelectContactPage(
+                            rootContext: rootContext,
                             isGroup: isGroup,
                             groupModel: groupModel,
                             pageType: PageTypeEnum.sendContactSelectPage,
@@ -123,12 +126,16 @@ class AttachmentListContainerVertical extends StatelessWidget {
                         title: "Share location",
                         subtitle: "Do you want to share your location",
                         onPressed: () {
-                          rootContext.read<MessageBloc>().add(LocationPickEvent(
-                              chatModel: chatModel,
-                              isGroup: isGroup,
-                              receiverContactName: receiverContactName,
-                              receiverID: chatModel?.receiverID,
-                              groupModel: groupModel,),);
+                          rootContext.read<MessageBloc>().add(
+                                LocationPickEvent(
+                                  context: rootContext,
+                                  chatModel: chatModel,
+                                  isGroup: isGroup,
+                                  receiverContactName: receiverContactName,
+                                  receiverID: chatModel?.receiverID,
+                                  groupModel: groupModel,
+                                ),
+                              );
                           Navigator.pop(rootContext);
                         },
                         actionButtonName: "Share location",
@@ -137,6 +144,7 @@ class AttachmentListContainerVertical extends StatelessWidget {
                     case MediaType.audio:
                       context.read<MessageBloc>().add(
                             OpenDeviceFileAndSaveToDbEvent(
+                              context: rootContext,
                               isGroup: isGroup,
                               groupModel: groupModel,
                               receiverID: chatModel?.receiverID ?? '',

@@ -9,7 +9,9 @@ import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
+import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
+import 'package:official_chatbox_application/core/service/notification_service.dart';
 import 'package:official_chatbox_application/core/utils/chat_asset_send_methods.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/message_methods.dart';
@@ -18,8 +20,10 @@ import 'package:official_chatbox_application/features/data/models/chat_model/cha
 import 'package:official_chatbox_application/features/data/models/contact_model/contact_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/message_model/message_model.dart';
+import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/domain/repositories/chat_repo/chat_repo.dart';
 import 'package:official_chatbox_application/features/domain/repositories/message_repo/message_repo.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/chat_home/chat_tile_widgets.dart';
 
 part 'message_event.dart';
 part 'message_state.dart';
@@ -58,6 +62,8 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     on<GetMessageDateEvent>(getMessageDateEvent);
     on<GetReplyMessageEvent>(getReplyMessageEvent);
     on<UnSelectEvent>(unSelectEvent);
+    on<SendNotifcationEvent>(sendNotifcationEvent);
+    on<SendGroupTopicNotifcationEvent>(sendGroupTopicNotifcationEvent);
   }
 
   FutureOr<void> getMessageDateEvent(
@@ -163,6 +169,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
 
       if (event.isGroup) {
         final value = await messageRepository.sendMessageToAGroupChat(
+          context: event.context,
           groupID: event.groupModel?.groupID,
           message: event.message,
         );
@@ -175,6 +182,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
               currentUserId: event.message.senderID!,
               receiverId: event.message.receiverID!);
           await messageRepository.sendMessage(
+            context: event.context,
             chatId: chatId,
             message: event.message,
             receiverContactName: event.receiverContactName,
@@ -182,6 +190,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           );
         } else {
           await messageRepository.sendMessage(
+            context: event.context,
             chatId: event.chatModel!.chatID,
             message: event.message,
             receiverContactName: event.receiverContactName,
@@ -243,6 +252,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
             senderID: firebaseAuth.currentUser?.uid,
           );
           final value = await messageRepository.sendMessageToAGroupChat(
+            context: event.context,
             groupID: event.groupModel?.groupID,
             message: photoMessage,
           );
@@ -263,6 +273,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
             senderID: event.chatModel?.senderID,
           );
           await messageRepository.sendMessage(
+            context: event.context,
             chatId: chatID,
             message: photoMessage,
             receiverContactName: event.receiverContactName,
@@ -325,6 +336,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
             senderID: firebaseAuth.currentUser?.uid,
           );
           final value = await messageRepository.sendMessageToAGroupChat(
+            context: event.context,
             groupID: event.groupModel?.groupID,
             message: videoMessage,
           );
@@ -345,6 +357,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
             senderID: event.chatModel?.senderID,
           );
           await messageRepository.sendMessage(
+            context: event.context,
             chatId: chatID,
             message: videoMessage,
             receiverContactName: event.receiverContactName,
@@ -441,6 +454,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           );
           final value = await messageRepository.sendMessageToAGroupChat(
             groupID: event.groupModel?.groupID,
+            context: event.context,
             message: message,
           );
           log("Group message: $value");
@@ -459,6 +473,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
             senderID: event.chatModel?.senderID,
           );
           await messageRepository.sendMessage(
+            context: event.context,
             chatId: chatID,
             message: message,
             receiverContactName: event.receiverContactName,
@@ -524,6 +539,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
               senderID: firebaseAuth.currentUser?.uid,
             );
             final value = await messageRepository.sendMessageToAGroupChat(
+              context: event.context,
               groupID: event.groupModel?.groupID,
               message: message,
             );
@@ -544,6 +560,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
               senderID: event.chatModel?.senderID,
             );
             await messageRepository.sendMessage(
+              context: event.context,
               chatId: chatID,
               message: message,
               receiverContactName: event.receiverContactName,
@@ -584,6 +601,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           File audioFile = File(path);
           add(
             AudioMessageSendEvent(
+              context: event.context,
               isGroup: event.isGroup,
               groupModel: event.groupModel,
               receiverContactName: event.receiverContactName,
@@ -641,6 +659,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           senderID: firebaseAuth.currentUser?.uid,
         );
         final value = await messageRepository.sendMessageToAGroupChat(
+          context: event.context,
           groupID: event.groupModel?.groupID,
           message: message,
         );
@@ -660,6 +679,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           senderID: event.chatModel?.senderID,
         );
         await messageRepository.sendMessage(
+          context: event.context,
           chatId: chatID,
           message: message,
           receiverContactName: event.receiverContactName,
@@ -749,6 +769,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           senderID: firebaseAuth.currentUser?.uid,
         );
         final value = await messageRepository.sendMessageToAGroupChat(
+          context: event.context,
           groupID: event.groupModel?.groupID,
           message: message,
         );
@@ -769,6 +790,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         );
         if (event.receiverContactName != null && event.receiverID != null) {
           await messageRepository.sendMessage(
+            context: event.context,
             chatId: chatID,
             message: message,
             receiverContactName: event.receiverContactName!,
@@ -817,6 +839,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
 
         add(
           LocationMessageSendEvent(
+            context: event.context,
             chatModel: event.chatModel,
             location: locationUrl,
             receiverID: event.receiverID,
@@ -922,6 +945,57 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         updatedSelectedIds.remove(event.messageId);
         emit(state.copyWith(selectedMessageIds: updatedSelectedIds));
       }
+    }
+  }
+
+  Future<FutureOr<void>> sendNotifcationEvent(
+      SendNotifcationEvent event, Emitter<MessageState> emit) async {
+    try {
+      final receiverDocument = await fireStore
+          .collection(usersCollection)
+          .doc(event.receiverID)
+          .get();
+          final senderDocument = await fireStore
+          .collection(usersCollection)
+          .doc(firebaseAuth.currentUser?.uid)
+          .get();
+      final receiverData = UserModel.fromJson(map: receiverDocument.data()!);
+      final senderData = UserModel.fromJson(map: senderDocument.data()!);
+      String messageToSend = messageByType(message: event.messageToSend);
+
+      await NotificationService.sendNotification(
+        receiverDeviceToken: receiverData.fcmToken!,
+        senderName: senderData.contactName ?? senderData.phoneNumber!,
+        messageToSend: messageToSend,
+        id: event.id,
+      );
+    } catch (e) {
+      emit(MessageErrorState(message: e.toString()));
+    }
+  }
+   Future<FutureOr<void>> sendGroupTopicNotifcationEvent(
+      SendGroupTopicNotifcationEvent event, Emitter<MessageState> emit) async {
+    try {
+      log("SENDER ID: ${event.messageToSend.senderID}");
+      log("Current USER ID: ${firebaseAuth.currentUser?.uid}");
+          final senderDocument = await fireStore
+          .collection(usersCollection)
+          .doc(event.messageToSend.senderID)
+          .get();
+          final groupDocument = await fireStore
+          .collection(usersCollection)
+          .doc(event.messageToSend.senderID)
+          .collection(groupsCollection).doc(event.groupid).get();
+      final senderData = UserModel.fromJson(map: senderDocument.data()!);
+      final groupData = GroupModel.fromJson(map: groupDocument.data()!);
+      String messageToSend = messageByType(message: event.messageToSend);
+      await NotificationService.sendGroupTopicNotification(
+        groupName: groupData.groupName!,
+        messageToSend: messageToSend,
+        groupid: event.groupid,
+      );
+    } catch (e) {
+      emit(MessageErrorState(message: e.toString()));
     }
   }
 }

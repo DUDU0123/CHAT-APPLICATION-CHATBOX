@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:official_chatbox_application/features/data/models/contact_model/contact_model.dart';
 import 'package:official_chatbox_application/features/domain/repositories/contact_repo/contact_repository.dart';
 
@@ -21,8 +22,8 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
     emit(ContactsLoadingState());
     try {
       log("Hello");
-      final List<ContactModel> contacts =
-          await contactRepository.getAccessToUserContacts();
+      final List<ContactModel> contacts = await contactRepository
+          .getAccessToUserContacts(context: event.context);
       log(contacts.length.toString());
       emit(ContactState(contactList: contacts));
     } catch (e) {
@@ -60,7 +61,7 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
       ClearListEvent event, Emitter<ContactState> emit) {
     try {
       emit(ContactState(
-          contactList: state.contactList, selectedContactList: const[]));
+          contactList: state.contactList, selectedContactList: const []));
     } catch (e) {
       emit(ContactsErrorState(message: e.toString()));
     }

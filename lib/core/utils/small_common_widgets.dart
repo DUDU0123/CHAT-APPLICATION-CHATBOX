@@ -5,6 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:official_chatbox_application/config/common_provider/common_provider.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
+import 'package:official_chatbox_application/core/utils/network_status_methods.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_icon_button_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
@@ -41,32 +42,40 @@ Widget countrySelectedShowWidget() {
   );
 }
 
-Widget commonAnimationWidget(
-    {required BuildContext context,
-    bool? isTextNeeded = true,
-    String? text,
-    double? fontSize,
-    String? lottie}) {
+
+Widget commonAnimationWidget({
+  required BuildContext context,
+  bool? isTextNeeded = true,
+  String? text,
+  double? fontSize,
+  String? lottie,
+}) {
   return Center(
     child: SizedBox(
       width: 200.w,
-      // height: screenHeight(context: context) / 2.8,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (isTextNeeded != null)
-            isTextNeeded
-                ? TextWidgetCommon(
-                    textAlign: TextAlign.center,
-                    text: text ?? "Creating Otp...",
-                    textColor: buttonSmallTextColor.withOpacity(0.8),
-                    fontWeight: FontWeight.bold,
-                    fontSize: fontSize ?? 26.sp,
-                  )
-                : zeroMeasureWidget,
-          Lottie.network(
+          if (isTextNeeded ?? false)
+            TextWidgetCommon(
+              textAlign: TextAlign.center,
+              text: text ?? "Creating Otp...",
+              textColor: buttonSmallTextColor.withOpacity(0.8),
+              fontWeight: FontWeight.bold,
+              fontSize: fontSize ?? 26.sp,
+            ),
+          LottieBuilder.network(
             lottie ??
                 'https://lottie.host/8d23344c-f904-4f4d-b66c-9193441547b9/1PlShH1AmG.json',
+            errorBuilder: (context, error, stackTrace) {
+              return  emptyShowWidget(context: context, text: "No data");
+            },
+            frameBuilder: (context, child, composition) {
+              if (composition == null) {
+                return emptyShowWidget(context: context, text: "No data");
+              }
+              return child;
+            },
           ),
         ],
       ),
@@ -226,19 +235,19 @@ Widget readMoreButton({
     ),
   );
 }
-Widget listTileCommonWidget({
-  Widget? leading,
-  Widget? trailing,
-  double? fontSize,
-  required String tileText,
-  FontWeight? fontWeight,
-  Color? textColor,
-  TextAlign? textAlign,
-  Color? subTitleTextColor,
-  String? subTitleTileText,
-  Widget? subTitle,
-  void Function()? onTap
-}) {
+
+Widget listTileCommonWidget(
+    {Widget? leading,
+    Widget? trailing,
+    double? fontSize,
+    required String tileText,
+    FontWeight? fontWeight,
+    Color? textColor,
+    TextAlign? textAlign,
+    Color? subTitleTextColor,
+    String? subTitleTileText,
+    Widget? subTitle,
+    void Function()? onTap}) {
   return ListTile(
     onTap: onTap,
     leading: leading,
@@ -259,12 +268,12 @@ Widget listTileCommonWidget({
 }
 
 Future<dynamic> animationLoadingDialogBoxTransparent(
-      {required BuildContext context}) {
-    return showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              backgroundColor: kTransparent,
-              content:
-                  commonAnimationWidget(context: context, isTextNeeded: false),
-            ));
-  }
+    {required BuildContext context}) {
+  return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            backgroundColor: kTransparent,
+            content:
+                commonAnimationWidget(context: context, isTextNeeded: false),
+          ));
+}

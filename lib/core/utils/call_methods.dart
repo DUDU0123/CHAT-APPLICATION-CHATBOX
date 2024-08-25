@@ -1,12 +1,23 @@
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/config/service_keys/zego_fields.dart';
+import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/call/call_bloc.dart';
+import 'package:official_chatbox_application/main.dart';
+import 'package:provider/provider.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 class CallMethods {
-  static void onUserLogin({required User? currentUser}) {
+  getCurrentUserRingtone() {}
+  static void onUserLogin({
+    required User? currentUser,
+    required BuildContext context,
+  }) {
     if (currentUser != null) {
       ZegoUIKitPrebuiltCallInvitationService().init(
           appID: ZegoFields.appId,
@@ -24,15 +35,46 @@ class CallMethods {
             },
             user: ZegoCallUserEvents(
               onEnter: (ZegoUIKitUser event) {
-                log("Call cleanup completed.");
+                log("Call cleanup onEnter completed.");
               },
               onLeave: (ZegoUIKitUser event) {
-                log("Call cleanup completed.");
+                log("Call cleanup onLeave completed.");
               },
             ),
             room: ZegoCallRoomEvents(
               onStateChanged: (ZegoUIKitRoomState state) {
-                log("Call cleanup completed.");
+                // final callState =
+                //     Provider.of<CallBloc>(context, listen: false).state;
+                // final currentCallId = callState.callId;
+                // final currentCallersId = callState.callersId;
+                 final currentCallId = callID;
+                final currentCallersId = callersID;
+                log("Call cleanup completed. ${state.reason}");
+                if (state.reason == ZegoRoomStateChangedReason.Logined) {
+                  log("Call Accepted");
+                  log("Callers Id: $currentCallersId, Call ID: $currentCallId");
+                  // if (currentCallersId != null && currentCallId != null) {
+                    Provider.of<CallBloc>(context, listen: false).add(
+                      UpdateCallStatusEvent(
+                        callId: currentCallId,
+                        callersId: currentCallersId,
+                        callStatus: 'accepted',
+                      ),
+                    );
+                  // }
+                } else if (state.reason == ZegoRoomStateChangedReason.Logout) {
+                  log("Call Ended");
+                  log("Callers Id: $currentCallersId, Call ID: $currentCallId");
+                  // if (currentCallersId != null && currentCallId != null) {
+                    Provider.of<CallBloc>(context, listen: false,).add(
+                      UpdateCallStatusEvent(
+                        callId: currentCallId,
+                        callersId: currentCallersId,
+                        callStatus: 'ended',
+                      ),
+                    );
+                  // }
+                }
               },
             ),
             onCallEnd: (event, defaultAction) {
@@ -40,9 +82,11 @@ class CallMethods {
               if (event.reason == ZegoCallEndReason.remoteHangUp) {
                 log("Call accepted and ended by the receiver.");
               } else if (event.reason == ZegoCallEndReason.kickOut) {
+                log("Call accepted and kikckout by the receiver.");
               } else if (event.reason == ZegoCallEndReason.abandoned) {
+                log("Call accepted abandoned.");
               } else {
-                log("Call ended for another reason: ${event.reason}");
+                log("Call ended for another reason: ${event.reason} by receiver");
               }
               defaultAction();
               log("Call cleanup completed.");

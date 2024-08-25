@@ -35,6 +35,7 @@ class CreateAccountPage extends StatelessWidget {
               builder: (context, state) {
                 if (state is OtpSentState) {
                   return commonAnimationWidget(
+                    isTextNeeded: false,
                     context: context,
                   );
                 }

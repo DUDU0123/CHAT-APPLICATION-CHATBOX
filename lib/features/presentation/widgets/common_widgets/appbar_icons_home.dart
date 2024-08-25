@@ -35,7 +35,7 @@ List<Widget> appBarIconsHome(
         ? addChatButtonHome(
             theme: theme,
             onTap: () {
-              context.read<ContactBloc>().add(GetContactsEvent());
+              context.read<ContactBloc>().add(GetContactsEvent(context: context));
               Navigator.push(
                 context,
                 MaterialPageRoute(

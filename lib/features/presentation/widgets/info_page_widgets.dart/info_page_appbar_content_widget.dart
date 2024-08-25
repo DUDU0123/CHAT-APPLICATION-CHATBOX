@@ -46,7 +46,7 @@ Widget infoPageAppBarContentWidget({
                   containerRadius: 45,
                   context: context,
                 )
-          : groupData?.groupProfileImage != null && isGroup
+          : isGroup
               ? StreamBuilder<GroupModel?>(
                   stream: CommonDBFunctions.getOneGroupDataByStream(
                     userID: firebaseAuth.currentUser!.uid,

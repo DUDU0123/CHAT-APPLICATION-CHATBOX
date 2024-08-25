@@ -44,89 +44,91 @@ class _GroupDetailsAddPageState extends State<GroupDetailsAddPage> {
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 8.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: screenWidth(context: context),
-              // color: Colors.amberAccent,
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () async {
-                      File? pickedImageFile =
-                          await pickImage(imageSource: ImageSource.gallery);
-                      if (mounted) {
-                        context.read<GroupBloc>().add(
-                            GroupImagePickEvent(pickedFile: pickedImageFile));
-                      }
-                    },
-                    child: BlocBuilder<GroupBloc, GroupState>(
-                      builder: (context, state) {
-                        return Container(
-                          alignment: Alignment.center,
-                          height: 85.h,
-                          width: 85.w,
-                          decoration: BoxDecoration(
-                            color: kRed,
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: state.groupPickedImageFile != null
-                                  ? state.groupPickedImageFile!.path
-                                          .isNotEmpty
-                                      ? FileImage(state.groupPickedImageFile!)
-                                      : const AssetImage(appLogo)
-                                  : const AssetImage(appLogo),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.camera_alt_outlined,
-                            color: kBlack,
-                            size: 30.sp,
-                          ),
-                        );
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: screenWidth(context: context),
+                // color: Colors.amberAccent,
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () async {
+                        File? pickedImageFile =
+                            await pickImage(imageSource: ImageSource.gallery);
+                        if (mounted) {
+                          context.read<GroupBloc>().add(
+                              GroupImagePickEvent(pickedFile: pickedImageFile));
+                        }
                       },
+                      child: BlocBuilder<GroupBloc, GroupState>(
+                        builder: (context, state) {
+                          return Container(
+                            alignment: Alignment.center,
+                            height: 85.h,
+                            width: 85.w,
+                            decoration: BoxDecoration(
+                              color: kRed,
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                image: state.groupPickedImageFile != null
+                                    ? state.groupPickedImageFile!.path
+                                            .isNotEmpty
+                                        ? FileImage(state.groupPickedImageFile!)
+                                        : const AssetImage(appLogo)
+                                    : const AssetImage(appLogo),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.camera_alt_outlined,
+                              color: kBlack,
+                              size: 30.sp,
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                  kWidth15,
-                  Expanded(
-                    child: TextFieldCommon(
-                      controller: groupNameController,
-                      textAlign: TextAlign.start,
-                      border: const UnderlineInputBorder(),
-                      maxLines: 1,
-                      hintText: "Enter group name",
-                      labelText: "New group",
+                    kWidth15,
+                    Expanded(
+                      child: TextFieldCommon(
+                        controller: groupNameController,
+                        textAlign: TextAlign.start,
+                        border: const UnderlineInputBorder(),
+                        maxLines: 1,
+                        hintText: "Enter group name",
+                        labelText: "New group",
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            kHeight30,
-            CommonGradientTileWidget(
-              onTap: () {
-                log("Nav");
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const GroupPermissionsPage(),
-                  ),
-                );
-              },
-              rootContext: context,
-              isSmallTitle: false,
-              title: "Group Permissions",
-              trailing: Icon(
-                Icons.settings,
-                color: kWhite,
+              kHeight30,
+              CommonGradientTileWidget(
+                onTap: () {
+                  log("Nav");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const GroupPermissionsPage(),
+                    ),
+                  );
+                },
+                rootContext: context,
+                isSmallTitle: false,
+                title: "Group Permissions",
+                trailing: Icon(
+                  Icons.settings,
+                  color: kWhite,
+                ),
               ),
-            ),
-            kHeight30,
-            const TextWidgetCommon(text: "Members"),
-            kHeight10,
-            const SelectedContactShowWidget(),
-          ],
+              kHeight30,
+              const TextWidgetCommon(text: "Members"),
+              kHeight10,
+              const SelectedContactShowWidget(),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingDoneNavigateButton(

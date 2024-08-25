@@ -159,7 +159,7 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                                   receiverContactName:
                                       widget.receiverContactName,
                                   chatModel: widget.chatModel,
-                                  context: context,
+                                  rootContext: context,
                                 );
                               },
                               icon: SvgPicture.asset(
@@ -204,6 +204,7 @@ class _ChatBarWidgetState extends State<ChatBarWidget> {
                             } else {
                               context.read<MessageBloc>().add(
                                     AudioRecordToggleEvent(
+                                      context: context,
                                       isGroup: widget.isGroup,
                                       groupModel: widget.groupModel,
                                       receiverID:

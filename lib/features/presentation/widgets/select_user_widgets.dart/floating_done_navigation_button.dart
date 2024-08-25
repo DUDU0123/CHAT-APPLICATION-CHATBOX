@@ -35,6 +35,7 @@ class FloatingDoneNavigateButton extends StatefulWidget {
     required this.isStatus,
     this.messageType,
     this.messageContent,
+    this.rootContext,
   });
 
   final ChatModel? chatModel;
@@ -52,6 +53,7 @@ class FloatingDoneNavigateButton extends StatefulWidget {
   final String? uploadedStatusModelID;
   final MessageType? messageType;
   final String? messageContent;
+  final BuildContext? rootContext;
 
   @override
   State<FloatingDoneNavigateButton> createState() =>
@@ -68,14 +70,17 @@ class _FloatingDoneNavigateButtonState
 
         switch (widget.pageType) {
           case PageTypeEnum.sendContactSelectPage:
-            ContactMethods.sendSelectedContactMessage(
-              selectedContactList: widget.selectedContactList,
-              receiverContactName: widget.receiverContactName,
-              context: context,
-              isGroup: widget.isGroup,
-              groupModel: widget.groupModel,
-              chatModel: widget.chatModel,
-            );
+            if (widget.rootContext != null) {
+              ContactMethods.sendSelectedContactMessage(
+                selectedContactList: widget.selectedContactList,
+                receiverContactName: widget.receiverContactName,
+                context: widget.rootContext!,
+                isGroup: widget.isGroup,
+                groupModel: widget.groupModel,
+                chatModel: widget.chatModel,
+              );
+            }
+
             break;
           case PageTypeEnum.groupMemberSelectPage:
             GroupMethods
@@ -106,14 +111,18 @@ class _FloatingDoneNavigateButtonState
                   (status) =>
                       status.uploadedStatusId == widget.uploadedStatusModelID);
 
-              StatusMethods.shareStatusToAnyChat(
-                selectedContactList: widget.selectedContactList,
-                uploadedStatusModel: sendingStatus,
-                messageBloc: messageBloc,
-              );
+              if (mounted) {
+                StatusMethods.shareStatusToAnyChat(
+                  context: context,
+                  selectedContactList: widget.selectedContactList,
+                  uploadedStatusModel: sendingStatus,
+                  messageBloc: messageBloc,
+                );
+              }
             } else {
               if (widget.messageContent != null && widget.messageType != null) {
                 MessageMethods.shareMessage(
+                  context: context,
                   selectedContactList: widget.selectedContactList,
                   messageBloc: messageBloc,
                   messageType: widget.messageType!,
