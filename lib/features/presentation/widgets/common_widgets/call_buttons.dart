@@ -21,6 +21,7 @@ Widget callButtonsMethods({
   required CallBloc callBloc,
   required ThemeData theme,
   required BuildContext context,
+  Color? buttonIconColor,
 }) {
   if (chatModel != null) {
     log("Chatmodel not null");
@@ -49,7 +50,7 @@ Widget callButtonsMethods({
           width: isVideoCall ? 37.w : 30.w,
           height: isVideoCall ? 37.h : 30.w,
           colorFilter: ColorFilter.mode(
-            theme.colorScheme.onPrimary,
+            buttonIconColor ?? theme.colorScheme.onPrimary,
             BlendMode.srcIn,
           ),
         ),
@@ -99,7 +100,7 @@ Widget callButtonsMethods({
           width: isVideoCall ? 37.w : 30.w,
           height: isVideoCall ? 37.h : 30.w,
           colorFilter: ColorFilter.mode(
-            theme.colorScheme.onPrimary,
+            buttonIconColor ?? theme.colorScheme.onPrimary,
             BlendMode.srcIn,
           ),
         ),

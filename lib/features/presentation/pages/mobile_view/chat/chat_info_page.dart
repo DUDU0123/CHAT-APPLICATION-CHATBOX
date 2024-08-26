@@ -13,6 +13,7 @@ import 'package:official_chatbox_application/features/data/models/chat_model/cha
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/report_model/report_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/call/call_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/select_contacts/select_contact_page.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat_home/chat_tile_actions_on_longpress_method.dart';
@@ -105,12 +106,22 @@ class ChatInfoPage extends StatelessWidget {
               : zeroMeasureWidget,
         ],
       ),
-      body: chatInfoPageBody(groupNameEditController, context, isAdmin),
+      body: chatInfoPageBody(
+        callBloc: context.read<CallBloc>(),
+        groupNameEditController: groupNameEditController,
+        receiverData: receiverData,
+        context: context,
+        isAdmin: isAdmin,
+      ),
     );
   }
 
-  Padding chatInfoPageBody(TextEditingController groupNameEditController,
-      BuildContext context, bool isAdmin) {
+  Padding chatInfoPageBody(
+      {required TextEditingController groupNameEditController,
+      required UserModel? receiverData,
+      required BuildContext context,
+      required bool isAdmin,
+      required CallBloc callBloc}) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w),
       child: SingleChildScrollView(
@@ -126,10 +137,22 @@ class ChatInfoPage extends StatelessWidget {
               receiverContactName: receiverContactName,
             ),
             kHeight20,
-            infoPageActionIconsBlueGradient(
-              context: context,
-              isGroup: isGroup,
-            ),
+            receiverData?.id != firebaseAuth.currentUser?.uid
+                ? infoPageActionIconsBlueGradient(
+                    callBloc: callBloc,
+                    chatModel: chatModel,
+                    groupModel: groupData,
+                    receiverTitle: receiverData != null
+                        ? receiverData.contactName ?? receiverData.phoneNumber!
+                        : groupData!.groupName!,
+                    receiverImage: receiverData != null
+                        ? receiverData.contactName ??
+                            receiverData.userProfileImage
+                        : groupData!.groupProfileImage,
+                    context: context,
+                    isGroup: isGroup,
+                  )
+                : zeroMeasureWidget,
             chatDescriptionOrAbout(
               groupData: groupData,
               context: context,

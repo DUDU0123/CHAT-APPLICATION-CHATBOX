@@ -53,31 +53,33 @@ Widget commonAnimationWidget({
   return Center(
     child: SizedBox(
       width: 200.w,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          if (isTextNeeded ?? false)
-            TextWidgetCommon(
-              textAlign: TextAlign.center,
-              text: text ?? "Creating Otp...",
-              textColor: buttonSmallTextColor.withOpacity(0.8),
-              fontWeight: FontWeight.bold,
-              fontSize: fontSize ?? 26.sp,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (isTextNeeded ?? false)
+              TextWidgetCommon(
+                textAlign: TextAlign.center,
+                text: text ?? "Creating Otp...",
+                textColor: buttonSmallTextColor.withOpacity(0.8),
+                fontWeight: FontWeight.bold,
+                fontSize: fontSize ?? 26.sp,
+              ),
+            LottieBuilder.network(
+              lottie ??
+                  'https://lottie.host/8d23344c-f904-4f4d-b66c-9193441547b9/1PlShH1AmG.json',
+              errorBuilder: (context, error, stackTrace) {
+                return  emptyShowWidget(context: context, text: "No data");
+              },
+              frameBuilder: (context, child, composition) {
+                if (composition == null) {
+                  return emptyShowWidget(context: context, text: "No data");
+                }
+                return child;
+              },
             ),
-          LottieBuilder.network(
-            lottie ??
-                'https://lottie.host/8d23344c-f904-4f4d-b66c-9193441547b9/1PlShH1AmG.json',
-            errorBuilder: (context, error, stackTrace) {
-              return  emptyShowWidget(context: context, text: "No data");
-            },
-            frameBuilder: (context, child, composition) {
-              if (composition == null) {
-                return emptyShowWidget(context: context, text: "No data");
-              }
-              return child;
-            },
-          ),
-        ],
+          ],
+        ),
       ),
     ),
   );

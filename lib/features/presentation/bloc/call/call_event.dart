@@ -45,23 +45,16 @@ class GetCurrentCallIdAndCallersId extends CallEvent {
     required this.callersId,
   });
   @override
-  List<Object> get props => [
-        callId,
-        callersId
-      ];
+  List<Object> get props => [callId, callersId];
 }
+
 class UpdateCallStatusEvent extends CallEvent {
-  final String callId;
-  final List<String?> callersId;
   final String callStatus;
   const UpdateCallStatusEvent({
-    required this.callId,
-    required this.callersId,
     required this.callStatus,
   });
   @override
   List<Object> get props => [
-        callId,
-        callersId, callStatus
+        callStatus,
       ];
 }

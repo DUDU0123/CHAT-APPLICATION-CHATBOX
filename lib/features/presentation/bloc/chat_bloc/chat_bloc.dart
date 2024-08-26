@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
+import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
@@ -11,6 +13,7 @@ import 'package:official_chatbox_application/features/data/models/message_model/
 import 'package:official_chatbox_application/features/data/models/report_model/report_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/domain/repositories/chat_repo/chat_repo.dart';
+import 'package:rxdart/rxdart.dart';
 part 'chat_event.dart';
 part 'chat_state.dart';
 
@@ -28,6 +31,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<ChatUpdateEvent>(chatUpdateEvent);
     on<ReportAccountEvent>(reportAccountEvent);
     on<CheckIsBlockedUserEvent>(checkIsBlockedUserEvent);
+    on<ChatSearchEvent>(chatSearchEvent);
   }
 
   FutureOr<void> createANewChatEvent(
@@ -130,7 +134,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   Future<FutureOr<void>> reportAccountEvent(
       ReportAccountEvent event, Emitter<ChatState> emit) async {
     try {
-      final value = await chatRepo.reportAccount(reportModel: event.reportModel);
+      final value =
+          await chatRepo.reportAccount(reportModel: event.reportModel);
       log(name: "reported user", value.toString());
       if (value) {
         commonSnackBarWidget(
@@ -147,20 +152,51 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   Future<FutureOr<void>> checkIsBlockedUserEvent(
       CheckIsBlockedUserEvent event, Emitter<ChatState> emit) async {
     try {
-      if (event.currentUserId !=null && event.receiverID!=null) {
+      if (event.currentUserId != null && event.receiverID != null) {
         final isBlockedUser = await CommonDBFunctions.checkIfIsBlocked(
-        receiverId: event.receiverID!,
-        currentUserId: event.currentUserId!,
-      );
-      state.copyWith(
-        isBlockedUser: isBlockedUser,
-        chatList: state.chatList,
-        message: state.message,
-        pickedFile: state.pickedFile,
-      );
+          receiverId: event.receiverID!,
+          currentUserId: event.currentUserId!,
+        );
+        state.copyWith(
+          isBlockedUser: isBlockedUser,
+          chatList: state.chatList,
+          message: state.message,
+          pickedFile: state.pickedFile,
+        );
       }
     } catch (e) {
       emit(ChatErrorState(errormessage: e.toString()));
     }
+  }
+
+  FutureOr<void> chatSearchEvent(
+      ChatSearchEvent event, Emitter<ChatState> emit) {
+    final debouncedSearchStream = Rx.timer(
+      event.searchInput,
+      const Duration(milliseconds: 500),
+    ).flatMap((searchInput) {
+      final searchStream = fireStore
+          .collection(usersCollection)
+          .doc(firebaseAuth.currentUser?.uid)
+          .collection(chatsCollection)
+          .where(receiverNameInChatList, isGreaterThanOrEqualTo: searchInput)
+          .where(receiverNameInChatList, isLessThanOrEqualTo: searchInput + '\uf8ff')
+          .snapshots();
+
+      // Map the Firestore snapshots into a list of UserModel
+      final filteredUserStream = searchStream.map((snapshot) {
+        return snapshot.docs
+            .map((doc) => ChatModel.fromJson(doc.data()))
+            .toList();
+      });
+
+      return filteredUserStream;
+    });
+
+    emit(
+      state.copyWith(
+        chatList: debouncedSearchStream,
+      ),
+    );
   }
 }

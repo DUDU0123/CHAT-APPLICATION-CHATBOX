@@ -43,36 +43,25 @@ class CallMethods {
             ),
             room: ZegoCallRoomEvents(
               onStateChanged: (ZegoUIKitRoomState state) {
-                // final callState =
-                //     Provider.of<CallBloc>(context, listen: false).state;
-                // final currentCallId = callState.callId;
-                // final currentCallersId = callState.callersId;
-                 final currentCallId = callID;
-                final currentCallersId = callersID;
                 log("Call cleanup completed. ${state.reason}");
                 if (state.reason == ZegoRoomStateChangedReason.Logined) {
                   log("Call Accepted");
-                  log("Callers Id: $currentCallersId, Call ID: $currentCallId");
-                  // if (currentCallersId != null && currentCallId != null) {
-                    Provider.of<CallBloc>(context, listen: false).add(
-                      UpdateCallStatusEvent(
-                        callId: currentCallId,
-                        callersId: currentCallersId,
-                        callStatus: 'accepted',
-                      ),
-                    );
+                  Provider.of<CallBloc>(context, listen: false).add(
+                    const UpdateCallStatusEvent(
+                      callStatus: 'accepted',
+                    ),
+                  );
                   // }
                 } else if (state.reason == ZegoRoomStateChangedReason.Logout) {
                   log("Call Ended");
-                  log("Callers Id: $currentCallersId, Call ID: $currentCallId");
-                  // if (currentCallersId != null && currentCallId != null) {
-                    Provider.of<CallBloc>(context, listen: false,).add(
-                      UpdateCallStatusEvent(
-                        callId: currentCallId,
-                        callersId: currentCallersId,
-                        callStatus: 'ended',
-                      ),
-                    );
+                  Provider.of<CallBloc>(
+                    context,
+                    listen: false,
+                  ).add(
+                    const UpdateCallStatusEvent(
+                      callStatus: 'ended',
+                    ),
+                  );
                   // }
                 }
               },

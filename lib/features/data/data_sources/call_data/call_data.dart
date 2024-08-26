@@ -17,7 +17,10 @@ class CallData {
     required this.firebaseFirestore,
   });
 
-  Future<void> saveCallInfo({required CallModel callModel, required BuildContext context,}) async {
+  Future<void> saveCallInfo({
+    required CallModel callModel,
+    required BuildContext context,
+  }) async {
     try {
       final callersId = [
         firebaseAuth.currentUser?.uid,
@@ -36,13 +39,12 @@ class CallData {
             .doc(callId)
             .set(updatedCallModel.toJson());
       }
-      log("Callers Id: $callersId, Call ID: $callId");
       Provider.of<CallBloc>(context, listen: false).add(
-            GetCurrentCallIdAndCallersId(
-              callId: callId,
-              callersId: callersId,
-            ),
-          );
+        GetCurrentCallIdAndCallersId(
+          callId: callId,
+          callersId: callersId,
+        ),
+      );
     } on FirebaseException catch (e) {
       log("Firebase Error on save call ${e.message}");
       if (e.code == 'unavailable') {

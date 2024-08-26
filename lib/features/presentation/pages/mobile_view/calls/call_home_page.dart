@@ -163,7 +163,8 @@ class _CallHomePageState extends State<CallHomePage> {
                                               ? Icons.arrow_forward_outlined
                                               : Icons.arrow_back_outlined,
                                           color: callModel.callStatus != null
-                                              ? callModel.callStatus=='not_accepted'
+                                              ? callModel.callStatus ==
+                                                      'not_accepted'
                                                   ? kRed
                                                   : kGreen
                                               : kRed,
@@ -178,69 +179,15 @@ class _CallHomePageState extends State<CallHomePage> {
                                       )
                                     ],
                                   ),
-                                  trailing:
-                                      //  GestureDetector(
-                                      //   onTap: () async {
-                                      //     chatModel = callModel.chatModelId != null
-                                      //         ? await CommonDBFunctions
-                                      //             .getChatModelByChatID(
-                                      //             chatModelId:
-                                      //                 callModel.chatModelId!,
-                                      //           )
-                                      //         : null;
-                                      //   },
-                                      // //   child:
-                                      //    callButtonsMethods(
-                                      //     callBloc: callBloc,
-                                      //     chatModel: chatModel,
-                                      //     groupModel: groupModel,
-                                      //     isVideoCall:
-                                      //         callModel.callType == CallType.audio
-                                      //             ? false
-                                      //             : true,
-                                      //     theme: theme,
-                                      //     receiverTitle: callModel.receiverName!,
-                                      //     receiverImage: callModel.receiverImage,
-                                      //   ),
-                                      // ),
-                                      IconButton(
-                                    onPressed: () async {
-                                      final theme = Theme.of(context);
-                                      final callBloc = context.read<CallBloc>();
-
-                                      final groupModel =
-                                          callModel.groupModelId != null
-                                              ? await CommonDBFunctions
-                                                  .getGroupDetailsByGroupID(
-                                                      userID: firebaseAuth
-                                                          .currentUser!.uid,
-                                                      groupID: callModel
-                                                          .groupModelId!)
-                                              : null;
-                                      callButtonsMethods(
-                                        context: context,
-                                        callBloc: callBloc,
-                                        chatModel: chatModel,
-                                        groupModel: groupModel,
-                                        isVideoCall:
-                                            callModel.callType == CallType.audio
-                                                ? false
-                                                : true,
-                                        theme: theme,
-                                        receiverTitle: callModel.receiverName!,
-                                        receiverImage: callModel.receiverImage,
-                                      );
-                                    },
-                                    icon: SvgPicture.asset(
-                                      callModel.callType == CallType.audio
-                                          ? call
-                                          : videoCall,
-                                      width: 26.w,
-                                      height: 26.h,
-                                      colorFilter: ColorFilter.mode(
-                                        Theme.of(context).colorScheme.onPrimary,
-                                        BlendMode.srcIn,
-                                      ),
+                                  trailing: SvgPicture.asset(
+                                    callModel.callType == CallType.audio
+                                        ? call
+                                        : videoCall,
+                                    width: 26.w,
+                                    height: 26.h,
+                                    colorFilter: ColorFilter.mode(
+                                      Theme.of(context).colorScheme.onPrimary,
+                                      BlendMode.srcIn,
                                     ),
                                   ),
                                 );

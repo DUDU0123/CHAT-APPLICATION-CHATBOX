@@ -88,3 +88,13 @@ class CheckIsBlockedUserEvent extends ChatEvent {
         receiverID??"",
       ];
 }
+class ChatSearchEvent extends ChatEvent {
+  final String searchInput;
+  const ChatSearchEvent(
+  { required this.searchInput,}
+  );
+  @override
+  List<Object> get props => [
+        searchInput,
+      ];
+}

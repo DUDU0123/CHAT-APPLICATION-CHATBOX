@@ -7,7 +7,6 @@ import 'package:official_chatbox_application/config/bloc_providers/all_bloc_prov
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/features/data/models/call_model/call_model.dart';
 import 'package:official_chatbox_application/features/domain/repositories/call_repo/call_repository.dart';
-import 'package:official_chatbox_application/main.dart';
 part 'call_event.dart';
 part 'call_state.dart';
 
@@ -62,13 +61,12 @@ class CallBloc extends Bloc<CallEvent, CallState> {
   FutureOr<void> getCurrentCallIdAndCallersId(
       GetCurrentCallIdAndCallersId event, Emitter<CallState> emit) {
     try {
-      log("Callers ${event.callId}and ${event.callersId} callid getting");
-      callID = event.callId;
-      callersID = event.callersId;
+      log("Callers ${event.callId}and ${event.callersId} callid From Bloc");
       emit(
-        state.copyWith(
+        CallState(
           callId: event.callId,
           callersId: event.callersId,
+          callLogList: state.callLogList
         ),
       );
     } catch (e) {
@@ -79,18 +77,21 @@ class CallBloc extends Bloc<CallEvent, CallState> {
   Future<FutureOr<void>> updateCallStatusEvent(
       UpdateCallStatusEvent event, Emitter<CallState> emit) async {
     try {
-
-      for (var callerID in event.callersId) {
-        log("Data updating");
-        await fireStore
-            .collection(usersCollection)
-            .doc(callerID)
-            .collection(callsCollection)
-            .doc(event.callId)
-            .update({
-          dbCallStatus: event.callStatus,
-        });
+      log("Callers ${state.callersId}and ${state.callId} callid From Bloc Update Status");
+      if (state.callersId != null) {
+        for (var callerID in state.callersId!) {
+          log("Data updating");
+          await fireStore
+              .collection(usersCollection)
+              .doc(callerID)
+              .collection(callsCollection)
+              .doc(state.callId)
+              .update({
+            dbCallStatus: event.callStatus,
+          });
+        }
       }
+
       add(GetAllCallLogEvent());
     } catch (e) {
       emit(CallErrorState(errorMessage: e.toString()));

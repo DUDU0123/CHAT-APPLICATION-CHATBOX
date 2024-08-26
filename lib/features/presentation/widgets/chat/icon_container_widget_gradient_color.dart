@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
@@ -17,19 +16,9 @@ Widget iconContainerWidgetGradientColor({
         GestureDetector(
           onTap: onTap,
           child: Container(
-            width: size?.w?? 100.w,
-            height: size?.h?? 100.w,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14.sp),
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  darkLinearGradientColorOne,
-                  darkLinearGradientColorTwo,
-                ],
-              ),
-            ),
+            width: size?.w ?? 100.w,
+            height: size?.h ?? 100.w,
+            decoration: gradientButtonDecoration(),
             child: GestureDetector(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -39,12 +28,7 @@ Widget iconContainerWidgetGradientColor({
                     size: 30.sp,
                     color: kWhite,
                   ),
-                  TextWidgetCommon(
-                    text: subtitle,
-                    fontSize: 16.sp,
-                    textColor: kWhite,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  gradientButtonText(subtitle: subtitle),
                 ],
               ),
             ),
@@ -52,5 +36,30 @@ Widget iconContainerWidgetGradientColor({
         ),
       ],
     ),
+  );
+}
+
+BoxDecoration gradientButtonDecoration() {
+  return BoxDecoration(
+            borderRadius: BorderRadius.circular(14.sp),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                darkLinearGradientColorOne,
+                darkLinearGradientColorTwo,
+              ],
+            ),
+          );
+}
+
+Widget gradientButtonText({
+  required String subtitle,
+}) {
+  return TextWidgetCommon(
+    text: subtitle,
+    fontSize: 16.sp,
+    textColor: kWhite,
+    fontWeight: FontWeight.w500,
   );
 }

@@ -22,7 +22,7 @@ class CallState extends Equatable {
   }
 
   @override
-  List<Object> get props => [callLogList ?? []];
+  List<Object> get props => [callLogList ?? [], callId??'', callersId??''];
 }
 
 final class CallInitial extends CallState {}

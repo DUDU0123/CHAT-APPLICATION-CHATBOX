@@ -12,10 +12,13 @@ import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/date_provider.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
+import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/call/call_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat/icon_container_widget_gradient_color.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/call_buttons.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/info_page_widgets.dart/group_description_add_page.dart';
 import 'package:provider/provider.dart';
@@ -198,26 +201,63 @@ Widget aboutDescriptionWidget({
 Widget infoPageActionIconsBlueGradient({
   required bool isGroup,
   required BuildContext context,
+  required ChatModel? chatModel,
+  required GroupModel? groupModel,
+  required String receiverTitle,
+  required String? receiverImage,
+  required CallBloc callBloc,
 }) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
-      iconContainerWidgetGradientColor(
-        size: 75.sp,
-        subtitle: "Audio",
-        icon: Icons.call,
-        onTap: () {},
+      Container(
+        height: 80,
+        padding: EdgeInsets.symmetric(
+          horizontal: 20.w,
+        ),
+        decoration: gradientButtonDecoration(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            callButtonsMethods(
+              chatModel: chatModel,
+              groupModel: groupModel,
+              isVideoCall: false,
+              receiverTitle: receiverTitle,
+              receiverImage: receiverImage,
+              callBloc: callBloc,
+              theme: Theme.of(context),
+              context: context,
+              buttonIconColor: kWhite
+            ),
+            gradientButtonText(subtitle: "Audio")
+          ],
+        ),
       ),
       kWidth10,
-      iconContainerWidgetGradientColor(
-        size: 75.sp,
-        subtitle: !isGroup ? "Video" : "Chat",
-        icon: !isGroup ? Icons.videocam_outlined : Icons.chat_outlined,
-        onTap: () {
-          if (isGroup) {
-            Navigator.pop(context);
-          }
-        },
+      Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: 20.w,
+        ),
+        height: 80,
+        decoration: gradientButtonDecoration(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            callButtonsMethods(
+              buttonIconColor: kWhite,
+              chatModel: chatModel,
+              groupModel: groupModel,
+              isVideoCall: true,
+              receiverTitle: receiverTitle,
+              receiverImage: receiverImage,
+              callBloc: callBloc,
+              theme: Theme.of(context),
+              context: context,
+            ),
+            gradientButtonText(subtitle: "Video")
+          ],
+        ),
       ),
       kWidth10,
     ],
