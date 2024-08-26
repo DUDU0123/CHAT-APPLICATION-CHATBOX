@@ -170,23 +170,6 @@ class MessageMethods {
           ),
         );
         log("Chatmodel id : ${chatModel?.chatID}");
-    // String? id;
-    // if (chatModel != null) {
-    //   id = chatModel.chatID;
-    // } else {
-    //   id = groupModel?.groupID;
-    // }
-    //  log("ID NULL: $id ");
-    // if (id != null) {
-    //   log("ID NULL: $id ");
-    //   context.read<MessageBloc>().add(
-    //         SendNotifcationEvent(
-    //           id: id,
-    //           messageToSend: message,
-    //           receiverID: chatModel!.receiverID!,
-    //         ),
-    //       );
-    // }
     messageController.clear();
   }
 

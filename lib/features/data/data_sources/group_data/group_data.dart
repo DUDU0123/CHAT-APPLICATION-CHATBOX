@@ -19,27 +19,33 @@ class GroupData {
   });
   // group subscription for sending notification
   static Future<void> subscribeUserToGroupTopic(
-      String userId, String groupId) async {
+     {required String userId,required String groupid,}) async {
     try {
       final userDoc =
           await fireStore.collection(usersCollection).doc(userId).get();
-      final userData = UserModel.fromJson(map: userDoc.data()!);
-      log('user id:::::${userData.id}');
-      if (userData.fcmToken != null) {
-        await FirebaseMessaging.instance.subscribeToTopic('group_$groupId');
-        log("Subscription done.........");
+      if (userDoc.exists) {
+        final userData = UserModel.fromJson(map: userDoc.data()!);
+        log('User ID: ${userData.id}');
+        if (userData.fcmToken != null && userData.fcmToken!.isNotEmpty) {
+          log("FCM Token: ${userData.fcmToken}");
+          await FirebaseMessaging.instance.subscribeToTopic('group_$groupid');
+          log("Successfully subscribed to group topic: group_$groupid");
+        } else {
+          log("User FCM Token is null or empty.");
+        }
+      } else {
+        log("User document does not exist.");
       }
     } catch (e) {
       log("Error subscribing to group topic: ${e.toString()}");
     }
   }
 
-  // group unsubscription for not sending notification
   static Future<void> unsubscribeUserFromGroupTopic(
-      String userId, String groupId) async {
+    {required  String userId,required String groupId,}) async {
     try {
       await FirebaseMessaging.instance.unsubscribeFromTopic('group_$groupId');
-      log("unSubscription done.........");
+      log("Successfully unsubscribed from group topic: group_$groupId");
     } catch (e) {
       log("Error unsubscribing from group topic: ${e.toString()}");
     }
@@ -91,9 +97,6 @@ class GroupData {
 
       // iterating through each user id and creating group in their groups collection using the id of the group doc before created
       for (String userID in newGroupData.groupMembers!) {
-        updatedGroupData.groupID != null
-            ? await subscribeUserToGroupTopic(userID, updatedGroupData.groupID!)
-            : null;
         final newDocumentRefernce = firebaseFirestore
             .collection(usersCollection)
             .doc(userID)
@@ -118,6 +121,9 @@ class GroupData {
 
       await batch.commit();
       log("Group created successfully with ID: $groupDocumentID");
+      for (String userID in newGroupData.groupMembers!) {
+        await subscribeUserToGroupTopic(userId:  userID,groupid: updatedGroupData.groupID!);
+      }
       return true;
     } on FirebaseException catch (e) {
       log("From new group creation firebase: ${e.toString()}");

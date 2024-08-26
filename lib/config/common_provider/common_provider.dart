@@ -7,13 +7,6 @@ class CommonProvider extends ChangeNotifier {
   String appStorage = '';
   double deviceFreeStorage = 0.0;
   bool isEmojiPickerOpened = false;
-  String currentCallId = '';
-  List<String?> currentCallersId = [];
-
-  void getCurrentCallDetails({required String currentCallId, required List<String?> currentCallersId,}){
-    currentCallId = currentCallId;
-    currentCallersId = currentCallersId;
-  }
   void setEmojiPickerStatus(){
     isEmojiPickerOpened =!isEmojiPickerOpened;
     notifyListeners();

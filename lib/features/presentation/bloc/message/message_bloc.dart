@@ -955,7 +955,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           .collection(usersCollection)
           .doc(event.receiverID)
           .get();
-          final senderDocument = await fireStore
+      final senderDocument = await fireStore
           .collection(usersCollection)
           .doc(firebaseAuth.currentUser?.uid)
           .get();
@@ -973,26 +973,24 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       emit(MessageErrorState(message: e.toString()));
     }
   }
-   Future<FutureOr<void>> sendGroupTopicNotifcationEvent(
+
+  Future<FutureOr<void>> sendGroupTopicNotifcationEvent(
       SendGroupTopicNotifcationEvent event, Emitter<MessageState> emit) async {
     try {
-      log("SENDER ID: ${event.messageToSend.senderID}");
-      log("Current USER ID: ${firebaseAuth.currentUser?.uid}");
-          final senderDocument = await fireStore
+      final groupDocument = await fireStore
           .collection(usersCollection)
           .doc(event.messageToSend.senderID)
+          .collection(groupsCollection)
+          .doc(event.groupid)
           .get();
-          final groupDocument = await fireStore
-          .collection(usersCollection)
-          .doc(event.messageToSend.senderID)
-          .collection(groupsCollection).doc(event.groupid).get();
-      final senderData = UserModel.fromJson(map: senderDocument.data()!);
+      log("Group id from event bloc: ${event.groupid}");
       final groupData = GroupModel.fromJson(map: groupDocument.data()!);
+      log("Group id from bloc: ${groupData.groupID}");
       String messageToSend = messageByType(message: event.messageToSend);
       await NotificationService.sendGroupTopicNotification(
         groupName: groupData.groupName!,
         messageToSend: messageToSend,
-        groupid: event.groupid,
+        groupid: groupData.groupID!,
       );
     } catch (e) {
       emit(MessageErrorState(message: e.toString()));

@@ -44,8 +44,8 @@ class GroupHomePage extends StatelessWidget {
                 if (!snapshot.hasData ||
                     snapshot.data == null ||
                     snapshot.data!.isEmpty) {
-                  return commonErrorWidget(
-                    message: "No groups",
+                  return emptyShowWidget(
+                    text: "No groups",context: context,
                   );
                 }
                 return ListView.separated(

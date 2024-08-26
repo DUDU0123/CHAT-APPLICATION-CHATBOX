@@ -215,14 +215,14 @@ class AppBlocProvider {
         ),
       )..add(GetAllAIChatMessages()),
     ),
-    // BlocProvider(
-    //   create: (context) => PaymentBloc(
-    //     paymentRepository: PaymentRepositoryImpl(
-    //       paymentData: PaymentData(
-    //         firebaseFirestore: fireStore,
-    //       ),
-    //     ),
-    //   ),
-    // ),
+    BlocProvider(
+      create: (context) => PaymentBloc(
+        paymentRepository: PaymentRepositoryImpl(
+          paymentData: PaymentData(
+            firebaseFirestore: fireStore,
+          ),
+        ),
+      ),
+    ),
   ];
 }

@@ -12,6 +12,11 @@ import io.flutter.embedding.engine.FlutterEngine
 import android.os.Environment
 import android.os.StatFs
 import android.widget.Toast
+import io.flutter.plugin.common.MethodCall
+import android.content.ContentResolver
+import android.net.Uri
+import android.provider.MediaStore
+import android.provider.Settings
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterActivity() {
@@ -21,22 +26,20 @@ class MainActivity: FlutterActivity() {
     private val TOAST_SHOWER_CHANNEL = "toastshowerchannel"
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, NOTIFICATION_TONE_GIVER)
-            .setMethodCallHandler { call, result ->
-                when (call.method) {
-                    "getAllNotificationTones" -> {
-                        val notficationTones = getAllNotificationTones(this)
-                        result.success(notficationTones);
-                    }
-                }
-            }
+
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, RINGTONE_GIVER)
             .setMethodCallHandler { call, result ->
                 when (call.method) {
-                    "getAllRingtones" -> {
-                        val ringtones = getAllRingtones(this)
-                        result.success(ringtones);
-                    }
+                    "getDeviceRingtoneName" -> result.success(getDeviceRingtoneName())
+                    else -> result.notImplemented()
+                }
+            }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, NOTIFICATION_TONE_GIVER)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "getDeviceNotificationToneName" -> result.success(getDeviceNotificationToneName())
+                    else -> result.notImplemented()
                 }
             }
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, DISK_SPACE_GIVER)
@@ -62,31 +65,36 @@ class MainActivity: FlutterActivity() {
     }
 
     // methods
-    private fun getAllNotificationTones(context: Context): List<String> {
-        val manager = RingtoneManager(context)
-        manager.setType(RingtoneManager.TYPE_NOTIFICATION)
-        val cursor: Cursor = manager.cursor
-        val list: MutableList<String> = mutableListOf()
-        while (cursor.moveToNext()) {
-            val notificationTitle: String = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX)
-            list.add(notificationTitle)
-        }
-        cursor.close()
-        return list
+     private fun getDeviceRingtoneName(): String {
+        val ringtoneUri = Settings.System.DEFAULT_RINGTONE_URI
+        return getRingtoneName(contentResolver, ringtoneUri)
     }
 
-    private fun getAllRingtones(context: Context): List<String> {
-        val manager = RingtoneManager(context)
-        manager.setType(RingtoneManager.TYPE_RINGTONE)
-        val cursor: Cursor = manager.cursor
-        val list: MutableList<String> = mutableListOf()
-        while (cursor.moveToNext()) {
-            val ringtoneTitle: String = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX)
-            list.add(ringtoneTitle)
-        }
-        cursor.close()
-        return list
+    private fun getDeviceNotificationToneName(): String {
+        val notificationUri = Settings.System.DEFAULT_NOTIFICATION_URI
+        return getRingtoneName(contentResolver, notificationUri)
     }
+
+    private fun getRingtoneName(contentResolver: ContentResolver, uri: Uri): String {
+    val projection = arrayOf(MediaStore.Audio.Media.TITLE)
+    val cursor = contentResolver.query(uri, projection, null, null, null)
+    
+    return if (cursor != null && cursor.moveToFirst()) {
+        val titleIndex = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)
+        if (titleIndex != -1) {
+            val title = cursor.getString(titleIndex)
+            cursor.close()
+            title
+        } else {
+            cursor.close()
+            "Unknown"
+        }
+    } else {
+        cursor?.close()
+        "Unknown"
+    }
+}
+
 
     private fun getFreeDiskSpace(): Double {
         val stat = StatFs(

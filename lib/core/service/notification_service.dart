@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart' as google_apis_auth;
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -8,6 +9,7 @@ import 'package:official_chatbox_application/config/bloc_providers/all_bloc_prov
 import 'package:official_chatbox_application/config/service_keys/firebase_keys.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/main.dart';
+import 'package:path_provider/path_provider.dart';
 
 class NotificationService {
   static final firebaseMessaging = FirebaseMessaging.instance;
@@ -147,6 +149,7 @@ class NotificationService {
     }
   }
 
+
   // local notification init
   static localNotificationInit() {
     AndroidInitializationSettings androidInitializationSettings =
@@ -189,7 +192,6 @@ class NotificationService {
         priority: Priority.high,
         playSound: true,
         ticker: 'ticker',
-        // sound: RawResourceAndroidNotificationSound(_sound)
       );
       NotificationDetails platformChannelsSpecific = NotificationDetails(
         android: androidNotificationDetails,

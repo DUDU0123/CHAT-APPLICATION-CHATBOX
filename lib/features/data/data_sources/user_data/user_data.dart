@@ -191,6 +191,26 @@ class UserData {
         }
       }
       await userDoc.delete();
+      final allUsers = await firestore.collection(usersCollection).get();
+      for (final user in allUsers.docs) {
+        if (user.id != userId) {
+          final otherUserChats = firestore
+              .collection(usersCollection)
+              .doc(user.id)
+              .collection(chatsCollection)
+              .where(receiverId,
+                  isEqualTo:
+                      userId,); // Assuming 'receiverID' is the field to identify the chat with the deleting user
+
+          final otherUserChatDocs = await otherUserChats.get();
+          for (final chatDoc in otherUserChatDocs.docs) {
+            if (chatDoc.exists) {
+              await chatDoc.reference
+                  .delete(); // Delete the chat with the deleting user
+            }
+          }
+        }
+      }
     } on FirebaseAuthException catch (e) {
       log(
         'Firebase Auth exception: $e',
@@ -501,8 +521,7 @@ class UserData {
       );
       return false;
     } catch (e, stackTrace) {
-      log('Error while tfa pin update in database: $e',
-          stackTrace: stackTrace);
+      log('Error while tfa pin update in database: $e', stackTrace: stackTrace);
       return false;
     }
   }

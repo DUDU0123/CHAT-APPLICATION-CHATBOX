@@ -56,13 +56,14 @@ class MessageData {
       );
       WriteBatch batch = firestore.batch();
       batch.set(groupMessageDocumentReference, updatedMessageModel.toJson());
-      context.read<MessageBloc>().add(
-              SendGroupTopicNotifcationEvent(
-                groupid: groupData.groupID!,
-                messageToSend: message,
-              ),
-            );
+      
       for (var userId in groupData.groupMembers!) {
+        context.read<MessageBloc>().add(
+            SendGroupTopicNotifcationEvent(
+              groupid: groupData.groupID!,
+              messageToSend: message,
+            ),
+          );
         final newDocReference = firestore
             .collection(usersCollection)
             .doc(userId)

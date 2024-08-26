@@ -75,7 +75,7 @@ class GroupMethods {
         for (var selectedContact in selectedContactList) {
           updatedGroupMembers.add(selectedContact.chatBoxUserId!);
           if (selectedContact.chatBoxUserId!=null && groupModel!=null) {
-            GroupData.subscribeUserToGroupTopic(selectedContact.chatBoxUserId!, groupModel.groupID!);
+            GroupData.subscribeUserToGroupTopic(userId: selectedContact.chatBoxUserId!,groupid: groupModel.groupID!);
           }
         }
         final updatedGroupData =

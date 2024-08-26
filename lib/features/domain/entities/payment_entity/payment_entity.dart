@@ -4,12 +4,16 @@ class PaymentEntity extends Equatable {
   final String? id;
   final String? transactionID;
   final String? amountSended;
-  final String? receiverID;
+  final String? paymentReceiverName;
+  final String? paymentReceiverProfilePhoto;
+  final String? paymentReceiverContactNumber;
   const PaymentEntity({
     this.id,
     this.transactionID,
-    this.receiverID,
+    this.paymentReceiverName,
+    this.paymentReceiverProfilePhoto,
     this.amountSended,
+    this.paymentReceiverContactNumber,
   });
 
   @override
@@ -18,7 +22,9 @@ class PaymentEntity extends Equatable {
       id,
       transactionID,
       amountSended,
-      receiverID,
+      paymentReceiverName,
+      paymentReceiverProfilePhoto,
+      paymentReceiverContactNumber,
     ];
   }
 }

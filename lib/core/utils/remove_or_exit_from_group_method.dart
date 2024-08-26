@@ -33,7 +33,7 @@ void removeOrExitFromGroupMethod({
       log("Also outside");
       updatedGroupMembers.remove(groupMemberSnapshot.data?.id);
       if (groupMemberSnapshot.data!=null && groupData.groupID!=null) {
-         GroupData.unsubscribeUserFromGroupTopic(groupMemberSnapshot.data!.id!, groupData.groupID!);
+         GroupData.unsubscribeUserFromGroupTopic(userId: groupMemberSnapshot.data!.id!,groupId: groupData.groupID!);
       }
       final updatedGroupData = groupData.copyWith(
         groupMembers: updatedGroupMembers.toList(),

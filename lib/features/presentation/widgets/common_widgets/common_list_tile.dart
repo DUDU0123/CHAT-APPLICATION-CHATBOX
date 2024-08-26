@@ -6,7 +6,7 @@ import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 
 Widget commonListTile({
-  required void Function()? onTap,
+  void Function()? onTap,
   required String title,
   String? subtitle,
   Widget? leading,
