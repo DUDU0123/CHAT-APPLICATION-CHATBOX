@@ -964,6 +964,8 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       String messageToSend = messageByType(message: event.messageToSend);
 
       await NotificationService.sendNotification(
+        chatModel: event.chatModel,
+        receiverID: event.receiverID,
         receiverDeviceToken: receiverData.fcmToken!,
         senderName: senderData.contactName ?? senderData.phoneNumber!,
         messageToSend: messageToSend,
@@ -988,6 +990,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       log("Group id from bloc: ${groupData.groupID}");
       String messageToSend = messageByType(message: event.messageToSend);
       await NotificationService.sendGroupTopicNotification(
+        groupModel: event.groupModel,
         groupName: groupData.groupName!,
         messageToSend: messageToSend,
         groupid: groupData.groupID!,

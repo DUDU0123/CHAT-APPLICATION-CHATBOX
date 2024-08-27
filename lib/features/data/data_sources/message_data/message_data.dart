@@ -60,6 +60,7 @@ class MessageData {
       for (var userId in groupData.groupMembers!) {
         context.read<MessageBloc>().add(
             SendGroupTopicNotifcationEvent(
+              groupModel: groupData,
               groupid: groupData.groupID!,
               messageToSend: message,
             ),
@@ -156,8 +157,10 @@ class MessageData {
       }
 
       if (chatId != null) {
+         final chatModel = await CommonDBFunctions.getChatModelByChatID(chatModelId: chatId);
         context.read<MessageBloc>().add(
               SendNotifcationEvent(
+                chatModel: chatModel,
                 id: chatId,
                 messageToSend: message,
                 receiverID: message.receiverID!,

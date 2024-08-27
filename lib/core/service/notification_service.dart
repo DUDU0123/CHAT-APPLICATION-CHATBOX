@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart' as google_apis_auth;
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -8,6 +10,9 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/config/service_keys/firebase_keys.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
+import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
+import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
+import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chat/chat_room_page.dart';
 import 'package:official_chatbox_application/main.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -75,6 +80,8 @@ class NotificationService {
     required String senderName,
     required String messageToSend,
     required String id,
+    required ChatModel? chatModel, // Add ChatModel parameter
+    required String receiverID,
   }) async {
     try {
       final String serverAccessTokenKey = await getAccessToken();
@@ -89,6 +96,10 @@ class NotificationService {
           },
           'data': {
             'id': id,
+            'chatModel': jsonEncode(
+                chatModel?.toJson()), // Convert ChatModel to JSON string
+            'isGroup': 'false',
+            'receiverID': receiverID,
           },
         }
       };
@@ -114,6 +125,7 @@ class NotificationService {
     required String groupName,
     required String messageToSend,
     required String groupid,
+    required GroupModel groupModel,
   }) async {
     try {
       final String serverAccessTokenKey = await getAccessToken();
@@ -128,6 +140,9 @@ class NotificationService {
           },
           'data': {
             'groupid': groupid,
+            'groupModel': jsonEncode(
+                groupModel.toJson()), // Convert GroupModel to JSON string
+            'isGroup': 'true',
           },
         }
       };
@@ -148,7 +163,6 @@ class NotificationService {
       log("Exception occured $e");
     }
   }
-
 
   // local notification init
   static localNotificationInit() {
@@ -177,6 +191,26 @@ class NotificationService {
     // firebase foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage remoteMessage) async {
       log("onMessage: ${remoteMessage.notification?.title} and ${remoteMessage.notification?.body}");
+      // Accessing custom data from the remote message
+      String userName = remoteMessage.data['userName'] ?? 'Unknown';
+      bool isGroup =
+          remoteMessage.data['isGroup'] == 'true'; // Convert string to boolean
+      String chatModelJson = remoteMessage.data['chatModel'] ?? '{}';
+      String groupModelJson = remoteMessage.data['groupModel'] ?? '{}';
+      String receiverID = remoteMessage.data['receiverID'] ?? 'unknown';
+
+      // Deserialize chatModel and groupModel from JSON if needed
+      ChatModel? chatModel;
+      GroupModel? groupModel;
+
+      if (chatModelJson.isNotEmpty) {
+        chatModel = ChatModel.fromJson(jsonDecode(chatModelJson));
+      }
+
+      if (groupModelJson.isNotEmpty && groupModelJson != 'null') {
+        groupModel = GroupModel.fromJson(map: jsonDecode(groupModelJson));
+      }
+
       BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
         remoteMessage.notification!.body.toString(),
         htmlFormatBigText: true,
@@ -197,19 +231,63 @@ class NotificationService {
         android: androidNotificationDetails,
       );
       await flutterLocalNotificationsPlugin.show(
-          0,
-          remoteMessage.notification?.title,
-          remoteMessage.notification?.body,
-          platformChannelsSpecific,
-          payload: remoteMessage.data['body']);
+        0,
+        remoteMessage.notification?.title,
+        remoteMessage.notification?.body,
+        platformChannelsSpecific,
+        payload: jsonEncode({
+          'userName': userName,
+          'isGroup': isGroup,
+          'chatModel': chatModel?.toJson(),
+          'groupModel':
+              groupModel?.toJson(), // or groupModel.toJson() if it's a group
+          'receiverID': receiverID
+        }),
+      );
     });
   }
 
   static void onNotificationTap(NotificationResponse notificationResponse) {
-    navigatorKey.currentState?.pushNamed(
-      "/chat_home",
-      arguments: notificationResponse,
-    );
+    // Ensure that the payload contains the required data
+    if (notificationResponse.payload != null) {
+      try {
+        // Assuming the payload contains a JSON string with all required data
+        final Map<String, dynamic> payloadData =
+            jsonDecode(notificationResponse.payload!);
+
+        String userName = payloadData['userName'] ?? 'Unknown';
+        bool isGroup = payloadData['isGroup'] == true;
+        String receiverID = payloadData['receiverID'] ?? '';
+
+        ChatModel? chatModel;
+        GroupModel? groupModel;
+
+        if (payloadData['chatModel'] != null) {
+          chatModel = ChatModel.fromJson(payloadData['chatModel']);
+        }
+
+        if (isGroup && payloadData['groupModel'] != null) {
+          groupModel = GroupModel.fromJson(map: payloadData['groupModel']);
+        }
+
+        // Navigate to ChatRoomPage with extracted data
+        navigatorKey.currentState?.push(
+          MaterialPageRoute(
+            builder: (context) => ChatRoomPage(
+              userName: userName,
+              isGroup: isGroup,
+              chatModel: chatModel,
+              groupModel: groupModel,
+              receiverID: receiverID,
+            ),
+          ),
+        );
+      } catch (e) {
+        log('Error processing notification payload: $e');
+      }
+    } else {
+      log('No payload in notification response.');
+    }
   }
 
   // inapp

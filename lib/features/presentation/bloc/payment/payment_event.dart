@@ -24,17 +24,23 @@ class AddPaymentOnDBEvent extends PaymentEvent {
 
 class TransactionInitiateEvent extends PaymentEvent {
   final String upiId;
-  final double amountToPay;
+  final String amountToPay;
   final String receiverName;
+  final String? profilePhoto;
+  final String? contactNumber;
   const TransactionInitiateEvent({
     required this.upiId,
     required this.amountToPay,
     required this.receiverName,
+    required this.profilePhoto,
+    required this.contactNumber,
   });
   @override
   List<Object> get props => [
         upiId,
         amountToPay,
         receiverName,
+        contactNumber??'',
+        profilePhoto??'',
       ];
 }

@@ -525,30 +525,34 @@ class UnSelectEvent extends MessageEvent {
 class SendNotifcationEvent extends MessageEvent {
   final MessageModel messageToSend;
   final String id;
+  final ChatModel? chatModel;
   final String receiverID;
   const SendNotifcationEvent({
     required this.messageToSend,
     required this.id,
+    required this.chatModel,
     required this.receiverID,
   });
   @override
   List<Object> get props => [
         messageToSend,
         id,
-        receiverID,
+        receiverID,chatModel??const ChatModel(),
       ];
 }
 
 class SendGroupTopicNotifcationEvent extends MessageEvent {
   final MessageModel messageToSend;
   final String groupid;
+  final GroupModel groupModel;
   const SendGroupTopicNotifcationEvent({
     required this.messageToSend,
     required this.groupid,
+    required this.groupModel,
   });
   @override
   List<Object> get props => [
         messageToSend,
-        groupid,
+        groupid,groupModel,
       ];
 }

@@ -51,7 +51,6 @@ class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
         if (firebaseAuth.currentUser != null &&
             context.watch<UserBloc>().state.currentUserData!.isDisabled!) {
           AppMethods.pop();
-          
         }
       }
     }
