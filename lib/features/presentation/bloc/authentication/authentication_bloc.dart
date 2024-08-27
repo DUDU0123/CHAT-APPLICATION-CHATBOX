@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/utils/app_methods.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
-import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/domain/repositories/authentication_repo/authentication_repo.dart';
 import 'package:official_chatbox_application/features/domain/repositories/user_repo/user_repository.dart';

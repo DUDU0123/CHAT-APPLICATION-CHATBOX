@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/features/domain/entities/chat_entity/chat_entity.dart';
@@ -15,7 +13,6 @@ class ChatModel extends ChatEntity {
     super.lastMessageType,
     super.notificationCount,
     super.receiverProfileImage,
-    super.attachmentsWithMessage,
     super.receiverName,
     super.isMuted,
     super.isIncomingMessage,
@@ -24,10 +21,7 @@ class ChatModel extends ChatEntity {
   });
 
   factory ChatModel.fromJson(Map<String, dynamic> map) {
-    log("Map Data: $map");
     return ChatModel(
-      // isGroup:map[isGroupChat]??false,
-      attachmentsWithMessage: map['attachments'],
       chatID: map[chatId],
       receiverID: map[receiverId],
       senderID: map[senderId],
@@ -36,11 +30,9 @@ class ChatModel extends ChatEntity {
       lastMessage: map[chatLastMessage],
       isMuted: map[chatMuted] ?? false,
       notificationCount: map[chatMessageNotificationCount],
-      // lastMessageStatus: MessageStatus.values.byName(map[lastChatStatus]),
       lastMessageStatus: map[lastChatStatus] != null
       ? MessageStatus.values.byName(map[lastChatStatus])
       : null,
-      // lastMessageType: MessageType.values.byName(map[lastChatType]),
       lastMessageType: map[lastChatType] != null
       ? MessageType.values.byName(map[lastChatType])
       : null,
@@ -64,7 +56,6 @@ class ChatModel extends ChatEntity {
       lastChatType: lastMessageType?.name,
       lastChatStatus: lastMessageStatus?.name,
       receiverNameInChatList: receiverName,
-      'attachments': attachmentsWithMessage,
       isIncoming: isIncomingMessage,
       isUserChatOpen: isChatOpen,
       dbchatWallpaper: chatWallpaper,
@@ -79,7 +70,6 @@ class ChatModel extends ChatEntity {
     String? lastMessageTime,
     MessageStatus? lastMessageStatus,
     MessageType? lastMessageType,
-    // bool? isGroup,
     int? notificationCount,
     String? receiverProfileImage,
     String? receiverName,
@@ -102,7 +92,6 @@ class ChatModel extends ChatEntity {
       isMuted: isMuted ?? this.isMuted,
       isIncomingMessage: isIncomingMessage ?? this.isIncomingMessage,
       isChatOpen: isChatOpen ?? this.isChatOpen,
-      // isGroup: isGroup??this.isGroup,
       chatWallpaper: chatWallpaper ?? this.chatWallpaper,
     );
   }

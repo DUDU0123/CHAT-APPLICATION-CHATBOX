@@ -8,7 +8,6 @@ class ChatEntity extends Equatable {
   final String? receiverName;
   final String? receiverProfileImage;
   
-  final List<MessageAttachmentModel>? attachmentsWithMessage;
   final bool? isMuted;
   final MessageStatus? lastMessageStatus;
   final String? lastMessage;
@@ -25,7 +24,6 @@ class ChatEntity extends Equatable {
     this.chatWallpaper,
     this.receiverName,
     this.receiverProfileImage,
-    this.attachmentsWithMessage,
     this.isMuted,
     this.lastMessageStatus,
     this.lastMessage,
@@ -52,7 +50,6 @@ class ChatEntity extends Equatable {
       lastMessageStatus,
       lastMessageType,
       receiverName,
-      attachmentsWithMessage,
       isIncomingMessage,
       isChatOpen,
       isGroup,chatWallpaper,

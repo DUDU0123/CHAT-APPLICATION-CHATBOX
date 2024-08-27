@@ -9,9 +9,7 @@ import 'package:official_chatbox_application/core/constants/database_name_consta
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
-import 'package:official_chatbox_application/features/data/models/message_model/message_model.dart';
 import 'package:official_chatbox_application/features/data/models/report_model/report_model.dart';
-import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/domain/repositories/chat_repo/chat_repo.dart';
 import 'package:rxdart/rxdart.dart';
 part 'chat_event.dart';

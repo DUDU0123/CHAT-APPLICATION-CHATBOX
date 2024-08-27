@@ -26,7 +26,7 @@ class AppMethods {
     }
   }
 
-  static void openAppNotificationToneChangeSettings() {
+  static void openAppToneChangeSettings() {
     if (Platform.isAndroid) {
       const intent = AndroidIntent(
         action: 'android.settings.SOUND_SETTINGS',
@@ -46,4 +46,19 @@ class AppMethods {
       intent.launch();
     } else {}
   }
+
+  static Future<String> getCurrentRingtone() async {
+  const ringtoneChannel = MethodChannel('ringtonegiver');
+  final deviceRingtoneName =
+      await ringtoneChannel.invokeMethod('getDeviceRingtoneName');
+  return deviceRingtoneName;
+}
+
+static Future<String> getCurrentNotificationTone() async {
+  const notificationChannel = MethodChannel('notificationtonegiver');
+  final deviceNotificationToneName =
+      await notificationChannel.invokeMethod('getDeviceNotificationToneName');
+  return deviceNotificationToneName;
+}
+
 }

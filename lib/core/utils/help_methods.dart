@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
@@ -6,8 +5,8 @@ import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_field_common.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class HelpMethods{
-static  Future<void> launchEmail(String email) async {
+class HelpMethods {
+  static Future<void> launchEmail(String email) async {
     final Uri emailLaunchUri = Uri(
       scheme: 'mailto',
       path: email,
@@ -20,6 +19,7 @@ static  Future<void> launchEmail(String email) async {
       throw 'Could not launch $emailLaunchUri';
     }
   }
+
   static Future<dynamic> contactUsBottomSheet({required BuildContext context}) {
     return showModalBottomSheet(
       shape: RoundedRectangleBorder(
@@ -55,7 +55,10 @@ static  Future<void> launchEmail(String email) async {
                 ),
                 enabled: false,
                 border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Theme.of(context).colorScheme.onPrimary,),),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
               ),
             ),
           ),
@@ -63,5 +66,4 @@ static  Future<void> launchEmail(String email) async {
       ),
     );
   }
-
 }

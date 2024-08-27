@@ -3,7 +3,7 @@ import 'package:official_chatbox_application/core/constants/database_name_consta
 import 'package:official_chatbox_application/features/domain/entities/contact_entity/contact_entity.dart';
 
 class ContactModel extends ContactEntity {
-  ContactModel({
+  const ContactModel({
     super.chatBoxUserId,
     super.userContactName,
     super.userAbout,

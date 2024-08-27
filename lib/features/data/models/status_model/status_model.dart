@@ -21,7 +21,6 @@ class StatusModel extends StatusEntity {
           ?.map((item) =>
               UploadedStatusModel.fromJson(item as Map<String, dynamic>))
           .toList(),
-          // timeStamp: map[dbStatusModelTimeStamp]
           timeStamp: map[dbStatusModelTimeStamp] is Timestamp
           ? (map[dbStatusModelTimeStamp] as Timestamp).toDate()
           : null,

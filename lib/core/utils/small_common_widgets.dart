@@ -5,7 +5,6 @@ import 'package:lottie/lottie.dart';
 import 'package:official_chatbox_application/config/common_provider/common_provider.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
-import 'package:official_chatbox_application/core/utils/network_status_methods.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_icon_button_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
@@ -42,7 +41,6 @@ Widget countrySelectedShowWidget() {
   );
 }
 
-
 Widget commonAnimationWidget({
   required BuildContext context,
   bool? isTextNeeded = true,
@@ -69,11 +67,11 @@ Widget commonAnimationWidget({
               lottie ??
                   'https://lottie.host/8d23344c-f904-4f4d-b66c-9193441547b9/1PlShH1AmG.json',
               errorBuilder: (context, error, stackTrace) {
-                return  emptyShowWidget(context: context, text: "No data");
+                return commonCircularProgressIndicator();
               },
               frameBuilder: (context, child, composition) {
                 if (composition == null) {
-                  return emptyShowWidget(context: context, text: "No data");
+                  return commonCircularProgressIndicator();
                 }
                 return child;
               },
@@ -190,6 +188,14 @@ Widget smallGreyMediumBoldTextWidget({
     fontSize: 12.sp,
     textColor: iconGreyColor,
     fontWeight: FontWeight.w500,
+  );
+}
+
+Widget commonCircularProgressIndicator() {
+  return Center(
+    child: CircularProgressIndicator(
+      color: buttonSmallTextColor,
+    ),
   );
 }
 

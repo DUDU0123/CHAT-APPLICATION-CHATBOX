@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart' as google_apis_auth;
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -14,7 +12,6 @@ import 'package:official_chatbox_application/features/data/models/chat_model/cha
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chat/chat_room_page.dart';
 import 'package:official_chatbox_application/main.dart';
-import 'package:path_provider/path_provider.dart';
 
 class NotificationService {
   static final firebaseMessaging = FirebaseMessaging.instance;
@@ -74,16 +71,17 @@ class NotificationService {
     });
   }
 
-  // send notification
+  // send notification for one to one chat
   static Future<void> sendNotification({
     required String receiverDeviceToken,
     required String senderName,
     required String messageToSend,
     required String id,
     required ChatModel? chatModel, // Add ChatModel parameter
-    required String receiverID,
+    required String messageNotificationReceiverID,
   }) async {
     try {
+      log("Chat model:: ${chatModel} and receiverId ::  ${chatModel?.senderID}");
       final String serverAccessTokenKey = await getAccessToken();
       String endpointFirebaseCloudMessaging =
           'https://fcm.googleapis.com/v1/projects/new-chat-box-social-app/messages:send';
@@ -96,10 +94,11 @@ class NotificationService {
           },
           'data': {
             'id': id,
+            'userName': senderName,
             'chatModel': jsonEncode(
-                chatModel?.toJson()), // Convert ChatModel to JSON string
+                chatModel?.toJson()),
             'isGroup': 'false',
-            'receiverID': receiverID,
+            'receiverID': chatModel?.receiverID,
           },
         }
       };
@@ -121,6 +120,7 @@ class NotificationService {
     }
   }
 
+  // send notification for group
   static Future<void> sendGroupTopicNotification({
     required String groupName,
     required String messageToSend,
@@ -139,6 +139,7 @@ class NotificationService {
             'body': messageToSend,
           },
           'data': {
+            'userName':groupName,
             'groupid': groupid,
             'groupModel': jsonEncode(
                 groupModel.toJson()), // Convert GroupModel to JSON string
@@ -211,6 +212,9 @@ class NotificationService {
         groupModel = GroupModel.fromJson(map: jsonDecode(groupModelJson));
       }
 
+       log("Chat model:: ${chatModel} and receiverId :: $receiverID");
+
+
       BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
         remoteMessage.notification!.body.toString(),
         htmlFormatBigText: true,
@@ -241,7 +245,7 @@ class NotificationService {
           'chatModel': chatModel?.toJson(),
           'groupModel':
               groupModel?.toJson(), // or groupModel.toJson() if it's a group
-          'receiverID': receiverID
+          'receiverID': receiverID,
         }),
       );
     });
@@ -289,44 +293,4 @@ class NotificationService {
       log('No payload in notification response.');
     }
   }
-
-  // inapp
-  static Future showSimpleNotification({
-    required String title,
-    required String body,
-    required String payload,
-  }) async {
-    const AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails(
-      'channelId',
-      'channelName',
-      channelDescription: '',
-      importance: Importance.max,
-      priority: Priority.high,
-      ticker: 'ticker',
-    );
-    const NotificationDetails notificationDetails = NotificationDetails(
-      android: androidNotificationDetails,
-    );
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      title,
-      body,
-      notificationDetails,
-      payload: payload,
-    );
-  }
 }
-// call init, local init inside main
-  // terminated
-  // FirebaseMessaging.onBackgroundMessage(backgroundMessaging);
-  // background
-  // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage remoteMessage) {
-  //   if (remoteMessage.notification != null) {
-  //     log("Geted notification");
-  //     navigatorKey.currentState?.pushNamed(
-  //       "/chat_home",
-  //       arguments: remoteMessage,
-  //     );
-  //   }
-  // });

@@ -3,10 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/config/common_provider/common_provider.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
-import 'package:official_chatbox_application/core/utils/media_methods.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/media/media_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/storage/media_files_list_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/storage/storage_widgets.dart';
 import 'package:provider/provider.dart';
 
 class StorageSettings extends StatefulWidget {
@@ -41,33 +41,14 @@ class _StorageSettingsState extends State<StorageSettings> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    dataLevelTextShowWidget(
-                      data: MediaMethods.formatStorageSize(double.parse(
-                          Provider.of<CommonProvider>(context).appStorage)),
-                      isUsed: true,
-                    ),
-                    dataLevelTextShowWidget(
-                      data: MediaMethods.formatStorageSize(
-                          Provider.of<CommonProvider>(context)
-                              .deviceFreeStorage),
-                      isUsed: false,
-                    ),
-                  ],
+                dataLevelRow(
+                  context: context,
                 ),
                 kHeight10,
                 Stack(
                   children: [
-                    Container(
-                      width: screenWidth(context: context),
-                      height: 15.h,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100.sp),
-                        color: buttonSmallTextColor
-                            .withOpacity(0.2), // Background color
-                      ),
+                    smallDotWidget(
+                      context: context,
                     ),
                     Container(
                       width:

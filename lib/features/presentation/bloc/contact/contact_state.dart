@@ -1,9 +1,9 @@
 part of 'contact_bloc.dart';
 
 class ContactState extends Equatable {
-  List<ContactModel>? contactList;
+  final List<ContactModel>? contactList;
   final List<ContactModel>? selectedContactList;
-  ContactState({this.contactList, this.selectedContactList = const [],});
+  const ContactState({this.contactList, this.selectedContactList = const [],});
 
   @override
   List<Object> get props => [contactList??[], selectedContactList??[]];

@@ -76,24 +76,10 @@ class MainActivity: FlutterActivity() {
     }
 
     private fun getRingtoneName(contentResolver: ContentResolver, uri: Uri): String {
-    val projection = arrayOf(MediaStore.Audio.Media.TITLE)
-    val cursor = contentResolver.query(uri, projection, null, null, null)
-    
-    return if (cursor != null && cursor.moveToFirst()) {
-        val titleIndex = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)
-        if (titleIndex != -1) {
-            val title = cursor.getString(titleIndex)
-            cursor.close()
-            title
-        } else {
-            cursor.close()
-            "Unknown"
-        }
-    } else {
-        cursor?.close()
-        "Unknown"
+        val ringtone = RingtoneManager.getRingtone(applicationContext, uri)
+        return ringtone.getTitle(applicationContext) ?: "Unknown"
     }
-}
+
 
 
     private fun getFreeDiskSpace(): Double {

@@ -1,26 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/app_methods.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_appbar_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_list_tile.dart';
-
-Future<String> getCurrentRingtone() async {
-  const ringtoneChannel = MethodChannel('ringtonegiver');
-  final deviceRingtoneName =
-      await ringtoneChannel.invokeMethod('getDeviceRingtoneName');
-  return deviceRingtoneName;
-}
-
-Future<String> getCurrentNotificationTone() async {
-  const notificationChannel = MethodChannel('notificationtonegiver');
-  final deviceNotificationToneName =
-      await notificationChannel.invokeMethod('getDeviceNotificationToneName');
-  return deviceNotificationToneName;
-}
 
 class NotificationSettings extends StatefulWidget {
   const NotificationSettings({super.key});
@@ -30,7 +16,11 @@ class NotificationSettings extends StatefulWidget {
 }
 
 class _NotificationSettingsState extends State<NotificationSettings> {
-  AudioPlayer player = AudioPlayer();
+  @override
+  void initState() {
+    context.read<UserBloc>().add(RingToneNotificationToneGetEvent());
+    super.initState();
+  }
   // await player
   @override
   Widget build(BuildContext context) {
@@ -44,36 +34,34 @@ class _NotificationSettingsState extends State<NotificationSettings> {
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-        child: Column(
-          children: [
-            FutureBuilder<String>(
-                future: getCurrentNotificationTone(),
-                builder: (context, snapshot) {
-                  return commonListTile(
-                    onTap: () {
-                      AppMethods.openAppNotificationToneChangeSettings();
-                    },
-                    title: "Notification tone",
-                    isSmallTitle: false,
-                    context: context,
-                    subtitle: snapshot.data ?? 'Default',
-                  );
-                }),
-            kHeight10,
-            FutureBuilder<String>(
-                future: getCurrentRingtone(),
-                builder: (context, snapshot) {
-                  return commonListTile(
-                    onTap: () {
-                      AppMethods.openRingtoneChangeSettings();
-                    },
-                    title: "Ringtone",
-                    isSmallTitle: false,
-                    context: context,
-                    subtitle: snapshot.data ?? 'Default',
-                  );
-                }),
-          ],
+        child: BlocBuilder<UserBloc, UserState>(
+          builder: (context, state) {
+            return Column(
+              children: [
+                commonListTile(
+                  onTap: () {
+                    Navigator.pop(context);
+                    AppMethods.openAppToneChangeSettings();
+                  },
+                  title: "Notification tone",
+                  isSmallTitle: false,
+                  context: context,
+                  subtitle: state.notificationTone ?? 'Default',
+                ),
+                kHeight10,
+                commonListTile(
+                  onTap: () {
+                    Navigator.pop(context);
+                    AppMethods.openAppToneChangeSettings();
+                  },
+                  title: "Ringtone",
+                  isSmallTitle: false,
+                  context: context,
+                  subtitle: state.ringtone ?? 'Default',
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

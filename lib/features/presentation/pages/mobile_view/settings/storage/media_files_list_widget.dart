@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,7 +7,6 @@ import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/utils/media_methods.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/media/media_bloc.dart';
-import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/media/media_widgets.dart';
 
 BlocBuilder<MediaBloc, MediaState> mediaFilesListWidget() {
@@ -92,78 +90,4 @@ BlocBuilder<MediaBloc, MediaState> mediaFilesListWidget() {
   );
 }
 
-// Widget dataLevelTextShowWidget({
-//   required String data,
-//   required bool isUsed,
-// }) {
-//   return Column(
-//     crossAxisAlignment: CrossAxisAlignment.start,
-//     children: [
-//       SizedBox(
-//         width: 90.w,
-//         //color: buttonSmallTextColor,
-//         child: Stack(
-//           children: [
-//             TextWidgetCommon(
-//               text: data,
-//               fontWeight: FontWeight.w500,
-//               fontSize: 35.sp,
-//             ),
-//             // Positioned(
-//             //   right: 0,
-//             //   bottom: 5.h,
-//             //   child: TextWidgetCommon(
-//             //     text: "MB",
-//             //     fontWeight: FontWeight.normal,
-//             //     fontSize: 20.sp,
-//             //   ),
-//             // ),
-//           ],
-//         ),
-//       ),
-//       TextWidgetCommon(
-//         text: isUsed ? "Used" : "Free",
-//         textColor: iconGreyColor,
-//       ),
-//     ],
-//   );
-// }
-Widget dataLevelTextShowWidget({
-  required String data,
-  required bool isUsed,
-}) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      SizedBox(
-        // width: 90.w,
-        child: RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: data.split(' ')[0], // Numeric part
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 35.sp,
-                  color: Colors.black, // Adjust the color as needed
-                ),
-              ),
-              TextSpan(
-                text: " ${data.split(' ')[1]}", // Unit part (MB, GB, etc.)
-                style: TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontSize: 20.sp,
-                  color: Colors.black, // Adjust the color as needed
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      TextWidgetCommon(
-        text: isUsed ? "Used" : "Free",
-        textColor: iconGreyColor,
-      ),
-    ],
-  );
-}
+

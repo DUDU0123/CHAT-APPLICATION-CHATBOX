@@ -100,8 +100,6 @@ class AIData {
       );
       return false;
     } catch (e) {
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.toString());
       return false;
     }
   }
@@ -174,8 +172,6 @@ class AIData {
         contentText: "Please check your network connection",
       );
     } catch (e) {
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.toString());
       return null;
     }
   }
@@ -207,8 +203,6 @@ class AIData {
       );
       return false;
     } catch (e) {
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.toString());
       return true;
     }
   }
@@ -242,8 +236,6 @@ class AIData {
       return false;
     } catch (e) {
       log("Chat AI clear chat error: $e");
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.toString());
       return false;
     }
   }

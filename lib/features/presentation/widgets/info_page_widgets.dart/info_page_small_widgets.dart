@@ -48,20 +48,6 @@ Widget chatDescriptionOrAbout({
   required GroupModel? groupData,
   required UserModel? receiverData,
 }) {
-  log(receiverData.toString());
-  // final isShowableAbout = context
-  //         .watch<UserBloc>()
-  //         .state
-  //         .userPrivacySettings![receiverData?.id]?[userDbAboutPrivacy] ??
-  //     false;
-
-  //     log("Setting::::${context
-  //         .watch<UserBloc>()
-  //         .state
-  //         .userPrivacySettings![receiverData?.id]}");
-
-  //         log(isShowableAbout.toString());
-
   return StreamBuilder<GroupModel?>(
       stream: groupData != null
           ? CommonDBFunctions.getOneGroupDataByStream(

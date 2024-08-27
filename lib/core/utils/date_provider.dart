@@ -45,9 +45,6 @@ class DateProvider {
     if (messageDateTime.day == now.day &&
         messageDateTime.month == now.month &&
         messageDateTime.year == now.year) {
-      // Today
-      // return DateFormat.Hm()
-      //     .format(messageDateTime); // 24-hour time format (e.g., 10:00)
        return  !isInsideChat!? DateFormat.jm()
           .format(messageDateTime): "Today";
     } else if (messageDateTime.day == yesterday.day &&

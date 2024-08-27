@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/ai/ai_small_widgets.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat/icon_container_widget_gradient_color.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/divider_common.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
@@ -73,27 +74,4 @@ class AIChatInfoPage extends StatelessWidget {
       ),
     );
   }
-}
-Widget boxAITitle({double? fontSize}) {
-  return TextWidgetCommon(
-    overflow: TextOverflow.ellipsis,
-    text: "BOX AI",
-    fontWeight: FontWeight.bold,
-    fontSize: fontSize ?? 20.sp,
-  );
-}
-
-Widget imageContainer({
-  required double size,
-}) {
-  return Container(
-    height: size.h,
-    width: size.w,
-    decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-        image: DecorationImage(
-          image: AssetImage(appLogo),
-          fit: BoxFit.cover,
-        )),
-  );
 }

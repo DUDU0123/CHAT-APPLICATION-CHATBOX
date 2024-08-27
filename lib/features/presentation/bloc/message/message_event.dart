@@ -526,18 +526,18 @@ class SendNotifcationEvent extends MessageEvent {
   final MessageModel messageToSend;
   final String id;
   final ChatModel? chatModel;
-  final String receiverID;
+  final String messageNotificationReceiverID;
   const SendNotifcationEvent({
     required this.messageToSend,
     required this.id,
     required this.chatModel,
-    required this.receiverID,
+    required this.messageNotificationReceiverID,
   });
   @override
   List<Object> get props => [
         messageToSend,
         id,
-        receiverID,chatModel??const ChatModel(),
+        messageNotificationReceiverID,chatModel??const ChatModel(),
       ];
 }
 

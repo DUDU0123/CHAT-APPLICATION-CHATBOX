@@ -96,9 +96,4 @@ class UserRepositoryImpl extends UserRepository {
   Future<bool> updateTfaPinInDB({required String tfaPin}) {
     return userData.updateTFAPin(tfaPin: tfaPin);
   }
-
-  // @override
-  // Future<void> deleteUserFilesInDB({required String fullPathToFile}) {
-  //   return userData.deleteUserFilesInDB(fullPathToFile: fullPathToFile);
-  // }
 }

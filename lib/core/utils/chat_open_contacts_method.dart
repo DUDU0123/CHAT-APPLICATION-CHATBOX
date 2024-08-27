@@ -12,13 +12,6 @@ void chatOpen(
         receiverId: receiverId,
         recieverContactName: recieverContactName,
       ));
-  // Navigator.push(
-  //   context,
-  //   MaterialPageRoute(
-  //     builder: (context) =>
-  //         ChatRoomPage(isGroup: false, userName: recieverContactName),
-  //   ),
-  // );
 }
 // function for sorting the contact list to find the chatbox users and to show them first to the list
 void sortContactsToShowChatBoxUsersFirst({

@@ -7,7 +7,9 @@ class UserState extends Equatable {
     this.lastSeenPrivacyGroupValue = 1,
     this.profilePhotoPrivacyGroupValue = 1,
     this.aboutPrivacyGroupValue = 1,
-    this.statusPrivacyGroupValue=1,
+    this.statusPrivacyGroupValue = 1,
+    this.notificationTone,
+    this.ringtone,
     this.userPrivacySettings,
   });
   final UserModel? currentUserData;
@@ -16,6 +18,8 @@ class UserState extends Equatable {
   final int? profilePhotoPrivacyGroupValue;
   final int? aboutPrivacyGroupValue;
   final int? statusPrivacyGroupValue;
+  final String? notificationTone;
+  final String? ringtone;
   final Map<String, Map<String, bool?>>? userPrivacySettings;
   UserState copyWith({
     UserModel? currentUserData,
@@ -27,6 +31,8 @@ class UserState extends Equatable {
     bool? isShowableProfileImage,
     bool? isShowableAbout,
     bool? isShowableLastSeenOnline,
+    String? notificationTone,
+    String? ringtone,
     Map<String, Map<String, bool?>>? userPrivacySettings,
   }) {
     return UserState(
@@ -38,8 +44,11 @@ class UserState extends Equatable {
           lastSeenPrivacyGroupValue ?? this.lastSeenPrivacyGroupValue,
       profilePhotoPrivacyGroupValue:
           profilePhotoPrivacyGroupValue ?? this.profilePhotoPrivacyGroupValue,
-          statusPrivacyGroupValue: statusPrivacyGroupValue ?? this.statusPrivacyGroupValue,
+      statusPrivacyGroupValue:
+          statusPrivacyGroupValue ?? this.statusPrivacyGroupValue,
       userPrivacySettings: userPrivacySettings ?? this.userPrivacySettings,
+      notificationTone: notificationTone ?? this.notificationTone,
+      ringtone: ringtone ?? this.ringtone,
     );
   }
 
@@ -49,8 +58,10 @@ class UserState extends Equatable {
         blockedUsersList ?? [],
         lastSeenPrivacyGroupValue ?? 1,
         profilePhotoPrivacyGroupValue ?? 1,
-        aboutPrivacyGroupValue ?? 1,statusPrivacyGroupValue??1,
+        aboutPrivacyGroupValue ?? 1,
+        statusPrivacyGroupValue ?? 1,
         userPrivacySettings ?? {},
+        notificationTone??'', ringtone??'',
       ];
 }
 

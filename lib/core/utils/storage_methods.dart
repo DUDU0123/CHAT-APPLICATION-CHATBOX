@@ -13,7 +13,7 @@ class StorageMethods{
       }
     }
   } catch (e) {
-    print("Error calculating directory size: $e");
+    // print("Error calculating directory size: $e");
   }
   return totalSize;
 }

@@ -70,7 +70,7 @@ class CommonDBFunctions {
       });
     } on FirebaseAuthException catch (e) {
       return null;
-    } catch (e, stackTrace) {
+    } catch (e) {
       return null;
     }
   }
@@ -250,7 +250,6 @@ class CommonDBFunctions {
       return true;
     } catch (e) {
       // If we get here, the file doesn't exist or there was an error
-      print('Error checking asset: $e');
       return false;
     }
   }
@@ -296,10 +295,6 @@ class CommonDBFunctions {
             ChatModel.fromJson(docSnapshot.data() as Map<String, dynamic>);
         if (chat.isChatOpen ?? false) {
           // Handle the case when the chat is opened
-          log(
-            name: "Checking chat open or not",
-            'Chat is opened by the receiver ${chat.isChatOpen}',
-          );
         }
       }
     });
@@ -404,45 +399,6 @@ class CommonDBFunctions {
         dbStatusContentList:
             updatedStatusList?.map((status) => status.toJson()).toList(),
       });
-      // final now = DateTime.now();
-      // final cutoffTime = now.subtract(const Duration(hours: 24));
-
-      // final usersCollection = FirebaseFirestore.instance.collection('users');
-      // final usersSnapshot = await usersCollection.get();
-
-      // for (var userDoc in usersSnapshot.docs) {
-      //   final userId = userDoc.id;
-      //   final statusCollectionSnap =
-      //       await usersCollection.doc(userId).collection('status').get();
-
-      //   if (statusCollectionSnap.docs.isEmpty) {
-      //     continue;
-      //   }
-
-      //   final statusDocs = statusCollectionSnap.docs;
-      //   for (var doc in statusDocs) {
-      //     final StatusModel statusModel = StatusModel.fromJson(map: doc.data());
-      //     if (statusModel.statusList == null) {
-      //       continue;
-      //     }
-
-      //     final updatedStatusList =
-      //         statusModel.statusList?.where((uploadedStatus) {
-      //       final statusTime =
-      //           DateTime.parse(uploadedStatus.statusUploadedTime!);
-      //       return statusTime.isAfter(cutoffTime);
-      //     }).toList();
-
-      //     await usersCollection
-      //         .doc(userId)
-      //         .collection(statusCollection)
-      //         .doc(statusModel.statusId)
-      //         .update({
-      //       dbStatusContentList:
-      //           updatedStatusList?.map((status) => status.toJson()).toList(),
-      //     });
-      //   }
-      // }
       log("Old statuses deleted successfully.");
     } catch (e) {
       log("Error while deleting old statuses: $e");
@@ -558,7 +514,7 @@ class CommonDBFunctions {
     } else if (groupModel != null && forWhich == For.notAll) {
       final wallpaperUrl = await saveUserFileToDataBaseStorage(
           ref: "WallPaper/$currentUserId${groupModel.groupID}",
-          file: wallpaperFile!);
+          file: wallpaperFile);
       final GroupModel updatedGroupModel = groupModel.copyWith(
         groupWallpaper: wallpaperUrl,
       );
@@ -572,7 +528,7 @@ class CommonDBFunctions {
     } else {
       // For all
       final wallpaperUrl = await saveUserFileToDataBaseStorage(
-          ref: "WallPaper/$currentUserId", file: wallpaperFile!);
+          ref: "WallPaper/$currentUserId", file: wallpaperFile);
       final chatDocs = await fireStore
           .collection(usersCollection)
           .doc(currentUserId)

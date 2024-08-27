@@ -12,7 +12,7 @@ import 'package:official_chatbox_application/features/presentation/widgets/commo
 import 'package:video_player/video_player.dart';
 
 class AssetLoadedPage extends StatefulWidget {
-  AssetLoadedPage({super.key});
+  const AssetLoadedPage({super.key});
 
   @override
   State<AssetLoadedPage> createState() => _AssetLoadedPageState();

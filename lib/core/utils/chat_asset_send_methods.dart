@@ -5,13 +5,17 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
-initRecorder({required FlutterSoundRecorder recorder,}) async {
-   final permissionStatus = await Permission.microphone.request();
-   if (permissionStatus!=PermissionStatus.granted) {
-     throw 'Microphone Permission not granted';
-   }
-   await recorder.openRecorder();
+
+initRecorder({
+  required FlutterSoundRecorder recorder,
+}) async {
+  final permissionStatus = await Permission.microphone.request();
+  if (permissionStatus != PermissionStatus.granted) {
+    throw 'Microphone Permission not granted';
   }
+  await recorder.openRecorder();
+}
+
 Future<void> addToContact({
   required String contactNumber,
 }) async {

@@ -8,8 +8,6 @@ import 'dart:developer';
 
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/service/dialog_helper.dart';
-import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
-
 class NetworkStatusMethods {
 
 

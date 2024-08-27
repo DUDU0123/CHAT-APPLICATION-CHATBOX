@@ -14,14 +14,10 @@ import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-List<String?> callersID = [];
-String callID = '';
 Future<void> backgroundMessaging(
   RemoteMessage remoteMessage,
 ) async {
-  if (remoteMessage.notification != null) {
-    log("Notfication receive in background");
-  }
+  if (remoteMessage.notification != null) {}
 }
 
 Future<void> main() async {

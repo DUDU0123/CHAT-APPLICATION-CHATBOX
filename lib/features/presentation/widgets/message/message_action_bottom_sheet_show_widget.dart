@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -31,7 +30,6 @@ Widget messageActionBottomSheetShowWidget(
       color: Theme.of(context).scaffoldBackgroundColor,
     ),
     width: screenWidth(context: context),
-    // height: screenHeight(context: context) / 2,
     child: Column(
       children: [
         selectedMessagesId.length <= 1
@@ -60,7 +58,8 @@ Widget messageActionBottomSheetShowWidget(
                 : zeroMeasureWidget
             : zeroMeasureWidget,
         selectedMessagesId.length <= 1
-            ? message?.senderID == firebaseAuth.currentUser?.uid &&message?.messageType == MessageType.text
+            ? message?.senderID == firebaseAuth.currentUser?.uid &&
+                    message?.messageType == MessageType.text
                 ? listTileCommonWidget(
                     textColor: Theme.of(context).colorScheme.onPrimary,
                     trailing: Icon(
@@ -72,7 +71,6 @@ Widget messageActionBottomSheetShowWidget(
                       Navigator.pop(context);
                       if (message != null) {
                         showModalBottomSheet<String>(
-                          
                           context: context,
                           isScrollControlled: true,
                           builder: (context) => EditMessageScreen(
@@ -108,20 +106,6 @@ Widget messageActionBottomSheetShowWidget(
                 );
               },
             );
-          },
-        ),
-        listTileCommonWidget(
-          textColor: Theme.of(context).colorScheme.onPrimary,
-          trailing: Icon(
-            Icons.keyboard_double_arrow_right_rounded,
-            color: Theme.of(context).colorScheme.onPrimary,
-          ),
-          tileText: "Forward",
-          onTap: () {
-            context
-                .read<MessageBloc>()
-                .add(UnSelectEvent(messageId: message?.messageId));
-            Navigator.pop(context);
           },
         ),
         listTileCommonWidget(

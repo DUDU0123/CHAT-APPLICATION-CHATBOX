@@ -55,8 +55,4 @@ class CommonProvider extends ChangeNotifier {
   bool isExpandedMessage(String messageId) {
     return expandedMessages.contains(messageId);
   }
-
-  void restartApp() {
-    notifyListeners();
-  }
 }

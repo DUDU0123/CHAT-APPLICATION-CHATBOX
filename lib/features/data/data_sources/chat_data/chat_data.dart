@@ -127,12 +127,8 @@ class ChatData {
           contentText: "Please check your network connection",
         );
       }
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.message.toString());
     } catch (e, stackTrace) {
       log("Error while creating chat: $e", stackTrace: stackTrace);
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.toString());
     }
   }
 
@@ -190,8 +186,6 @@ class ChatData {
       );
     } catch (e) {
       log(e.toString());
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.toString());
     }
   }
 
@@ -228,8 +222,6 @@ class ChatData {
       );
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.toString());
     }
   }
 
@@ -285,8 +277,7 @@ class ChatData {
       return false;
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.toString());
+
       return false;
     }
   }

@@ -917,7 +917,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         chatModel: event.chatModel,
         isGroup: event.isGroup,
         selectedMessagesId: updatedSelectedIds,
-        context: event.context,
+        rootContext: event.context,
         message: event.messageModel,
       );
       emit(state.copyWith(
@@ -951,21 +951,30 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   Future<FutureOr<void>> sendNotifcationEvent(
       SendNotifcationEvent event, Emitter<MessageState> emit) async {
     try {
+      log("Chat model:: ${event.chatModel} and receiverId :: ${event.messageNotificationReceiverID} From Bloc");
+
       final receiverDocument = await fireStore
           .collection(usersCollection)
-          .doc(event.receiverID)
+          .doc(event.messageNotificationReceiverID)
           .get();
       final senderDocument = await fireStore
           .collection(usersCollection)
-          .doc(firebaseAuth.currentUser?.uid)
+          .doc(event.messageToSend.senderID)
           .get();
-      final receiverData = UserModel.fromJson(map: receiverDocument.data()!);
-      final senderData = UserModel.fromJson(map: senderDocument.data()!);
+      final receiverData = UserModel.fromJson(map: receiverDocument.data()!);//person receive message
+      final senderData = UserModel.fromJson(map: senderDocument.data()!);//person sended message
       String messageToSend = messageByType(message: event.messageToSend);
 
+      final updatedChatmodel = event.chatModel?.copyWith(
+        receiverID: event.messageToSend.senderID,
+        senderID: event.messageNotificationReceiverID,
+        receiverProfileImage: senderData.userProfileImage,
+        receiverName: senderData.contactName??senderData.phoneNumber
+      );
+
       await NotificationService.sendNotification(
-        chatModel: event.chatModel,
-        receiverID: event.receiverID,
+        chatModel: updatedChatmodel,
+        messageNotificationReceiverID: event.messageNotificationReceiverID,
         receiverDeviceToken: receiverData.fcmToken!,
         senderName: senderData.contactName ?? senderData.phoneNumber!,
         messageToSend: messageToSend,

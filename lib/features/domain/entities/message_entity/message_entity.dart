@@ -52,14 +52,3 @@ class MessageEntity extends Equatable {
   }
 }
 
-class MessageAttachmentModel extends Equatable {
-  final String? attachmentUrl;
-  final MessageType messageType;
-  const MessageAttachmentModel({
-    this.attachmentUrl,
-    required this.messageType,
-  });
-
-  @override
-  List<Object?> get props => [attachmentUrl, messageType];
-}

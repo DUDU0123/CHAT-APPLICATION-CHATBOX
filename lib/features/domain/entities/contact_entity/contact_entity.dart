@@ -1,14 +1,14 @@
 import 'package:equatable/equatable.dart';
 
 class ContactEntity extends Equatable {
-  String? chatBoxUserId;
-  String? contactId;
-  String? userContactName;
-  String? userAbout;
-  String? userProfilePhotoOnChatBox;
-  String? userContactNumber;
-  bool? isChatBoxUser;
-  ContactEntity({
+  final String? chatBoxUserId;
+  final String? contactId;
+  final String? userContactName;
+  final String? userAbout;
+  final String? userProfilePhotoOnChatBox;
+  final String? userContactNumber;
+  final bool? isChatBoxUser;
+  const ContactEntity({
     this.chatBoxUserId,
     this.userContactName,
     this.userAbout,

@@ -35,67 +35,6 @@ import 'package:official_chatbox_application/features/presentation/bloc/status/s
 import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:provider/single_child_widget.dart';
 
-// final getItInstance = GetIt.instance;
-// void initializeServiceLocator() {
-//   getItInstance.registerSingleton(() => FirebaseAuth.instance);
-//   getItInstance.registerSingleton(() => FirebaseStorage.instance);
-//   getItInstance.registerSingleton(() => FirebaseFirestore.instance);
-
-//   getItInstance.registerLazySingleton(
-//     () => ContactData(),
-//   );
-//   getItInstance.registerLazySingleton(
-//     () => AuthenticationRepoImpl(firebaseAuth: getItInstance<FirebaseAuth>()),
-//   );
-//   getItInstance.registerLazySingleton(
-//     () => ContactRepoImpl(
-//       contactData: getItInstance<ContactData>(),
-//       firebaseFirestore: getItInstance<FirebaseFirestore>(),
-//     ),
-//   );
-//   getItInstance.registerLazySingleton(
-//     () => UserData(
-//       firestore: getItInstance<FirebaseFirestore>(),
-//       firebaseStorage: getItInstance<FirebaseStorage>(),
-//       firebaseAuth: getItInstance<FirebaseAuth>(),
-//     ),
-//   );
-//   getItInstance.registerLazySingleton(
-//     () => UserRepositoryImpl(
-//       userData: getItInstance<UserData>(),
-//     ),
-//   );
-//   getItInstance.registerFactory(() => UserModel());
-// }
-
-// class AppBlocProvider {
-//   static List<SingleChildWidget> allBlocProviders = [
-//     BlocProvider(
-//       create: (context) => BottomNavBloc(),
-//     ),
-//     BlocProvider(
-//       create: (context) => AuthenticationBloc(
-//         userRepository: getItInstance<UserRepositoryImpl>(),
-//         authenticationRepo:getItInstance<AuthenticationRepoImpl>(),
-//       )..add(CheckUserLoggedInEvent()),
-//     ),
-//     BlocProvider(
-//       create: (context) => ContactBloc(
-//         contactRepository: getItInstance<ContactRepoImpl>(),
-//       ),
-//     ),
-//     BlocProvider(
-//       create: (context) => MessageBloc(),
-//     ),
-//     BlocProvider(
-//       create: (context) => UserBloc(
-//         firebaseAuth: getItInstance<FirebaseAuth>(),
-//         userRepository: getItInstance<UserRepositoryImpl>(),
-//       )..add(GetCurrentUserData()),
-//     ),
-//   ];
-// }
-
 FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 FirebaseFirestore fireStore = FirebaseFirestore.instance;
 FirebaseStorage firebaseStorage = FirebaseStorage.instance;

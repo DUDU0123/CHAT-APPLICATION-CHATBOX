@@ -89,7 +89,7 @@ class _ChatboxWelcomePageState extends State<ChatboxWelcomePage> {
               text: "Get Started",
             ),
           ],
-        ):AppIconHoldWidget(),
+        ): const AppIconHoldWidget(),
       ),
     );
   }

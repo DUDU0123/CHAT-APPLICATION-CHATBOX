@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_list_tile.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 
 Widget boldTextWidget({
@@ -59,6 +60,43 @@ Widget buildBulletPoint(String text) {
     ],
   );
 }
+
+Widget linkText({required String text, void Function()? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: TextWidgetCommon(
+        textAlign: TextAlign.start,
+        text: text,
+        textColor: buttonSmallTextColor,
+        fontSize: 18.sp,
+      ),
+    );
+  }
+
+  Widget commonCheckTile({
+    required BuildContext context,
+    required String title,
+    bool? boxValue,
+    required void Function(bool?)? onChanged,
+  }) {
+    return commonListTile(
+      onTap: () {},
+      title: title,
+      isSmallTitle: false,
+      context: context,
+      leading: Checkbox(
+        checkColor: kWhite,
+        activeColor: buttonSmallTextColor,
+        fillColor: WidgetStateProperty.all(boxValue != null
+            ? boxValue
+                ? buttonSmallTextColor
+                : kTransparent
+            : kTransparent),
+        value: boxValue,
+        onChanged: (value) {},
+      ),
+    );
+  }
 const introText =
     "Welcome to ChatBox! These Terms of Service govern your use of our chat application, including all functionalities such as one-to-one chat, group chat, media sharing, voice and video calls, status posting, and payment transactions. By using ChatBox, you agree to these terms in full.";
 const useOfApplicationText =

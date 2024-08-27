@@ -18,8 +18,10 @@ class GroupData {
     required this.firebaseFirestore,
   });
   // group subscription for sending notification
-  static Future<void> subscribeUserToGroupTopic(
-     {required String userId,required String groupid,}) async {
+  static Future<void> subscribeUserToGroupTopic({
+    required String userId,
+    required String groupid,
+  }) async {
     try {
       final userDoc =
           await fireStore.collection(usersCollection).doc(userId).get();
@@ -41,8 +43,10 @@ class GroupData {
     }
   }
 
-  static Future<void> unsubscribeUserFromGroupTopic(
-    {required  String userId,required String groupId,}) async {
+  static Future<void> unsubscribeUserFromGroupTopic({
+    required String userId,
+    required String groupId,
+  }) async {
     try {
       await FirebaseMessaging.instance.unsubscribeFromTopic('group_$groupId');
       log("Successfully unsubscribed from group topic: group_$groupId");
@@ -122,7 +126,8 @@ class GroupData {
       await batch.commit();
       log("Group created successfully with ID: $groupDocumentID");
       for (String userID in newGroupData.groupMembers!) {
-        await subscribeUserToGroupTopic(userId:  userID,groupid: updatedGroupData.groupID!);
+        await subscribeUserToGroupTopic(
+            userId: userID, groupid: updatedGroupData.groupID!);
       }
       return true;
     } on FirebaseException catch (e) {
@@ -135,8 +140,6 @@ class GroupData {
       }
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.toString());
     }
     log("Can't do try ctach");
     return false;
@@ -167,8 +170,6 @@ class GroupData {
       }
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.toString());
     }
     return null;
   }
@@ -227,8 +228,6 @@ class GroupData {
       }
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.toString());
     }
     return false;
   }
@@ -273,8 +272,6 @@ class GroupData {
       }
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.toString());
     }
     return false;
   }
@@ -301,8 +298,6 @@ class GroupData {
       }
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.toString());
     }
     return "Can't delete";
   }
@@ -335,8 +330,6 @@ class GroupData {
       }
     } catch (e) {
       log("From new group creation catch: ${e.toString()}");
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.toString());
     }
   }
 }

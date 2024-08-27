@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -91,8 +89,6 @@ class _CommonAppBarState extends State<CommonAppBar> {
                                   final isShowableLastSeen =
                                       privacySettings[userDbLastSeenOnline] ??
                                           false;
-
-                                          log("Last Seen : $isShowableLastSeen");
                                   return isShowableLastSeen
                                       ? TextWidgetCommon(
                                           overflow: TextOverflow.ellipsis,

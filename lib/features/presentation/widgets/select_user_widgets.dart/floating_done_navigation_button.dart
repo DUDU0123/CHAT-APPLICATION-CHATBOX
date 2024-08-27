@@ -9,7 +9,6 @@ import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/contact_methods.dart';
 import 'package:official_chatbox_application/core/utils/group_methods.dart';
 import 'package:official_chatbox_application/core/utils/message_methods.dart';
-import 'package:official_chatbox_application/core/utils/status_methods.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/contact_model/contact_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
@@ -112,17 +111,22 @@ class _FloatingDoneNavigateButtonState
                       status.uploadedStatusId == widget.uploadedStatusModelID);
 
               if (mounted) {
-                StatusMethods.shareStatusToAnyChat(
-                  context: context,
+                MessageMethods.shareMessage(
                   selectedContactList: widget.selectedContactList,
-                  uploadedStatusModel: sendingStatus,
                   messageBloc: messageBloc,
+                  messageType: sendingStatus?.statusType == StatusType.video
+                      ? MessageType.video
+                      : sendingStatus?.statusType == StatusType.image
+                          ? MessageType.photo
+                          : MessageType.text,
+                  messageContent: sendingStatus?.statusContent,
+                  context: context,
                 );
               }
             } else {
               if (widget.messageContent != null && widget.messageType != null) {
                 MessageMethods.shareMessage(
-                  context: context,
+                  context:widget.rootContext!,
                   selectedContactList: widget.selectedContactList,
                   messageBloc: messageBloc,
                   messageType: widget.messageType!,

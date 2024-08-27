@@ -13,7 +13,6 @@ import 'package:official_chatbox_application/features/data/models/user_model/use
 import 'package:official_chatbox_application/features/presentation/bloc/message/message_bloc.dart';
 
 class StatusMethods {
-
   // method for upload status
   static Future<StatusModel> newStatusUploadMethod({
     File? fileToShow,
@@ -68,52 +67,5 @@ class StatusMethods {
     debugPrint("This is status after edit $statusModel");
     return statusModel;
   }
-
-  static void shareStatusToAnyChat({
-    required List<ContactModel>? selectedContactList,
-    required UploadedStatusModel? uploadedStatusModel,
-    required MessageBloc messageBloc,required BuildContext context,
-  }) async {
-    log("Status: $uploadedStatusModel");
-    log("vIDEO uRL: ${uploadedStatusModel?.statusContent}");
-    for (var contact in selectedContactList!) {
-      if (contact.chatBoxUserId != null && firebaseAuth.currentUser != null) {
-        final ChatModel? chatModel = await CommonDBFunctions.getChatModel(
-            receiverID: contact.chatBoxUserId!);
-        final UserModel? receiverModel =
-            await CommonDBFunctions.getOneUserDataFromDBFuture(
-                userId: contact.chatBoxUserId);
-
-        final MessageModel message = MessageModel(
-          messageId: DateTime.now().millisecondsSinceEpoch.toString(),
-          message: uploadedStatusModel?.statusContent,
-          isDeletedMessage: false,
-          isEditedMessage: false,
-          isPinnedMessage: false,
-          isStarredMessage: false,
-          messageStatus: MessageStatus.sent,
-          messageTime: DateTime.now().toString(),
-          messageType: uploadedStatusModel?.statusType == StatusType.video
-              ? MessageType.video
-              : uploadedStatusModel?.statusType == StatusType.image
-                  ? MessageType.photo
-                  : MessageType.text,
-          receiverID: contact.chatBoxUserId,
-          senderID: firebaseAuth.currentUser?.uid,
-        );
-        messageBloc.add(MessageSentEvent(
-          context: context,
-          chatModel: chatModel,
-          receiverID: contact.chatBoxUserId!,
-          currentUserId: firebaseAuth.currentUser!.uid,
-          receiverContactName: receiverModel?.contactName ??
-              receiverModel?.userName ??
-              receiverModel?.phoneNumber ??
-              '',
-          message: message,
-          isGroup: false,
-        ));
-      }
-    }
-  }
 }
+

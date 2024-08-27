@@ -74,8 +74,10 @@ class GroupMethods {
             Set<String>.from(groupModel?.groupMembers ?? []);
         for (var selectedContact in selectedContactList) {
           updatedGroupMembers.add(selectedContact.chatBoxUserId!);
-          if (selectedContact.chatBoxUserId!=null && groupModel!=null) {
-            GroupData.subscribeUserToGroupTopic(userId: selectedContact.chatBoxUserId!,groupid: groupModel.groupID!);
+          if (selectedContact.chatBoxUserId != null && groupModel != null) {
+            GroupData.subscribeUserToGroupTopic(
+                userId: selectedContact.chatBoxUserId!,
+                groupid: groupModel.groupID!);
           }
         }
         final updatedGroupData =
@@ -103,25 +105,25 @@ class GroupMethods {
   }
 
   static void selectGroupMembersOnCreationAndSendToDetailsAddPageMethod(
-    {required List<ContactModel>? selectedContactList,
-    required BuildContext context}) {
-  selectedContactList != null
-      ? selectedContactList.length >= 2
-          ? Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => GroupDetailsAddPage(
-                  selectedGroupMembers: selectedContactList,
+      {required List<ContactModel>? selectedContactList,
+      required BuildContext context}) {
+    selectedContactList != null
+        ? selectedContactList.length >= 2
+            ? Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => GroupDetailsAddPage(
+                    selectedGroupMembers: selectedContactList,
+                  ),
                 ),
-              ),
-            )
-          : commonSnackBarWidget(
-              contentText: "Select atleast 2 members",
-              context: context,
-            )
-      : commonSnackBarWidget(
-          contentText: "Select atleast 2 members",
-          context: context,
-        );
-}
+              )
+            : commonSnackBarWidget(
+                contentText: "Select atleast 2 members",
+                context: context,
+              )
+        : commonSnackBarWidget(
+            contentText: "Select atleast 2 members",
+            context: context,
+          );
+  }
 }

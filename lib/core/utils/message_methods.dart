@@ -34,7 +34,7 @@ class MessageMethods {
   }
 
   static Future<dynamic> messageActionMethods({
-    required BuildContext context,
+    required BuildContext rootContext,
     required MessageModel? message,
     required bool isGroup,
     required Set<String> selectedMessagesId,
@@ -49,11 +49,11 @@ class MessageMethods {
           topRight: Radius.circular(25.sp),
         ),
       ),
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      context: context,
+      backgroundColor: Theme.of(rootContext).scaffoldBackgroundColor,
+      context: rootContext,
       builder: (context) {
         return messageActionBottomSheetShowWidget(
-          context: context,
+          context: rootContext,
           selectedMessagesId: selectedMessagesId,
           message: message,
           chatModel: chatModel,
@@ -68,10 +68,8 @@ class MessageMethods {
     ChatModel? chatModel,
     GroupModel? groupModel,
   }) {
-    log("Im inside message find");
     final currentUser = firebaseAuth.currentUser;
     if (chatModel != null) {
-      log("chatmodel NOT nULL");
       return fireStore
           .collection('users')
           .doc(currentUser?.uid)
@@ -89,7 +87,6 @@ class MessageMethods {
         }
       });
     } else if (groupModel != null) {
-      log("Groupmodel Not null");
       return fireStore
           .collection('users')
           .doc(currentUser?.uid)
@@ -177,7 +174,7 @@ class MessageMethods {
     required List<ContactModel>? selectedContactList,
     required MessageBloc messageBloc,
     required MessageType messageType,
-    required String messageContent,
+    required String? messageContent,
     required BuildContext context,
   }) async {
     for (var contact in selectedContactList!) {

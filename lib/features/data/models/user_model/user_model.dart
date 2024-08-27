@@ -2,7 +2,7 @@ import 'package:official_chatbox_application/core/constants/database_name_consta
 import 'package:official_chatbox_application/features/domain/entities/user_entity/user_entity.dart';
 
 class UserModel extends UserEntity {
-  UserModel({
+  const UserModel({
     super.id,
     super.userName,
     super.userEmailId,

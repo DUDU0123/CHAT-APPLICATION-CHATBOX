@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
-import 'package:official_chatbox_application/core/utils/call_methods.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chat/ai_chat_room/ai_chat_room_page.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat_home/chat_listtile_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat_home/searchbar_chat_home.dart';
@@ -25,6 +24,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
   void initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,7 +74,12 @@ class _ChatHomePageState extends State<ChatHomePage> {
                       if (chat == null) {
                         return zeroMeasureWidget;
                       }
-                      
+                      context.read<UserBloc>().add(
+                            UserPrivacyCheckerEvent(
+                              receiverID: chat[index].receiverID,
+                            ),
+                          );
+
                       return ChatListTileWidget(
                         isIncomingMessage: chat[index].isIncomingMessage,
                         chatModel: chat[index],

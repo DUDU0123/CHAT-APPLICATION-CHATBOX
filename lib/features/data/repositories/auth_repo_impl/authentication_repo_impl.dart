@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:official_chatbox_application/core/constants/app_constants.dart';
+import 'package:official_chatbox_application/core/service/dialog_helper.dart';
 import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/domain/repositories/authentication_repo/authentication_repo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -124,9 +125,7 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
     required int? forceResendingToken,
   }) async {
     if (!await isConnected()) {
-      commonSnackBarWidget(
-          context: context,
-          contentText: "No internet connection. Please try again later.");
+      DialogHelper.showDialogMethod(title: "Network error", contentText: "Please connect to a network");
       return;
     }
 

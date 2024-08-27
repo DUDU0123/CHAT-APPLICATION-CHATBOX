@@ -2,9 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
-import 'package:official_chatbox_application/config/common_provider/common_provider.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/service/dialog_helper.dart';
 import 'package:official_chatbox_application/features/data/models/call_model/call_model.dart';
@@ -60,8 +58,6 @@ class CallData {
       );
     } catch (e) {
       log("Error on save call ${e.toString()}");
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.toString());
     }
   }
 
@@ -92,8 +88,6 @@ class CallData {
       );
     } catch (e) {
       log("Error on save call ${e.toString()}");
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.toString());
     }
   }
 
@@ -127,8 +121,6 @@ class CallData {
       );
     } catch (e) {
       log("Error on get call logs ${e.toString()}");
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.toString());
       return null;
     }
   }
@@ -159,8 +151,6 @@ class CallData {
       return false;
     } catch (e) {
       log("Error on get delete call log ${e.toString()}");
-      DialogHelper.showSnackBar(
-          title: "Error Occured", contentText: e.toString());
       return false;
     }
   }

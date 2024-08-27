@@ -157,13 +157,17 @@ class MessageData {
       }
 
       if (chatId != null) {
-         final chatModel = await CommonDBFunctions.getChatModelByChatID(chatModelId: chatId);
+         final ChatModel? chatModel = await CommonDBFunctions.getChatModelByChatID(chatModelId: chatId);
+         log(name: "Chatmodel from message data",chatModel.toString());
+         log(
+          "chatmodel sender id:${chatModel?.senderID}, chatmodel receiver id:${chatModel?.receiverID},chatmodel chat id:${chatModel?.chatID}, chatmodel receiver name:${chatModel?.receiverName},",
+         );
         context.read<MessageBloc>().add(
               SendNotifcationEvent(
                 chatModel: chatModel,
                 id: chatId,
                 messageToSend: message,
-                receiverID: message.receiverID!,
+                messageNotificationReceiverID: message.receiverID!,
               ),
             );
       }
@@ -239,7 +243,6 @@ class MessageData {
             .doc(chatModel?.chatID)
             .get()
             .then((doc) => doc[isUserChatOpen] ?? false);
-        log("Is chat open::::: $isChatOpen");
 
         // Get the current message status
         String currentMessageStatus = await FirebaseFirestore.instance

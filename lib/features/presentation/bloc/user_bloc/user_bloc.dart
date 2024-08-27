@@ -5,7 +5,6 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/utils/app_methods.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
@@ -33,8 +32,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<GetBlockedUserEvent>(getBlockedUserEvent);
     on<RemoveBlockedUserEvent>(removeBlockedUserEvent);
     on<UpdateTFAPinEvent>(updateTFAPinEvent);
-    on<SetNoficationSoundEvent>(setNoficationSoundEvent);
-    on<SetRingtoneSoundEvent>(setRingtoneSoundEvent);
     on<LastSeenPrivacyChangeEvent>(lastSeenPrivacyChangeEvent);
     on<ProfilePhotoPrivacyChangeEvent>(profilePhotoPrivacyChangeEvent);
     on<AboutPrivacyChangeEvent>(aboutPrivacyChangeEvent);
@@ -42,6 +39,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     // privacy checking event
     on<UserPrivacyCheckerEvent>(userPrivacyCheckerEvent);
     on<CheckIsCurrentUserDisabled>(checkIsCurrentUserDisabled);
+    // ringtone notification tone getting event
+    on<RingToneNotificationToneGetEvent>(ringToneNotificationToneGetEvent);
   }
 
   Future<FutureOr<void>> getCurrentUserData(
@@ -209,39 +208,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     }
   }
 
-  FutureOr<void> setNoficationSoundEvent(
-      SetNoficationSoundEvent event, Emitter<UserState> emit) async {
-    try {
-      final currentUserId = firebaseAuth.currentUser?.uid;
-      final soundFileString =
-          await CommonDBFunctions.saveUserFileToDataBaseStorage(
-              ref: 'notificationTones/$currentUserId',
-              file: event.notficationSoundFile);
-      await fireStore.collection(usersCollection).doc(currentUserId).update({
-        userDbNotificationTone: soundFileString,
-        userDBNotificationName: event.notificationName,
-      });
-    } catch (e) {
-      emit(CurrentUserErrorState(message: e.toString()));
-    }
-  }
-
-  FutureOr<void> setRingtoneSoundEvent(
-      SetRingtoneSoundEvent event, Emitter<UserState> emit) async {
-    try {
-      final currentUserId = firebaseAuth.currentUser?.uid;
-      final soundFileString =
-          await CommonDBFunctions.saveUserFileToDataBaseStorage(
-              ref: 'ringtones/$currentUserId', file: event.ringtoneSoundFile);
-      await fireStore.collection(usersCollection).doc(currentUserId).update({
-        userDbRingTone: soundFileString,
-        userDBRingtoneName: event.ringtoneName,
-      });
-    } catch (e) {
-      emit(CurrentUserErrorState(message: e.toString()));
-    }
-  }
-
   Future<FutureOr<void>> lastSeenPrivacyChangeEvent(
       LastSeenPrivacyChangeEvent event, Emitter<UserState> emit) async {
     try {
@@ -377,5 +343,17 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     } catch (e) {
       emit(CurrentUserErrorState(message: e.toString()));
     }
+  }
+
+  FutureOr<void> ringToneNotificationToneGetEvent(
+      RingToneNotificationToneGetEvent event, Emitter<UserState> emit) async {
+    final notificationTone = await AppMethods.getCurrentNotificationTone();
+    final ringtone = await AppMethods.getCurrentRingtone();
+    emit(
+      state.copyWith(
+        notificationTone: notificationTone,
+        ringtone: ringtone,
+      ),
+    );
   }
 }

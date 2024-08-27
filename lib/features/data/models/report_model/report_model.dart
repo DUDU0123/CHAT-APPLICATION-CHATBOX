@@ -5,7 +5,6 @@ class ReportModel extends ReportEntity{
     super.docId,
     super.reportedUserId,
   });
-  // fromJson factory method
   factory ReportModel.fromJson(Map<String, dynamic> json) {
     return ReportModel(
       docId: json['docId'] as String?,
@@ -13,7 +12,6 @@ class ReportModel extends ReportEntity{
     );
   }
 
-  // toJson method
   Map<String, dynamic> toJson() {
     return {
       'docId': docId,
@@ -21,7 +19,6 @@ class ReportModel extends ReportEntity{
     };
   }
 
-  // copyWith method
   ReportModel copyWith({
     String? docId,
     String? reportedUserId,

@@ -10,6 +10,7 @@ import 'package:official_chatbox_application/features/presentation/widgets/commo
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_list_tile.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/divider_common.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/help/help_small_widgets.dart';
 
 class HelpSettings extends StatelessWidget {
   const HelpSettings({super.key});
@@ -56,14 +57,22 @@ class HelpSettings extends StatelessWidget {
             linkText(
               text: "Help Center",
               onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => HelpCenterPage(),));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HelpCenterPage(),
+                    ));
               },
             ),
             kHeight15,
             linkText(
               text: "Terms and privacy policy",
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => TermsAndPrivacyPolicyPage(),));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const TermsAndPrivacyPolicyPage(),
+                    ));
               },
             ),
           ],
@@ -72,41 +81,3 @@ class HelpSettings extends StatelessWidget {
     );
   }
 }
-
-
-GestureDetector linkText({required String text, void Function()? onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: TextWidgetCommon(
-        textAlign: TextAlign.start,
-        text: text,
-        textColor: buttonSmallTextColor,
-        fontSize: 18.sp,
-      ),
-    );
-  }
-
-  Widget commonCheckTile({
-    required BuildContext context,
-    required String title,
-    bool? boxValue,
-    required void Function(bool?)? onChanged,
-  }) {
-    return commonListTile(
-      onTap: () {},
-      title: title,
-      isSmallTitle: false,
-      context: context,
-      leading: Checkbox(
-        checkColor: kWhite,
-        activeColor: buttonSmallTextColor,
-        fillColor: WidgetStateProperty.all(boxValue != null
-            ? boxValue
-                ? buttonSmallTextColor
-                : kTransparent
-            : kTransparent),
-        value: boxValue,
-        onChanged: (value) {},
-      ),
-    );
-  }

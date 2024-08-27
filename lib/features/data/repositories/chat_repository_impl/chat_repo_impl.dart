@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:official_chatbox_application/features/data/data_sources/chat_data/chat_data.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/report_model/report_model.dart';
-import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/domain/repositories/chat_repo/chat_repo.dart';
 
 class ChatRepoImpl extends ChatRepo {
