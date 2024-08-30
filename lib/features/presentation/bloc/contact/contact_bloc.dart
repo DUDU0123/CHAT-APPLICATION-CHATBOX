@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -21,13 +20,10 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
       GetContactsEvent event, Emitter<ContactState> emit) async {
     emit(ContactsLoadingState());
     try {
-      log("Hello");
       final List<ContactModel> contacts = await contactRepository
           .getAccessToUserContacts(context: event.context);
-      log(contacts.length.toString());
       emit(ContactState(contactList: contacts));
     } catch (e) {
-      log("Error $e");
       emit(ContactsErrorState(message: e.toString()));
     }
   }
@@ -52,7 +48,6 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
         ),
       );
     } catch (e) {
-      log("Error $e");
       emit(ContactsErrorState(message: e.toString()));
     }
   }

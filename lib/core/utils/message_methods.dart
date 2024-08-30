@@ -12,6 +12,7 @@ import 'package:official_chatbox_application/features/data/models/chat_model/cha
 import 'package:official_chatbox_application/features/data/models/contact_model/contact_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/message_model/message_model.dart';
+import 'package:official_chatbox_application/features/data/models/status_model/status_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/message/message_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/message/message_action_bottom_sheet_show_widget.dart';
@@ -148,12 +149,6 @@ class MessageMethods {
         messageStatus: MessageStatus.sent,
       );
     }
-
-    scrollController.animateTo(
-      scrollController.position.maxScrollExtent,
-      duration: const Duration(milliseconds: 100),
-      curve: Curves.easeOut,
-    );
     context.read<MessageBloc>().add(
           MessageSentEvent(
             context: context,
@@ -173,7 +168,7 @@ class MessageMethods {
   static void shareMessage({
     required List<ContactModel>? selectedContactList,
     required MessageBloc messageBloc,
-    required MessageType messageType,
+    required MessageType? messageType,
     required String? messageContent,
     required BuildContext context,
   }) async {
@@ -214,4 +209,58 @@ class MessageMethods {
       }
     }
   }
+
+  // to send
+  static void toSendMethod({
+  required bool isStatus,
+  required StatusModel? statusModel,
+  required String? uploadedStatusModelID,
+  required bool mounted,
+  required MessageBloc messageBloc,
+  required BuildContext context,
+  required MessageType? messageType,
+  required String? messageContent,
+  required List<ContactModel>? selectedContactList,
+  required BuildContext? rootContext,
+}) async {
+  if (isStatus) {
+    final val = await fireStore
+        .collection(usersCollection)
+        .doc(firebaseAuth.currentUser?.uid)
+        .collection(statusCollection)
+        .doc(statusModel?.statusId)
+        .get();
+    final statusMOdell = StatusModel.fromJson(map: val.data()!);
+    final sendingStatus = statusMOdell.statusList?.firstWhere(
+        (status) => status.uploadedStatusId == uploadedStatusModelID);
+
+    if (mounted) {
+      MessageMethods.shareMessage(
+        selectedContactList: selectedContactList,
+        messageBloc: messageBloc,
+        messageType: sendingStatus?.statusType == StatusType.video
+            ? MessageType.video
+            : sendingStatus?.statusType == StatusType.image
+                ? MessageType.photo
+                : MessageType.text,
+        messageContent: sendingStatus?.statusContent,
+        context: context,
+      );
+    }
+  } else {
+    if (messageContent != null && messageType != null) {
+      MessageMethods.shareMessage(
+        context: rootContext!,
+        selectedContactList: selectedContactList,
+        messageBloc: messageBloc,
+        messageType: messageType,
+        messageContent: messageContent,
+      );
+    }
+  }
+  if (mounted) {
+    Navigator.pop(context);
+  }
+}
+
 }

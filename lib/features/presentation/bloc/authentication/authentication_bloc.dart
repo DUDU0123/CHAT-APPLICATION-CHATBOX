@@ -173,8 +173,7 @@ class AuthenticationBloc
           RegExp(r'^\+?(\d{1,3})?[-. ]?(\(?\d{3}\)?)[-. ]?\d{3}[-. ]?\d{4}$');
       if ((event.phoneNumberWithCountryCode != null &&
           phoneRegExp.hasMatch(event.phoneNumberWithCountryCode!))) {
-        log("IF resend COndition inside try");
-        log("Has resend Match");
+
         authenticationRepo.resentOtp(
           context: event.context,
           phoneNumber: event.phoneNumberWithCountryCode!,
@@ -182,11 +181,9 @@ class AuthenticationBloc
         );
         emit(OtpReSentState());
       } else {
-        log("Else COndition inside try");
         emit(AuthenticationErrorState(message: "Enter valid phone number"));
       }
     } catch (e) {
-      log("Catch error");
       emit(AuthenticationErrorState(message: e.toString()));
     }
   }

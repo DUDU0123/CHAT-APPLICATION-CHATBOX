@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -46,13 +45,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   Future<FutureOr<void>> getCurrentUserData(
       GetCurrentUserData event, Emitter<UserState> emit) async {
     try {
-      log("Current User: userbloc: ${firebaseAuth.currentUser?.uid}");
       UserModel? currentUser = await userRepository.getOneUserDataFromDB(
           userId: firebaseAuth.currentUser!.uid);
       if (currentUser != null) {
         emit(UserState(currentUserData: currentUser));
       } else {
-        log("User model is null error");
       }
     } catch (e) {
       emit(CurrentUserErrorState(message: e.toString()));
@@ -103,13 +100,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         await userRepository.updateUserInDataBase(
           userModel: updatedUser,
         );
-        log("User Profie image: $userProfileImageUrl");
 
         emit(state.copyWith(currentUserData: updatedUser));
 
         // },);
       } else {
-        log("Picked Image is null");
         UserModel nonEditedUser = currentUser!.copyWith(
           createdAt: currentUser.createdAt,
           isBlockedUser: currentUser.isBlockedUser,
@@ -137,7 +132,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         blockedUserModel: event.blockedUserModel,
         chatId: event.chatId,
       );
-      log(name: "Is Blocked", value.toString());
       if (value != null) {
         if (value) {
           add(GetBlockedUserEvent());
@@ -159,7 +153,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       final bool? value = await userRepository.removeBlockedUser(
           blockedUserId: event.blockedUserId);
 
-      log(name: "Is Removed", value.toString());
 
       if (value != null) {
         if (value) {
@@ -322,7 +315,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           userPrivacySettings: updatedPrivacySettings,
         ),
       );
-      log("Updated privacy settings: $updatedPrivacySettings");
     } catch (e) {
       emit(CurrentUserErrorState(message: e.toString()));
     }

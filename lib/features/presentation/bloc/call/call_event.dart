@@ -58,3 +58,8 @@ class UpdateCallStatusEvent extends CallEvent {
         callStatus,
       ];
 }
+
+class ClearAllCallLogs extends CallEvent {
+  @override
+  List<Object> get props => [];
+}

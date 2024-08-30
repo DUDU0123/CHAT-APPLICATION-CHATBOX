@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -24,7 +23,6 @@ Widget callButtonsMethods({
   Color? buttonIconColor,
 }) {
   if (chatModel != null) {
-    log("Chatmodel not null");
     return ZegoSendCallInvitationButton(
       onPressed: (code, message, p2) {
         CallModel callModel = CallModel(
@@ -68,7 +66,6 @@ Widget callButtonsMethods({
       ],
     );
   } else if (groupModel != null) {
-    log("GroupModel not null");
     final groupMembers = groupModel.groupMembers
         ?.where(
           (memberId) => memberId != firebaseAuth.currentUser?.uid,

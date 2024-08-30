@@ -5,4 +5,5 @@ abstract class CallRepository{
   Future<void> saveCallInfo({required CallModel callModel,  required BuildContext context,});
   Stream<List<CallModel>>? getAllCallLogs();
   Future<bool> deleteOneCallInfo({required String callModelId});
+  Future<bool> clearCallLogs();
 }

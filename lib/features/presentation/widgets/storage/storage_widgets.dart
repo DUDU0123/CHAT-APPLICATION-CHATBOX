@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 Widget dataLevelTextShowWidget({
   required String data,
-  required bool isUsed,
+  required bool isUsed,required BuildContext context,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -24,7 +24,7 @@ Widget dataLevelTextShowWidget({
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 35.sp,
-                  color: Colors.black,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
               TextSpan(
@@ -32,7 +32,7 @@ Widget dataLevelTextShowWidget({
                 style: TextStyle(
                   fontWeight: FontWeight.normal,
                   fontSize: 20.sp,
-                  color: Colors.black,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
             ],
@@ -67,11 +67,13 @@ Widget dataLevelRow({
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       dataLevelTextShowWidget(
+        context: context,
         data: MediaMethods.formatStorageSize(
             double.parse(Provider.of<CommonProvider>(context).appStorage)),
         isUsed: true,
       ),
       dataLevelTextShowWidget(
+        context: context,
         data: MediaMethods.formatStorageSize(
             Provider.of<CommonProvider>(context).deviceFreeStorage),
         isUsed: false,

@@ -126,11 +126,11 @@ class _FloatingDoneNavigateButtonState
             } else {
               if (widget.messageContent != null && widget.messageType != null) {
                 MessageMethods.shareMessage(
-                  context:widget.rootContext!,
+                  context: widget.rootContext!,
                   selectedContactList: widget.selectedContactList,
                   messageBloc: messageBloc,
-                  messageType: widget.messageType!,
-                  messageContent: widget.messageContent!,
+                  messageType: widget.messageType,
+                  messageContent: widget.messageContent,
                 );
               }
             }

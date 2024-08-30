@@ -133,10 +133,6 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
               Expanded(
                   child: BlocConsumer<MessageBloc, MessageState>(
                 listener: (context, state) {
-                  if (state is MessageErrorState) {
-                    commonSnackBarWidget(
-                        context: context, contentText: state.message);
-                  }
                   if (state is MessageLoadingState) {
                     showDialog(
                       context: context,

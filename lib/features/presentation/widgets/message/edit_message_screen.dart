@@ -83,7 +83,6 @@ class _EditMessageScreenState extends State<EditMessageScreen> {
                     message: editMessageController.text,
                     isEditedMessage: true,
                   );
-                  log(updatedMessage.toString());
                   context.read<MessageBloc>().add(
                         MessageEditEvent(
                           isGroup: widget.isGroup,

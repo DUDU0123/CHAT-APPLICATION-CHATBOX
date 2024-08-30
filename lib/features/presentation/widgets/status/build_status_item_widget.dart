@@ -65,7 +65,6 @@ List<StoryItem?> buildStatusItems({
                   duration: const Duration(seconds: 10),
                 );
               case StatusType.text:
-              log("${status.statusContent}");
                 return StoryItem.text(
                   shown: status.viewers!=null? status.viewers!.contains(currentUserId):false,
                   title: status.statusContent ?? '',

@@ -21,7 +21,7 @@ class ChatInfoPage extends StatelessWidget {
     this.groupData,
     required this.isGroup,
     this.chatModel,
-    this.isAIChat,
+    this.isAIChat, required this.rootContext,
   });
   final UserModel? receiverData;
   final String? receiverContactName;
@@ -29,6 +29,7 @@ class ChatInfoPage extends StatelessWidget {
   final bool isGroup;
   final bool? isAIChat;
   final ChatModel? chatModel;
+  final BuildContext rootContext;
   @override
   Widget build(BuildContext context) {
     TextEditingController groupNameEditController = TextEditingController();
@@ -59,6 +60,7 @@ class ChatInfoPage extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) => SelectContactPage(
+                                rootContext: rootContext,
                                 messageContent: receiverData?.phoneNumber,
                                 messageType: MessageType.contact,
                                 isStatus: false,

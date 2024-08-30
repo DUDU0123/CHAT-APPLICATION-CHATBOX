@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
@@ -64,9 +63,6 @@ class _StatusShowPageState extends State<StatusShowPage> {
                           ),
                         )
                     : null;
-                log(widget.statusModel.statusList![currentIndexNotifier.value]
-                    .viewers!.length
-                    .toString());
               },
               storyItems: buildStatusItems(
                 currentUserId: widget.currentUserId!,
@@ -113,9 +109,6 @@ class _StatusShowPageState extends State<StatusShowPage> {
             child: ValueListenableBuilder<int>(
               valueListenable: currentIndexNotifier,
               builder: (context, currentIndex, _) {
-                log(widget
-                    .statusModel.statusList![currentIndex].statusUploadedTime
-                    .toString());
                 return statusAppBarShowWidget(
                   isCurrentUser: widget.isCurrentUser,
                   statusList: widget.statusModel.statusList,

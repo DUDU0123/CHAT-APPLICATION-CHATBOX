@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,28 +18,21 @@ int getSeenStatusIndex(StatusModel? statusModel, String? currentUserId) {
   if (statusModel == null ||
       statusModel.statusList == null ||
       currentUserId == null) {
-    log('Invalid input: statusModel or statusList or currentUserId is null');
     return -1;
   }
-
-  log('currentUserId: $currentUserId');
-  log('Status List Length: ${statusModel.statusList!.length}');
 
   int highestViewedIndex = -1;
 
   for (int i = 0; i < statusModel.statusList!.length; i++) {
     final status = statusModel.statusList![i];
-    log('Checking status index: $i');
-    log('Viewers: ${status.viewers}');
+
     if (status.viewers != null && status.viewers!.contains(currentUserId)) {
       highestViewedIndex = i;
     }
   }
 
-  log('Highest index of seen status: $highestViewedIndex');
   return highestViewedIndex;
 }
-
 
 Widget statusTileWidget({
   required BuildContext context,
@@ -51,8 +42,8 @@ Widget statusTileWidget({
 }) {
   return ListTile(
     onTap: () {
-      if (statusModel != null) {
-        Navigator.push(
+      if (statusModel != null && statusModel.statusList!=null) {
+      statusModel.statusList!.isNotEmpty?  Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => StatusShowPage(
@@ -61,7 +52,7 @@ Widget statusTileWidget({
               currentUserId: currentUserId,
             ),
           ),
-        );
+        ):null;
       }
     },
     leading: Stack(
@@ -76,13 +67,10 @@ Widget statusTileWidget({
                             : firebaseAuth.currentUser!.uid
                     : ''),
             builder: (context, snapshot) {
-              log(
-                  name: "Index of seen",
-                  getSeenStatusIndex(statusModel, firebaseAuth.currentUser?.uid).toString());
               return StatusView(
                 padding: 0,
                 indexOfSeenStatus:
-                    getSeenStatusIndex(statusModel, currentUserId) +1,
+                    getSeenStatusIndex(statusModel, currentUserId) + 1,
                 numberOfStatus: statusModel != null
                     ? statusModel.statusList != null
                         ? statusModel.statusList!.length

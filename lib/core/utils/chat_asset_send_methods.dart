@@ -22,7 +22,6 @@ Future<void> addToContact({
   if (await canLaunchUrl(Uri.parse('tel:$contactNumber'))) {
     await launchUrl(Uri.parse('tel:$contactNumber'));
   } else {
-    log('Could not launch');
   }
 }
 
@@ -32,7 +31,6 @@ Future<void> openDocument({
   if (await canLaunchUrl(Uri.parse(url))) {
     await launchUrl(Uri.parse(url));
   } else {
-    log('Could not launch');
   }
 }
 
@@ -62,14 +60,12 @@ Future<List<File?>> pickMultipleFileWithAnyExtension() async {
     List<File?> files;
     if (result != null) {
       PlatformFile file = result.files.first;
-      log(file.extension.toString());
       files = result.paths.map((path) => File(path!)).toList();
       return files;
     } else {
       return [null];
     }
   } catch (e) {
-    log("File picker exception");
     throw Exception(e);
   }
 }

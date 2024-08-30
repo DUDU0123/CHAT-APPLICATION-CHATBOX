@@ -41,6 +41,7 @@ class AuthenticationRepoImpl extends AuthenticationRepo {
           await firebaseAuth.signInWithCredential(phoneAuthCredential);
         },
         verificationFailed: (error) {
+          log(error.message.toString());
           throw Exception(error.message);
         },
         codeSent: (verificationId, forceResendingToken) {

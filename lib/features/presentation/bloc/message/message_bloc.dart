@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
@@ -80,7 +80,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   FutureOr<void> messageTypedEvent(
       MessageTypedEvent event, Emitter<MessageState> emit) {
     try {
-      log(name: "Length:", event.textLength.toString());
       final bool isTyped = event.textLength > 0;
       emit(MessageState(isTyped: isTyped, messages: state.messages));
     } catch (e) {
@@ -91,12 +90,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   FutureOr<void> attachmentIconClickedEvent(
       AttachmentIconClickedEvent event, Emitter<MessageState> emit) {
     try {
-      log("Something");
-      log(name: "Bool value", "${state.isAttachmentListOpened}");
-      log("object");
-      state.messages?.listen((v) {
-        log(name: "Length message atat", v.length.toString());
-      });
       final isAttacthmentListOpened = state.isAttachmentListOpened ?? false;
       emit(state.copyWith(
           isAttachmentListOpened: !isAttacthmentListOpened,
@@ -117,13 +110,10 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       }
       if (event.isGroup!) {
         if (event.groupModel?.groupID != null) {
-          log(name: "get all", "${event.groupModel}");
           final messages = messageRepository.getAllMessageOfAGroupChat(
             groupID: event.groupModel!.groupID!,
           );
-          messages?.listen((v) {
-            log(name: "Length mess", v.length.toString());
-          });
+          messages?.listen((v) {});
           emit(MessageState(messages: messages));
         } else {
           return;
@@ -137,7 +127,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         // }
       }
     } catch (e) {
-      log("Get message error: ${e.toString()}");
       emit(MessageErrorState(message: e.toString()));
     }
   }
@@ -155,7 +144,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         chatModel: event.chatModel,
         groupModel: event.groupModel,
       );
-      log(value.toString());
       emit(state.copyWith(messages: state.messages));
     } catch (e) {
       emit(MessageErrorState(message: e.toString()));
@@ -165,15 +153,15 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   Future<FutureOr<void>> messageSentEvent(
       MessageSentEvent event, Emitter<MessageState> emit) async {
     try {
-      log('Sending nessage');
-
       if (event.isGroup) {
         final value = await messageRepository.sendMessageToAGroupChat(
           context: event.context,
           groupID: event.groupModel?.groupID,
           message: event.message,
         );
-        log("Group message: $value");
+        CommonDBFunctions.saveGroupMessageTime(
+            groupModel: event.groupModel, messageTime: event.message.messageTime
+          );
       } else {
         if (event.message.senderID != null &&
             event.message.receiverID != null &&
@@ -197,7 +185,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
             receiverId: event.receiverContactName,
           );
         }
-        log('Sended one to one message');
       }
 
       MessageData.updateChatMessageDataOfUser(
@@ -214,13 +201,13 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         chatId: event.chatModel?.chatID,
       ));
     } catch (e) {
-      log("Send message error: ${e.toString()}");
       emit(MessageErrorState(message: e.toString()));
     }
   }
 
   FutureOr<void> photoMessageSendEvent(
       PhotoMessageSendEvent event, Emitter<MessageState> emit) async {
+    emit(MessageLoadingState());
     try {
       final File? imageFile = event.imageFile;
       final String? chatID = event.chatModel?.chatID;
@@ -256,7 +243,9 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
             groupID: event.groupModel?.groupID,
             message: photoMessage,
           );
-          log("Group message: $value");
+         CommonDBFunctions.saveGroupMessageTime(
+            groupModel: event.groupModel, messageTime: photoMessage.messageTime
+          );
         } else {
           photoMessage = MessageModel(
             name: event.messageCaption,
@@ -295,14 +284,13 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
             messages: state.messages ?? messages, messagemodel: photoMessage));
       }
     } catch (e) {
-      log("Send photo message error: ${e.toString()}");
       emit(MessageErrorState(message: e.toString()));
     }
   }
 
   FutureOr<void> videoMessageSendEvent(
       VideoMessageSendEvent event, Emitter<MessageState> emit) async {
-    // emit(MessageLoadingState());
+    emit(MessageLoadingState());
     try {
       // final File? videoFile =
       //     await takeVideoAsset(imageSource: event.imageSource);
@@ -340,7 +328,9 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
             groupID: event.groupModel?.groupID,
             message: videoMessage,
           );
-          log("Group message: $value");
+          CommonDBFunctions.saveGroupMessageTime(
+            groupModel: event.groupModel, messageTime: videoMessage.messageTime
+          );
         } else {
           videoMessage = MessageModel(
             name: event.messageCaption,
@@ -380,7 +370,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
             messages: state.messages ?? messages, messagemodel: videoMessage));
       }
     } catch (e) {
-      log("Send photo message error: ${e.toString()}");
       emit(MessageErrorState(message: e.toString()));
     }
   }
@@ -389,7 +378,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
       VideoMessagePlayEvent event, Emitter<MessageState> emit) {
     try {
       if (state.isVideoPlaying == null) {
-        log("State video playing null");
         return null;
       }
       emit(MessageState(
@@ -457,7 +445,9 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
             context: event.context,
             message: message,
           );
-          log("Group message: $value");
+          CommonDBFunctions.saveGroupMessageTime(
+            groupModel: event.groupModel, messageTime: message.messageTime
+          );
         } else {
           message = MessageModel(
             messageId: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -498,7 +488,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         ));
       }
     } catch (e) {
-      log("Contact message send error");
       emit(MessageErrorState(message: e.toString()));
     }
   }
@@ -543,7 +532,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
               groupID: event.groupModel?.groupID,
               message: message,
             );
-            log("Group message: $value");
           } else {
             message = MessageModel(
               messageId: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -586,7 +574,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         }
       }
     } catch (e) {
-      log("File pick document message send error");
       emit(MessageErrorState(message: e.toString()));
     }
   }
@@ -624,7 +611,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         ));
       }
     } catch (e) {
-      log("Audio record error");
       emit(MessageErrorState(message: e.toString()));
     }
   }
@@ -663,7 +649,9 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           groupID: event.groupModel?.groupID,
           message: message,
         );
-        log("Group message: $value");
+        CommonDBFunctions.saveGroupMessageTime(
+            groupModel: event.groupModel, messageTime: message.messageTime
+          );
       } else {
         message = MessageModel(
           messageId: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -705,7 +693,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         isRecording: false,
       ));
     } catch (e) {
-      log("Audio message send error");
       emit(MessageErrorState(message: e.toString()));
     }
   }
@@ -773,7 +760,9 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           groupID: event.groupModel?.groupID,
           message: message,
         );
-        log("Group message: $value");
+        CommonDBFunctions.saveGroupMessageTime(
+            groupModel: event.groupModel, messageTime: message.messageTime
+          );
       } else {
         message = MessageModel(
           messageId: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -817,7 +806,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         isTyped: state.isTyped,
       ));
     } catch (e) {
-      log("Location send error");
       emit(MessageErrorState(message: e.toString()));
     }
   }
@@ -851,7 +839,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         emit(const MessageErrorState(message: "Location not found"));
       }
     } catch (e) {
-      log("Location pick error");
       emit(MessageErrorState(message: e.toString()));
     }
   }
@@ -865,7 +852,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         chatModel: event.chatModel,
         groupModel: event.groupModel,
       );
-      log(value.toString());
       emit(state.copyWith(messages: state.messages));
     } catch (e) {
       emit(MessageErrorState(message: e.toString()));
@@ -891,7 +877,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           ));
         }
       }
-      log(value.toString());
       emit(state.copyWith(messages: state.messages));
     } catch (e) {
       emit(MessageErrorState(message: e.toString()));
@@ -951,8 +936,6 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   Future<FutureOr<void>> sendNotifcationEvent(
       SendNotifcationEvent event, Emitter<MessageState> emit) async {
     try {
-      log("Chat model:: ${event.chatModel} and receiverId :: ${event.messageNotificationReceiverID} From Bloc");
-
       final receiverDocument = await fireStore
           .collection(usersCollection)
           .doc(event.messageNotificationReceiverID)
@@ -961,16 +944,17 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           .collection(usersCollection)
           .doc(event.messageToSend.senderID)
           .get();
-      final receiverData = UserModel.fromJson(map: receiverDocument.data()!);//person receive message
-      final senderData = UserModel.fromJson(map: senderDocument.data()!);//person sended message
+      final receiverData = UserModel.fromJson(
+          map: receiverDocument.data()!); //person receive message
+      final senderData = UserModel.fromJson(
+          map: senderDocument.data()!); //person sended message
       String messageToSend = messageByType(message: event.messageToSend);
 
       final updatedChatmodel = event.chatModel?.copyWith(
-        receiverID: event.messageToSend.senderID,
-        senderID: event.messageNotificationReceiverID,
-        receiverProfileImage: senderData.userProfileImage,
-        receiverName: senderData.contactName??senderData.phoneNumber
-      );
+          receiverID: event.messageToSend.senderID,
+          senderID: event.messageNotificationReceiverID,
+          receiverProfileImage: senderData.userProfileImage,
+          receiverName: senderData.contactName ?? senderData.phoneNumber);
 
       await NotificationService.sendNotification(
         chatModel: updatedChatmodel,
@@ -988,21 +972,12 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   Future<FutureOr<void>> sendGroupTopicNotifcationEvent(
       SendGroupTopicNotifcationEvent event, Emitter<MessageState> emit) async {
     try {
-      final groupDocument = await fireStore
-          .collection(usersCollection)
-          .doc(event.messageToSend.senderID)
-          .collection(groupsCollection)
-          .doc(event.groupid)
-          .get();
-      log("Group id from event bloc: ${event.groupid}");
-      final groupData = GroupModel.fromJson(map: groupDocument.data()!);
-      log("Group id from bloc: ${groupData.groupID}");
       String messageToSend = messageByType(message: event.messageToSend);
       await NotificationService.sendGroupTopicNotification(
         groupModel: event.groupModel,
-        groupName: groupData.groupName!,
+        groupName: event.groupModel.groupName!,
         messageToSend: messageToSend,
-        groupid: groupData.groupID!,
+        groupid: event.groupModel.groupID!,
       );
     } catch (e) {
       emit(MessageErrorState(message: e.toString()));

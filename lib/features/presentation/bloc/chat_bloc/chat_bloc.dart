@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -41,7 +40,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       );
       add(GetAllChatsEvent());
     } catch (e) {
-      log("Create chat: e ${e.toString()}");
       emit(ChatErrorState(errormessage: e.toString()));
     }
   }
@@ -50,12 +48,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       GetAllChatsEvent event, Emitter<ChatState> emit) {
     emit(ChatLoadingState());
     try {
-      log("Get all chats event called");
       Stream<List<ChatModel>> chatList = chatRepo.getAllChats();
       // emit(ChatSuccessState(chatList: chatList));
       emit(ChatState(chatList: chatList));
     } catch (e) {
-      log("Create chat: e ${e.toString()}");
       emit(ChatErrorState(errormessage: e.toString()));
     }
   }
@@ -71,7 +67,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           : null;
       add(GetAllChatsEvent());
     } catch (e) {
-      log("Delete chat: e ${e.toString()}");
       emit(ChatErrorState(errormessage: e.toString()));
     }
   }
@@ -81,7 +76,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     try {
       await chatRepo.clearChatMethodInOneToOne(chatID: event.chatId);
     } catch (e) {
-      log("Clear chat: e ${e.toString()}");
       emit(ChatErrorState(errormessage: e.toString()));
     }
   }
@@ -118,7 +112,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     try {
       final isUpdated =
           await chatRepo.updateChatData(chatModel: event.chatModel);
-      log(name: "Mute notification", isUpdated.toString());
       if (isUpdated) {
         add(GetAllChatsEvent());
       } else {
@@ -134,7 +127,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     try {
       final value =
           await chatRepo.reportAccount(reportModel: event.reportModel);
-      log(name: "reported user", value.toString());
       if (value) {
         commonSnackBarWidget(
             context: event.context, contentText: "Reported successfully");

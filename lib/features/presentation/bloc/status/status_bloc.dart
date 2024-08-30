@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:file_picker/file_picker.dart';
@@ -33,18 +32,15 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
 
   FutureOr<void> statusLoadEvent(
       StatusLoadEvent event, Emitter<StatusState> emit) {
-    emit(StatusLoadingState());
+    emit(StatusUploadedLoadingState());
     try {
       final Stream<List<StatusModel>>? statusList =
           statusRepository.getAllStatusFromDB();
-          statusList?.listen(
-            (data)=>log(data.length.toString())
-          );
+          
       emit(StatusState(
         statusList: statusList,
       ));
     } catch (e) {
-      log("Error on get all status bloc: ${e.toString()}");
       emit(StatusErrorState(errorMessage: e.toString()));
     }
   }
@@ -59,10 +55,8 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
         statusList: state.statusList,
         message: isUploaded ? "Status sent" : "Unable to sent",
       ));
-      print(isUploaded.toString());
       add(StatusLoadEvent());
     } catch (e) {
-      log("Error on upload status bloc: ${e.toString()}");
       emit(StatusErrorState(errorMessage: e.toString()));
     }
   }
@@ -70,7 +64,6 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
   FutureOr<void> statusShareEvent(
       StatusShareEvent event, Emitter<StatusState> emit) {
     try {} catch (e) {
-      log("Error on share status bloc: ${e.toString()}");
       emit(StatusErrorState(errorMessage: e.toString()));
     }
   }
@@ -87,7 +80,6 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
         message: isDeleted ? "Status sent" : "Unable to sent",
       ));
     } catch (e) {
-      log("Error on delete status bloc: ${e.toString()}");
       emit(StatusErrorState(errorMessage: e.toString()));
     }
   }
@@ -96,7 +88,6 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
       PickStatusEvent event, Emitter<StatusState> emit) async {
     try {
       final file = await pickAsset(assetSelected: event.statusType);
-      log("File $file");
       if (event.statusType == StatusType.image) {
         Navigator.push(
           event.context,
@@ -126,7 +117,6 @@ class StatusBloc extends Bloc<StatusEvent, StatusState> {
       }
       emit(state.copyWith(pickedStatus: file));
     } catch (e) {
-      log("Error on pick status bloc: ${e.toString()}");
       emit(StatusErrorState(errorMessage: e.toString()));
     }
   }

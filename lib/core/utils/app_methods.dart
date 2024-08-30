@@ -1,8 +1,8 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:android_intent_plus/flag.dart';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class AppMethods {
   static const platform = MethodChannel('toastshowerchannel');
@@ -22,7 +22,6 @@ class AppMethods {
     try {
       await platform.invokeMethod('showToast', {'message': message});
     } on PlatformException catch (e) {
-      log("Failed to show toast: '${e.message}'.");
     }
   }
 
@@ -59,6 +58,14 @@ static Future<String> getCurrentNotificationTone() async {
   final deviceNotificationToneName =
       await notificationChannel.invokeMethod('getDeviceNotificationToneName');
   return deviceNotificationToneName;
+}
+// contacts permission request
+static Future<PermissionStatus> requestContactsPermission() async {
+  var status = await Permission.contacts.status;
+  if (!status.isGranted) {
+    await Permission.contacts.request();
+  }
+  return status;
 }
 
 }

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -163,7 +161,6 @@ Future<dynamic> blockUnblockUserMethod({
                 if (isBlocked != null) {
                   if (isBlocked) {
                     if (blockedUserId != null) {
-                      log("Inside remove block $blockedUserId");
                       context.read<UserBloc>().add(
                             RemoveBlockedUserEvent(
                               blockedUserId: blockedUserId!,

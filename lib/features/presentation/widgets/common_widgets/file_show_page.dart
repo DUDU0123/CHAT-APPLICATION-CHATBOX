@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -30,7 +29,8 @@ class FileShowPage extends StatefulWidget {
       this.chatModel,
       this.groupModel,
       this.receiverContactName,
-      this.isGroup, required this.rootContext});
+      this.isGroup,
+      required this.rootContext});
   final File? fileToShow;
   final FileType fileType;
   final StatusModel? statusModel;
@@ -53,26 +53,14 @@ class _FileShowPageState extends State<FileShowPage> {
   @override
   void initState() {
     super.initState();
-    log('File to show: ${widget.fileToShow}');
-    log('File type: ${widget.fileType}');
 
     if (widget.fileToShow != null) {
-      log('Not null');
       if (widget.fileType == FileType.video) {
-        log('Initializing video player');
         videoPlayerController = VideoPlayerController.file(widget.fileToShow!)
-          ..initialize().then((_) {
-            log('Video player initialized');
-          }).catchError((error) {
-            log('Error initializing video player: $error');
-          });
+          ..initialize().then((_) {}).catchError((error) {});
         videoPlayerController?.addListener(_videoPlayerListener);
-      } else {
-        log('File type is not video');
-      }
-    } else {
-      log('No file to show');
-    }
+      } else {}
+    } else {}
   }
 
   @override
@@ -195,73 +183,96 @@ class _FileShowPageState extends State<FileShowPage> {
                         ),
                       ),
                     ),
-                    IconButton(
-                      onPressed: () async {
-                        if (widget.pageType == PageTypeEnum.chatStatus) {
-                          StatusModel statusModel =
-                              await StatusMethods.newStatusUploadMethod(
-                            fileToShow: widget.fileToShow,
-                            currentStatusModel: widget.statusModel,
-                            fileCaption: fileCaptionController.text,
-                            statusDuration: videoPlayerController != null
-                                ? videoPlayerController!.value.duration
-                                    .toString()
-                                : "10",
-                            statusType: widget.fileType == FileType.video
-                                ? StatusType.video
-                                : StatusType.image,
-                          );
-                          if (mounted) {
-                            context.read<StatusBloc>().add(StatusUploadEvent(
-                                  statusModel: statusModel,
-                                ));
-                          }
-                        } else if (widget.pageType ==
-                            PageTypeEnum.messagingPage) {
-                          if (widget.fileType == FileType.video &&
-                              widget.isGroup != null) {
-                            context.read<MessageBloc>().add(
-                                  VideoMessageSendEvent(
-                                    context: widget.rootContext,
-                                    messageCaption: fileCaptionController.text,
-                                    videoFile: widget.fileToShow,
-                                    isGroup: widget.isGroup!,
-                                    receiverContactName:
-                                        widget.receiverContactName ?? "",
-                                    receiverID:
-                                        widget.chatModel?.receiverID ?? "",
-                                    imageSource: ImageSource.camera,
-                                    chatModel: widget.chatModel,
-                                    groupModel: widget.groupModel,
-                                  ),
-                                );
-                          } else {
-                            context.read<MessageBloc>().add(
-                                  PhotoMessageSendEvent(
-                                    context: widget.rootContext,
-                                    messageCaption: fileCaptionController.text,
-                                    imageFile: widget.fileToShow,
-                                    isGroup: widget.isGroup!,
-                                    receiverContactName:
-                                        widget.receiverContactName ?? "",
-                                    receiverID:
-                                        widget.chatModel?.receiverID ?? "",
-                                    imageSource: ImageSource.camera,
-                                    chatModel: widget.chatModel,
-                                    groupModel: widget.groupModel,
-                                  ),
-                                );
-                          }
-                        }
-                        if (mounted) {
-                          Navigator.pop(context);
-                          context
-                              .read<StatusBloc>()
-                              .add(const FileResetEvent());
+                    BlocListener<StatusBloc, StatusState>(
+                      listener: (context, state) {
+                        if (state is! StatusLoadingState) {
+                          Navigator.of(context)
+                              .pop(); // Close the loading dialog
                         }
                       },
-                      icon: sendIconWidget(),
-                    )
+                      child: BlocListener<MessageBloc, MessageState>(
+                        listener: (context, state) {
+                          if (state is! MessageLoadingState) {
+                            Navigator.of(context)
+                                .pop();
+                          }
+                        },
+                        child: IconButton(
+                          onPressed: () async {
+                            showLoadingDialog(
+                                context);
+
+                            if (widget.pageType == PageTypeEnum.chatStatus) {
+                              StatusModel statusModel =
+                                  await StatusMethods.newStatusUploadMethod(
+                                fileToShow: widget.fileToShow,
+                                currentStatusModel: widget.statusModel,
+                                fileCaption: fileCaptionController.text,
+                                statusDuration: videoPlayerController != null
+                                    ? videoPlayerController!.value.duration
+                                        .toString()
+                                    : "10",
+                                statusType: widget.fileType == FileType.video
+                                    ? StatusType.video
+                                    : StatusType.image,
+                              );
+                              if (mounted) {
+                                context
+                                    .read<StatusBloc>()
+                                    .add(StatusUploadEvent(
+                                      statusModel: statusModel,
+                                    ));
+                              }
+                            } else if (widget.pageType ==
+                                PageTypeEnum.messagingPage) {
+                              if (widget.fileType == FileType.video &&
+                                  widget.isGroup != null) {
+                                context
+                                    .read<MessageBloc>()
+                                    .add(VideoMessageSendEvent(
+                                      context: widget.rootContext,
+                                      messageCaption:
+                                          fileCaptionController.text,
+                                      videoFile: widget.fileToShow,
+                                      isGroup: widget.isGroup!,
+                                      receiverContactName:
+                                          widget.receiverContactName ?? "",
+                                      receiverID:
+                                          widget.chatModel?.receiverID ?? "",
+                                      imageSource: ImageSource.camera,
+                                      chatModel: widget.chatModel,
+                                      groupModel: widget.groupModel,
+                                    ));
+                              } else {
+                                context
+                                    .read<MessageBloc>()
+                                    .add(PhotoMessageSendEvent(
+                                      context: widget.rootContext,
+                                      messageCaption:
+                                          fileCaptionController.text,
+                                      imageFile: widget.fileToShow,
+                                      isGroup: widget.isGroup!,
+                                      receiverContactName:
+                                          widget.receiverContactName ?? "",
+                                      receiverID:
+                                          widget.chatModel?.receiverID ?? "",
+                                      imageSource: ImageSource.camera,
+                                      chatModel: widget.chatModel,
+                                      groupModel: widget.groupModel,
+                                    ));
+                              }
+                            }
+                            if (mounted) {
+                              Navigator.pop(context);
+                              context
+                                  .read<StatusBloc>()
+                                  .add(const FileResetEvent());
+                            }
+                          },
+                          icon: sendIconWidget(),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -271,4 +282,18 @@ class _FileShowPageState extends State<FileShowPage> {
       ),
     );
   }
+}
+void showLoadingDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return PopScope(
+        onPopInvoked: (didPop)async => false,
+        child: commonAnimationWidget(
+          context: context, isTextNeeded: false,
+        ),
+      );
+    },
+  );
 }

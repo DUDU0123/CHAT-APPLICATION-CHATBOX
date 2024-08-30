@@ -22,5 +22,10 @@ class CallRepositoryImpl extends CallRepository {
   Future<bool> deleteOneCallInfo({required String callModelId}) async{
     return await callData.deleteOneCallInfo(callModelId: callModelId);
   }
+  
+  @override
+  Future<bool> clearCallLogs() {
+    return callData.clearCallLogs();
+  }
 
 }

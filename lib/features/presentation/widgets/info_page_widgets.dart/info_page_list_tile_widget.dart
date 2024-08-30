@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
@@ -11,6 +10,7 @@ import 'package:official_chatbox_application/features/data/models/user_model/use
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_app_bar_widgets_and_methods.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_list_tile.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/dialog_widgets/normal_dialogbox_widget.dart';
+
 Widget infoPageListTileWidget({
   required BuildContext context,
   required IconData icon,
@@ -27,10 +27,10 @@ Widget infoPageListTileWidget({
       !isBlockTile
           ? normalDialogBoxWidget(
               context: context,
-              title: dialogTitle??'',
-              subtitle: dialogSubTitle??'',
+              title: dialogTitle ?? '',
+              subtitle: dialogSubTitle ?? '',
               onPressed: onPressed,
-              actionButtonName: actionButtonName??'',
+              actionButtonName: actionButtonName ?? '',
             )
           : blockUnblockUserMethod(context: context, chatModel: chatModel);
     },
@@ -64,7 +64,6 @@ Widget groupListTile({
             case 'exit-tile':
               if (groupData.groupMembers!
                   .contains(firebaseAuth.currentUser?.uid)) {
-                log("Inside first tile");
                 removeOrExitFromGroupMethod(
                   context: context,
                   title: "Exit from ${groupData.groupName}",
@@ -74,7 +73,6 @@ Widget groupListTile({
                   groupMemberSnapshot: snapshot,
                   actionButtonName: "Exit",
                 );
-                log(groupData.toString());
               }
               break;
           }

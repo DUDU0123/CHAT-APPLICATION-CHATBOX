@@ -4,7 +4,9 @@ import 'package:official_chatbox_application/config/bloc_providers/all_bloc_prov
 import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
+import 'package:official_chatbox_application/features/data/models/status_model/status_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
+import 'package:official_chatbox_application/features/presentation/pages/mobile_view/status/status_pages/text_status_setup_page.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat_home/chat_tile_widgets.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
 
@@ -108,4 +110,26 @@ Future<dynamic> statusViewersListShowBottomSheet(
       );
     },
   );
+}
+StreamBuilder<StatusModel?> textStatusButton() {
+  return StreamBuilder<StatusModel?>(
+      stream: CommonDBFunctions.getCurrentUserStatus(),
+      builder: (context, snapshot) {
+        return FloatingActionButton(
+          backgroundColor: darkLinearGradientColorTwo,
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TextStatusSetupPage(
+                    currentStatusModel: snapshot.data,
+                  ),
+                ));
+          },
+          child: Icon(
+            Icons.edit,
+            color: kWhite,
+          ),
+        );
+      });
 }

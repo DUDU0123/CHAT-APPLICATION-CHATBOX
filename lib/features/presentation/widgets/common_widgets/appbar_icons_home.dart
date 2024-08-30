@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:official_chatbox_application/config/theme/theme_manager.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/call/call_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/contact/contact_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/chat/contact_list_page.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/payments/payments_home_page.dart';
@@ -15,22 +14,7 @@ List<Widget> appBarIconsHome(
     required ThemeData theme,
     required int currentIndex,
     required BuildContext context}) {
-  final themeManager = Provider.of<ThemeManager>(context, listen: false);
   return [
-    currentIndex == 0
-        ? CircleAvatar(
-            backgroundColor: theme.primaryColor,
-            child: IconButton(
-              onPressed: () {
-                themeManager.changeTheme();
-              },
-              icon: Icon(
-                Icons.dark_mode,
-                size: 30.sp,
-              ),
-            ),
-          )
-        : zeroMeasureWidget,
     currentIndex == 0
         ? addChatButtonHome(
             theme: theme,
@@ -43,16 +27,6 @@ List<Widget> appBarIconsHome(
                 ),
               );
             },
-          )
-        : zeroMeasureWidget,
-    cameraButtonMainPage(
-      theme: theme,
-      onPressed: () {},
-    ),
-    isSearchIconNeeded
-        ? searchButton(
-            theme: theme,
-            onPressed: () {},
           )
         : zeroMeasureWidget,
     PopupMenuButton(
@@ -95,7 +69,9 @@ List<Widget> appBarIconsHome(
           ];
         }
         return [
-          commonPopUpMenuItem(context: context, menuText: "Clear call log"),
+          commonPopUpMenuItem(context: context, menuText: "Clear call log", onTap: () {
+            context.read<CallBloc>().add(ClearAllCallLogs());
+          },),
           settingsNavigatorMenu(context),
         ];
       },

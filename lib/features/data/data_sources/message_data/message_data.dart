@@ -56,15 +56,7 @@ class MessageData {
       );
       WriteBatch batch = firestore.batch();
       batch.set(groupMessageDocumentReference, updatedMessageModel.toJson());
-      
       for (var userId in groupData.groupMembers!) {
-        context.read<MessageBloc>().add(
-            SendGroupTopicNotifcationEvent(
-              groupModel: groupData,
-              groupid: groupData.groupID!,
-              messageToSend: message,
-            ),
-          );
         final newDocReference = firestore
             .collection(usersCollection)
             .doc(userId)
@@ -74,13 +66,18 @@ class MessageData {
             .doc(messageId);
         batch.set(newDocReference, updatedMessageModel.toJson());
       }
+      context.read<MessageBloc>().add(
+            SendGroupTopicNotifcationEvent(
+              groupModel: groupData,
+              groupid: groupData.groupID!,
+              messageToSend: message,
+            ),
+          );
       await batch.commit();
       return true;
     } on FirebaseException catch (e) {
-      log("From group send message ${e.message}");
       return false;
     } catch (e) {
-      log(e.toString());
       return false;
     }
   }
@@ -90,7 +87,6 @@ class MessageData {
     try {
       final currentUserId = firebaseAuth.currentUser?.uid;
       if (currentUserId == null) {
-        log("Current user id null from getAllMessageOfAGroupChat");
         return null;
       }
       return firestore
@@ -107,11 +103,8 @@ class MessageData {
               )
               .toList());
     } on FirebaseException catch (e) {
-      log("Get all group message: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
-      log("Current user id null from getAllMessageOfAGroupChat");
-      log(e.toString());
       throw Exception(e.toString());
     }
   }
@@ -157,11 +150,9 @@ class MessageData {
       }
 
       if (chatId != null) {
-         final ChatModel? chatModel = await CommonDBFunctions.getChatModelByChatID(chatModelId: chatId);
-         log(name: "Chatmodel from message data",chatModel.toString());
-         log(
-          "chatmodel sender id:${chatModel?.senderID}, chatmodel receiver id:${chatModel?.receiverID},chatmodel chat id:${chatModel?.chatID}, chatmodel receiver name:${chatModel?.receiverName},",
-         );
+        final ChatModel? chatModel =
+            await CommonDBFunctions.getChatModelByChatID(chatModelId: chatId);
+
         context.read<MessageBloc>().add(
               SendNotifcationEvent(
                 chatModel: chatModel,
@@ -172,10 +163,8 @@ class MessageData {
             );
       }
     } on FirebaseException catch (e) {
-      log("From Chat Data: 241: ${e.message}");
       throw Exception(e.message);
     } catch (e) {
-      log(e.toString());
       throw Exception(e.toString());
     }
   }
@@ -204,10 +193,10 @@ class MessageData {
         return null;
       }
     } on FirebaseException catch (e) {
-      log("Photo send error chat data: ${e.message}");
+      // log("Photo send error chat data: ${e.message}");
       return null;
     } catch (e) {
-      log(e.toString());
+      // log(e.toString());
       return null;
     }
   }
@@ -318,24 +307,22 @@ class MessageData {
           }
 
           await batch.commit();
-        } else {
-          log("No messages to update for receiver");
-        }
-        // if (isGroup && groupModel != null) {
-        //   if (groupModel.groupMembers != null) {
-        //     for (var memberID in groupModel.groupMembers!) {
-        //       await FirebaseFirestore.instance
-        //           .collection(usersCollection)
-        //           .doc(memberID)
-        //           .collection(groupsCollection)
-        //           .doc(groupModel.groupID)
-        //           .update({
-        //         dbGroupLastMessageTime: message.messageTime,
-        //       });
-        //     }
-        //   }
+        } else {}
+        // if (isGroup) {
+          // if (groupModel?.groupMembers != null) {
+          //   for (var memberID in groupModel!.groupMembers!) {
+          //     await FirebaseFirestore.instance
+          //         .collection(usersCollection)
+          //         .doc(memberID)
+          //         .collection(groupsCollection)
+          //         .doc(groupModel.groupID)
+          //         .update({
+          //       dbGroupLastMessageTime: message.messageTime,
+          //     });
+          //   }
+          // }
         // }
-        // // Update sender's chat document
+        // Update sender's chat document
         await FirebaseFirestore.instance
             .collection(usersCollection)
             .doc(chatModel?.senderID)
@@ -374,7 +361,7 @@ class MessageData {
           dbMessageStatus: messageStatus,
         });
       } else {
-        log("Receiver snapshot does not exist");
+        // log("Receiver snapshot does not exist");
       }
     });
   }
@@ -475,10 +462,8 @@ class MessageData {
         return true;
       }
     } on FirebaseException catch (e) {
-      log("From edit message: ${e.message}");
       return false;
     } catch (e) {
-      log("From edit message catch: $e");
       return false;
     }
   }
@@ -599,10 +584,8 @@ class MessageData {
         return true;
       }
     } on FirebaseException catch (e) {
-      log("delete message for everyone error: ${e.toString()}");
       return false;
     } catch (e) {
-      log("delete message for everyone error: ${e.toString()}");
       return false;
     }
   }
@@ -635,15 +618,12 @@ class MessageData {
               .collection(messagesCollection)
               .doc(messageID)
               .delete();
-          log("Complete chat: ");
         }
       }
       return true;
     } on FirebaseException catch (e) {
-      log("Delete multiple message error: ${e.toString()}");
       return false;
     } catch (e) {
-      log("Delete multiple message error: ${e.toString()}");
       return false;
     }
   }

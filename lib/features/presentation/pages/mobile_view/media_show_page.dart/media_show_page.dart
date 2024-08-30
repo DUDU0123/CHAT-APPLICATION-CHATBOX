@@ -99,7 +99,6 @@ class MediaShowPage extends StatelessWidget {
               chatModel: chatModel,
             ),
       builder: (context, snapshot) {
-        log(name: "Media list", snapshot.data.toString());
         if (snapshot.connectionState == ConnectionState.waiting) {
           return commonAnimationWidget(
             context: context,

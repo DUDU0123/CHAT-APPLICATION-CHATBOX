@@ -54,35 +54,48 @@ class _AudioMessageContentShowWidgetState
 
         GestureDetector(
           onTap: () async {
-            if (await CommonDBFunctions.checkAssetExists(widget.message.message!)) {
+            if (await CommonDBFunctions.checkAssetExists(
+                widget.message.message!)) {
               await widget.audioPlayers[widget.message.message]
-                ?.setUrl(widget.message.message ?? '');
+                  ?.setUrl(widget.message.message ?? '');
 
-            final isPlaying =
-                widget.audioPlayers[widget.message.message]?.playing ?? false;
-            if (isPlaying) {
-              await widget.audioPlayers[widget.message.message]?.pause();
-              if (mounted) {
-                context.read<MessageBloc>().add(
-                    AudioPlayerPlayStateChangedEvent(
-                        widget.message.message!, false));
+              // Stop all other currently playing audio players
+              for (var player in widget.audioPlayers.values) {
+                if (player.playing &&
+                    player != widget.audioPlayers[widget.message.message]) {
+                  await player.pause();
+                }
+              }
+
+              final isPlaying =
+                  widget.audioPlayers[widget.message.message]?.playing ?? false;
+              if (isPlaying) {
+                await widget.audioPlayers[widget.message.message]?.pause();
+                if (mounted) {
+                  context.read<MessageBloc>().add(
+                      AudioPlayerPlayStateChangedEvent(
+                          widget.message.message!, false));
+                }
+              } else {
+                await widget.audioPlayers[widget.message.message]!.play();
+                if (mounted) {
+                  context.read<MessageBloc>().add(
+                      AudioPlayerPlayStateChangedEvent(
+                          widget.message.message!, true));
+                }
               }
             } else {
-              await widget.audioPlayers[widget.message.message]!.play();
               if (mounted) {
-                context.read<MessageBloc>().add(
-                    AudioPlayerPlayStateChangedEvent(
-                        widget.message.message!, true));
+                simpleDialogBox(
+                  context: context,
+                  title: "Can't play this audio, it is deleted",
+                  buttonText: "Ok",
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                );
               }
             }
-            }else{
-              if (mounted) {
-                simpleDialogBox(context: context, title: "Can't play this audio, it is deleted", buttonText: "Ok", onPressed: () {
-                Navigator.pop(context);
-              },);
-              }
-            }
-            
           },
           child: BlocBuilder<MessageBloc, MessageState>(
             builder: (context, state) {
@@ -96,6 +109,7 @@ class _AudioMessageContentShowWidgetState
             },
           ),
         ),
+
         Expanded(
           child: BlocBuilder<MessageBloc, MessageState>(
             builder: (context, state) {

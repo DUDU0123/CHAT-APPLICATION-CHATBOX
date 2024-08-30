@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,12 +37,9 @@ class UserData {
           )
           .toList();
     } on FirebaseAuthException catch (e) {
-      log(
-        'Firebase Auth exception: $e',
-      );
+
       throw Exception("Error while fetching all user: $e");
-    } catch (e, stackTrace) {
-      log('Error while fetching all users: $e', stackTrace: stackTrace);
+    } catch (e) {
       throw Exception("Error while fetching all users: $e");
     }
   }
@@ -57,12 +53,10 @@ class UserData {
             ),
           );
     } on FirebaseAuthException catch (e) {
-      log(
-        'Firebase Auth exception: $e',
-      );
+      
       throw Exception("Error while fetching user data: $e");
     } catch (e, stackTrace) {
-      log('Error while fetching user data: $e', stackTrace: stackTrace);
+     
       throw Exception("Error while fetching user data: $e");
     }
   }
@@ -76,16 +70,13 @@ class UserData {
       if (documentSnapshot.exists) {
         return UserModel.fromJson(map: documentSnapshot.data()!);
       } else {
-        log('User not found with ID: $userId');
         return null;
       }
     } on FirebaseAuthException catch (e) {
-      log(
-        'Firebase Auth exception: $e',
-      );
+      
       throw Exception("Error while fetching user data: $e");
     } catch (e, stackTrace) {
-      log('Error while fetching user data: $e', stackTrace: stackTrace);
+     
       throw Exception("Error while fetching user data: $e");
     }
   }
@@ -104,12 +95,9 @@ class UserData {
           .doc(userData.id)
           .set(userData.toJson());
     } on FirebaseAuthException catch (e) {
-      log(
-        'Firebase Auth exception: $e',
-      );
+      
       throw Exception("Error while saving user data: $e");
     } catch (e, stackTrace) {
-      log('Error while saving user data: $e', stackTrace: stackTrace);
       throw Exception("Error while saving user data: $e");
     }
   }
@@ -125,7 +113,6 @@ class UserData {
             ref: "profile_images/${userData.id}", file: profileImage);
         userData = userData.copyWith(userProfileImage: userProfileImage);
       }
-      log("User data updating...");
 
       // Update user profile in users collection
       await firestore
@@ -136,14 +123,10 @@ class UserData {
       // Update chat details where this user is a receiver
       await updateChatsWithNewReceiverInfo(userData);
 
-      log("User data updated");
     } on FirebaseAuthException catch (e) {
-      log(
-        'Firebase Auth exception: $e',
-      );
+      
       throw Exception("Error while updating user data: $e");
     } catch (e, stackTrace) {
-      log('Error while updating user data: $e', stackTrace: stackTrace);
       throw Exception("Error while updating user data: $e");
     }
   }
@@ -172,8 +155,7 @@ class UserData {
         }
       }
     } catch (e, stackTrace) {
-      log('Error while updating chats with new receiver info: $e',
-          stackTrace: stackTrace);
+
       throw Exception("Error while updating chats with new receiver info: $e");
     }
   }
@@ -212,18 +194,14 @@ class UserData {
         }
       }
     } on FirebaseAuthException catch (e) {
-      log(
-        'Firebase Auth exception: $e',
-      );
+      
       throw Exception("Error while deleting user data: $e");
     } catch (e, stackTrace) {
-      log('Error while deleting user data: $e', stackTrace: stackTrace);
       throw Exception("Error while deleting user data: $e");
     }
   }
 
   Future<void> deleteUserFilesInDB({required String fullPathToFile}) async {
-    log(name: "FilePath", fullPathToFile);
     try {
       Reference fileReference = firebaseStorage.ref(fullPathToFile);
       // Check if the file exists by attempting to get its metadata
@@ -231,17 +209,13 @@ class UserData {
 
       // If the file exists, proceed to delete it
       await fileReference.delete();
-      log('File deleted successfully');
     } on FirebaseException catch (e) {
       if (e.code == 'object-not-found') {
-        log('File does not exist at path: $fullPathToFile');
         return;
       } else {
-        log('Firebase exception: $e');
         return;
       }
     } catch (e) {
-      log('Error while deleting user file: $e');
       return;
     }
   }
@@ -259,7 +233,6 @@ class UserData {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {
-        log('The user must reauthenticate before this operation can be executed.');
         await reAuthenticateUser(
           phoneNumber: phoneNumber,
           context: context,
@@ -268,9 +241,7 @@ class UserData {
         await authenticationRepo.setUserAuthStatus(isSignedIn: false);
       }
     } catch (e) {
-      log(
-        'Error while deleting user from auth: $e',
-      );
+
       throw Exception("Error while deleting user from auth: $e");
     }
   }
@@ -286,13 +257,10 @@ class UserData {
         context: context,
         phoneNumber: phoneNumber,
       );
-      log("User reauthicate 203 file: userdata: ${credential.verificationId}");
       await user?.reauthenticateWithCredential(credential);
     } on FirebaseAuthException catch (e) {
-      log('Reauthentication error: $e');
       throw Exception('Reauthentication error: $e');
     } catch (e) {
-      log('No user is currently signed in');
       throw Exception('No user is currently signed in');
     }
   }
@@ -352,12 +320,9 @@ class UserData {
       TaskSnapshot taskSnapshot = await uploadTask;
       return await taskSnapshot.ref.getDownloadURL();
     } on FirebaseAuthException catch (e) {
-      log(
-        'Firebase Auth exception: $e',
-      );
+      
       throw Exception("Error while saving file to storage: $e");
     } catch (e, stackTrace) {
-      log('Error while saving file to storage: $e', stackTrace: stackTrace);
       throw Exception("Error while saving file to storage: $e");
     }
   }
@@ -378,16 +343,12 @@ class UserData {
         });
         await updateChatsWithNewReceiverInfo(currentUser);
       } else {
-        log('Current user or profile image is null');
       }
     } on FirebaseAuthException catch (e) {
-      log(
-        'Firebase Auth exception: $e',
-      );
+      
       throw Exception("Error while saving profile image to database: $e");
     } catch (e, stackTrace) {
-      log('Error while saving profile image to database: $e',
-          stackTrace: stackTrace);
+
       throw Exception("Error while saving profile image to database: $e");
     }
   }
@@ -398,27 +359,6 @@ class UserData {
   }) async {
     try {
       final currentUser = fireBaseAuth.currentUser;
-      QuerySnapshot<Map<String, dynamic>> messages = await firestore
-          .collection(usersCollection)
-          .doc(currentUser?.uid)
-          .collection(chatsCollection)
-          .doc(chatId)
-          .collection(messagesCollection)
-          .get();
-
-      // Delete each message document
-      for (QueryDocumentSnapshot<Map<String, dynamic>> messageDoc
-          in messages.docs) {
-        await messageDoc.reference.delete();
-      }
-
-      await firestore
-          .collection(usersCollection)
-          .doc(currentUser?.uid)
-          .collection(chatsCollection)
-          .doc(chatId)
-          .delete();
-
       DocumentReference<Map<String, dynamic>> blockedUserDoc = await firestore
           .collection(usersCollection)
           .doc(currentUser?.uid)
@@ -439,13 +379,10 @@ class UserData {
 
       return true;
     } on FirebaseException catch (e) {
-      log(
-        'Firebase exception: $e from block user',
-      );
+ 
       return false;
     } catch (e, stackTrace) {
-      log('Error while saving blocked user to database: $e',
-          stackTrace: stackTrace);
+
       return false;
     }
   }
@@ -464,13 +401,9 @@ class UserData {
           .delete();
       return true;
     } on FirebaseException catch (e) {
-      log(
-        'Firebase exception: $e from block user removing',
-      );
+
       return false;
     } catch (e, stackTrace) {
-      log('Error while removing blocked user to database: $e',
-          stackTrace: stackTrace);
       return false;
     }
   }
@@ -493,13 +426,10 @@ class UserData {
             .toList();
       });
     } on FirebaseException catch (e) {
-      log(
-        'Firebase exception: $e from get all blocked users',
-      );
+
       return null;
     } catch (e, stackTrace) {
-      log('Error while getting all blocked user from database: $e',
-          stackTrace: stackTrace);
+
       return null;
     }
   }
@@ -516,12 +446,9 @@ class UserData {
       });
       return true;
     } on FirebaseException catch (e) {
-      log(
-        'Firebase exception: $e from tfa pin update',
-      );
+
       return false;
     } catch (e, stackTrace) {
-      log('Error while tfa pin update in database: $e', stackTrace: stackTrace);
       return false;
     }
   }

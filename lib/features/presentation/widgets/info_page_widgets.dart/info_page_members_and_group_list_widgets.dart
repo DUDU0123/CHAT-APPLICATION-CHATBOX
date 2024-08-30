@@ -46,7 +46,6 @@ Widget infoPageGroupMembersList({
                                 : groupData.groupMembers![index]),
                         builder: (context, snapshot) {
                           if (snapshot.hasError) {
-                            log("Some Error Occured ${snapshot.error} ${snapshot.stackTrace}");
                             return commonErrorWidget(
                                 message:
                                     "Some Error Occured in group member listing ${snapshot.error} ${snapshot.stackTrace}");

@@ -42,6 +42,8 @@ class StatusInitial extends StatusState {}
 
 class StatusLoadingState extends StatusState {}
 
+class StatusUploadedLoadingState extends StatusState {}
+
 class StatusErrorState extends StatusState {
   final String errorMessage;
   StatusErrorState({

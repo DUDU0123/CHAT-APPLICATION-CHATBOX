@@ -154,4 +154,51 @@ class CallData {
       return false;
     }
   }
+
+  Future<bool> clearCallLogs() async {
+  try {
+    final currentUser = firebaseAuth.currentUser;
+
+    if (currentUser == null) {
+      return false;
+    }
+
+    final callCollectionRef = firebaseFirestore
+        .collection(usersCollection)
+        .doc(currentUser.uid)
+        .collection(callsCollection);
+
+    // Get all documents in the call logs collection
+    final callDocsSnapshot = await callCollectionRef.get();
+
+    // Batch delete all call logs
+    final batch = firebaseFirestore.batch();
+
+    for (var doc in callDocsSnapshot.docs) {
+      batch.delete(doc.reference);
+    }
+
+    await batch.commit();
+
+    return true;
+  } on FirebaseException catch (e) {
+    if (e.code == 'unavailable') {
+      DialogHelper.showDialogMethod(
+        title: "Network Error",
+        contentText: "Please check your network connection",
+      );
+    }
+    return false;
+  } on SocketException catch (e) {
+    DialogHelper.showDialogMethod(
+      title: "Network Error",
+      contentText: "Please check your network connection",
+    );
+    return false;
+  } catch (e) {
+    log("Error on delete call log: ${e.toString()}");
+    return false;
+  }
+}
+
 }

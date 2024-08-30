@@ -34,10 +34,13 @@ Widget messageListingWidget({
     stream: state.messages,
     builder: (context, snapshot) {
       if (snapshot.data == null) {
-        log("Snapshot message list data null");
         return zeroMeasureWidget;
       }
-
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+            scrollController.jumpTo(
+              scrollController.position.maxScrollExtent,
+            );
+          });
       final messages = snapshot.data!;
       List<Widget> messageWidgets = [];
       String? currentDate;

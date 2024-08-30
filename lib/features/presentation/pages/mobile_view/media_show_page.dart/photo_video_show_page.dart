@@ -1,5 +1,3 @@
-// import 'dart:developer';
-import 'dart:developer';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,26 +30,18 @@ class _PhotoVideoShowPageState extends State<PhotoVideoShowPage> {
   @override
   void initState() {
     super.initState();
-    log('File to show: ${widget.fileToShowUrl}');
-    log('File type: ${widget.fileType}');
 
     if (widget.fileToShowUrl != null) {
-      log('Not null');
       if (widget.fileType == FileType.video) {
-        log('Initializing video player');
         videoPlayerController =
             VideoPlayerController.networkUrl(Uri.parse(widget.fileToShowUrl!))
               ..initialize().then((_) {
-                log('Video player initialized');
               }).catchError((error) {
-                log('Error initializing video player: $error');
               });
         videoPlayerController?.addListener(_videoPlayerListener);
       } else {
-        log('File type is not video');
       }
     } else {
-      log('No file to show');
     }
   }
 

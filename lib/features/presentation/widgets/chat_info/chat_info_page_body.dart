@@ -12,9 +12,12 @@ import 'package:official_chatbox_application/features/data/models/report_model/r
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/call/call_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/group/group_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat_home/chat_tile_actions_on_longpress_method.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat_info/chat_info_widgets.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_list_tile.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/dialog_widgets/normal_dialogbox_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/info_page_widgets.dart/info_page_list_tile_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/info_page_widgets.dart/info_page_small_widgets.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/info_page_widgets.dart/info_page_user_details_part_widget.dart';
@@ -127,8 +130,7 @@ Widget chatInfoPageBody({
               : zeroMeasureWidget,
           // for group
           groupData != null
-              ? !groupData.groupMembers!
-                      .contains(firebaseAuth.currentUser?.uid)
+              ? !groupData.groupMembers!.contains(firebaseAuth.currentUser?.uid)
                   ? commonListTile(
                       leading: Icon(
                         Icons.delete_outline,
@@ -137,6 +139,24 @@ Widget chatInfoPageBody({
                       ),
                       color: kRed,
                       onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => alertDialog(
+                              context: context,
+                              title: "Delete ${groupData.groupName}",
+                              content: const TextWidgetCommon(
+                                text: "Do you want to delete this group?",
+                              ),
+                              onPressed: () {
+                                groupData.groupID != null
+                                    ? context.read<GroupBloc>().add(
+                                        DeleteGroupEvent(
+                                            groupID: groupData.groupID!))
+                                    : null;
+                                Navigator.pop(context);
+                              },
+                              actionButtonName: "Delete"),
+                        );
                         deleteChatMethodCommon(
                           context: context,
                           isGroup: isGroup,

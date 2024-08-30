@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +19,7 @@ class CallBloc extends Bloc<CallEvent, CallState> {
     on<DeleteACallLogEvent>(deleteACallLogEvent);
     on<GetCurrentCallIdAndCallersId>(getCurrentCallIdAndCallersId);
     on<UpdateCallStatusEvent>(updateCallStatusEvent);
+    on<ClearAllCallLogs>(clearAllCallLogs);
   }
 
   FutureOr<void> callInfoSaveEvent(
@@ -51,7 +51,6 @@ class CallBloc extends Bloc<CallEvent, CallState> {
       final bool value = await callRepository.deleteOneCallInfo(
         callModelId: event.callId,
       );
-      log("Deleted: $value");
       add(GetAllCallLogEvent());
     } catch (e) {
       emit(CallErrorState(errorMessage: e.toString()));
@@ -61,13 +60,11 @@ class CallBloc extends Bloc<CallEvent, CallState> {
   FutureOr<void> getCurrentCallIdAndCallersId(
       GetCurrentCallIdAndCallersId event, Emitter<CallState> emit) {
     try {
-      log("Callers ${event.callId}and ${event.callersId} callid From Bloc");
       emit(
         CallState(
-          callId: event.callId,
-          callersId: event.callersId,
-          callLogList: state.callLogList
-        ),
+            callId: event.callId,
+            callersId: event.callersId,
+            callLogList: state.callLogList),
       );
     } catch (e) {
       emit(CallErrorState(errorMessage: e.toString()));
@@ -77,10 +74,8 @@ class CallBloc extends Bloc<CallEvent, CallState> {
   Future<FutureOr<void>> updateCallStatusEvent(
       UpdateCallStatusEvent event, Emitter<CallState> emit) async {
     try {
-      log("Callers ${state.callersId}and ${state.callId} callid From Bloc Update Status");
       if (state.callersId != null) {
         for (var callerID in state.callersId!) {
-          log("Data updating");
           await fireStore
               .collection(usersCollection)
               .doc(callerID)
@@ -93,6 +88,18 @@ class CallBloc extends Bloc<CallEvent, CallState> {
       }
 
       add(GetAllCallLogEvent());
+    } catch (e) {
+      emit(CallErrorState(errorMessage: e.toString()));
+    }
+  }
+
+  FutureOr<void> clearAllCallLogs(
+      ClearAllCallLogs event, Emitter<CallState> emit) async{
+    try {
+      final value = await callRepository.clearCallLogs();
+      if (value) {
+        add(GetAllCallLogEvent());
+      }
     } catch (e) {
       emit(CallErrorState(errorMessage: e.toString()));
     }

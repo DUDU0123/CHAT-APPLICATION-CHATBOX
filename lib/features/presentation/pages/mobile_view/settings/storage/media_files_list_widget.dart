@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -53,11 +52,9 @@ BlocBuilder<MediaBloc, MediaState> mediaFilesListWidget() {
                         context
                             .read<MediaBloc>()
                             .add(MediaSelectEvent(downloadUrl));
-                        log("Long pressed");
                       },
                       child: BlocBuilder<MediaBloc, MediaState>(
                         builder: (context, state) {
-                          log("FIle is: $downloadUrl");
                           final isSelected =
                               state.selectedMediaUrls?.contains(downloadUrl) ??
                                   false;

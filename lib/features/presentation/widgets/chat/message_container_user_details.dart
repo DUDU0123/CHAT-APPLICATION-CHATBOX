@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -40,7 +38,6 @@ StreamBuilder<UserModel?> messageContainerUserDetails(
                     builder: (context, state) {
                       final privacySettings =
                           state.userPrivacySettings?[snapshot.data?.id] ?? {};
-                          log("Group Privacy user: $privacySettings");
                       final bool isShowableProfileImage =
                           privacySettings[userDbProfilePhotoPrivacy] ?? false;
                       return isShowableProfileImage

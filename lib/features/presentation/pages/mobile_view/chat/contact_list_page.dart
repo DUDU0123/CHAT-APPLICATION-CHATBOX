@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -39,7 +38,6 @@ class ContactListPage extends StatelessWidget {
                 if (state.contactList == null) {
                   return zeroMeasureWidget;
                 }
-                log("Length: Contactpage: ${state.contactList?.length}");
                 if (state is ContactsErrorState) {
                   return emptyShowWidget(context: context, text: "No contacts");
                 }
@@ -57,13 +55,6 @@ class ContactListPage extends StatelessWidget {
                     ? emptyShowWidget(context: context, text: "No Contacts")
                     : ListView.separated(
                         itemBuilder: (context, index) {
-                          if (state.contactList![index].isChatBoxUser != null) {
-                            state.contactList![index].isChatBoxUser!
-                                ? log(
-                                    "Id: ${state.contactList![index].chatBoxUserId} \n name: ${state.contactList![index].userContactName} \n Imageee: ${state.contactList![index].userProfilePhotoOnChatBox}",
-                                  )
-                                : null;
-                          }
                           return UserTileWithNameAndAboutAndProfileImage(
                             onTap: () {
                               if (state.contactList![index].isChatBoxUser !=

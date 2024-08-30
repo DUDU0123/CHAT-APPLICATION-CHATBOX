@@ -1,9 +1,7 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
-import 'package:official_chatbox_application/core/constants/colors.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
@@ -12,8 +10,8 @@ import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/data/models/status_model/status_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/status/status_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/user_bloc/user_bloc.dart';
-import 'package:official_chatbox_application/features/presentation/pages/mobile_view/status/status_pages/text_status_setup_page.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/status/status_tile_widget.dart';
+import 'package:official_chatbox_application/features/presentation/widgets/status/status_viewers_show_widgets.dart';
 
 class StatusHomePage extends StatefulWidget {
   const StatusHomePage({
@@ -74,7 +72,6 @@ class _StatusHomePageState extends State<StatusHomePage> {
                 child: StreamBuilder<List<StatusModel>?>(
                     stream: state.statusList,
                     builder: (context, snapshot) {
-                      log(snapshot.data.toString());
                       if (snapshot.data == null || snapshot.hasError) {
                         return commonErrorWidget(message: "No status");
                       }
@@ -82,15 +79,13 @@ class _StatusHomePageState extends State<StatusHomePage> {
                         return emptyShowWidget(
                             context: context, text: "No status");
                       }
-                      final otherUsersStatuses =
-                          snapshot.data!.where((status) {
+                      final otherUsersStatuses = snapshot.data!.where((status) {
                         final privacySettings = context
                             .watch<UserBloc>()
                             .state
                             .userPrivacySettings?[status.statusUploaderId];
                         final isShowableStatus =
-                            privacySettings?[userDbStatusPrivacy] ??
-                                false;
+                            privacySettings?[userDbStatusPrivacy] ?? false;
                         return status.statusUploaderId !=
                                 firebaseAuth.currentUser?.uid &&
                             (status.statusList?.isNotEmpty ?? false) &&
@@ -129,26 +124,7 @@ class _StatusHomePageState extends State<StatusHomePage> {
           );
         },
       ),
-      floatingActionButton: StreamBuilder<StatusModel?>(
-          stream: CommonDBFunctions.getCurrentUserStatus(),
-          builder: (context, snapshot) {
-            return FloatingActionButton(
-              backgroundColor: darkLinearGradientColorTwo,
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TextStatusSetupPage(
-                        currentStatusModel: snapshot.data,
-                      ),
-                    ));
-              },
-              child: Icon(
-                Icons.edit,
-                color: kWhite,
-              ),
-            );
-          }),
+      floatingActionButton: textStatusButton(),
     );
   }
 }

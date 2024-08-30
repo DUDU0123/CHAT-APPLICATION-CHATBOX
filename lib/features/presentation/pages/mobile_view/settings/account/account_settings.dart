@@ -47,7 +47,7 @@ class AccountSettings extends StatelessWidget {
                 isSmallTitle: false,
                 context: context,
                 trailing: TextWidgetCommon(
-                  text: 'Upcoming feature',
+                  text: 'Upcoming',
                   textColor: iconGreyColor,
                   fontSize: 13.sp,
                 )),

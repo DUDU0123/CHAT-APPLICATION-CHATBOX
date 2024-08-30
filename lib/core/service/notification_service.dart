@@ -29,13 +29,9 @@ class NotificationService {
       announcement: true,
     );
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      log("User granted permission");
     } else if (settings.authorizationStatus ==
         AuthorizationStatus.provisional) {
-      log("User granted provisional permission");
-    } else {
-      log("User declined permission");
-    }
+    } else {}
   }
 
   // get server access token
@@ -65,7 +61,6 @@ class NotificationService {
     final currentUser = firebaseAuth.currentUser;
     // get fcm Token
     final fcmToken = await firebaseMessaging.getToken();
-    log(name: "Token", fcmToken.toString());
     await fireStore.collection(usersCollection).doc(currentUser?.uid).update({
       userDbFcmToken: fcmToken,
     });
@@ -81,7 +76,6 @@ class NotificationService {
     required String messageNotificationReceiverID,
   }) async {
     try {
-      log("Chat model:: ${chatModel} and receiverId ::  ${chatModel?.senderID}");
       final String serverAccessTokenKey = await getAccessToken();
       String endpointFirebaseCloudMessaging =
           'https://fcm.googleapis.com/v1/projects/new-chat-box-social-app/messages:send';
@@ -95,8 +89,7 @@ class NotificationService {
           'data': {
             'id': id,
             'userName': senderName,
-            'chatModel': jsonEncode(
-                chatModel?.toJson()),
+            'chatModel': jsonEncode(chatModel?.toJson()),
             'isGroup': 'false',
             'receiverID': chatModel?.receiverID,
           },
@@ -111,13 +104,8 @@ class NotificationService {
         body: jsonEncode(message),
       );
       if (response.statusCode == 200) {
-        log("notification sended successfully");
-      } else {
-        log("notification send failed ${response.statusCode}");
-      }
-    } catch (e) {
-      log("Exception occured $e");
-    }
+      } else {}
+    } catch (e) {}
   }
 
   // send notification for group
@@ -139,7 +127,7 @@ class NotificationService {
             'body': messageToSend,
           },
           'data': {
-            'userName':groupName,
+            'userName': groupName,
             'groupid': groupid,
             'groupModel': jsonEncode(
                 groupModel.toJson()), // Convert GroupModel to JSON string
@@ -156,13 +144,8 @@ class NotificationService {
         body: jsonEncode(message),
       );
       if (response.statusCode == 200) {
-        log("notification sended successfully");
-      } else {
-        log("notification send failed ${response.statusCode}");
-      }
-    } catch (e) {
-      log("Exception occured $e");
-    }
+      } else {}
+    } catch (e) {}
   }
 
   // local notification init
@@ -189,9 +172,9 @@ class NotificationService {
       onDidReceiveBackgroundNotificationResponse: onNotificationTap,
       onDidReceiveNotificationResponse: onNotificationTap,
     );
+
     // firebase foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage remoteMessage) async {
-      log("onMessage: ${remoteMessage.notification?.title} and ${remoteMessage.notification?.body}");
       // Accessing custom data from the remote message
       String userName = remoteMessage.data['userName'] ?? 'Unknown';
       bool isGroup =
@@ -211,9 +194,6 @@ class NotificationService {
       if (groupModelJson.isNotEmpty && groupModelJson != 'null') {
         groupModel = GroupModel.fromJson(map: jsonDecode(groupModelJson));
       }
-
-       log("Chat model:: ${chatModel} and receiverId :: $receiverID");
-
 
       BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
         remoteMessage.notification!.body.toString(),
@@ -286,11 +266,7 @@ class NotificationService {
             ),
           ),
         );
-      } catch (e) {
-        log('Error processing notification payload: $e');
-      }
-    } else {
-      log('No payload in notification response.');
-    }
+      } catch (e) {}
+    } else {}
   }
 }

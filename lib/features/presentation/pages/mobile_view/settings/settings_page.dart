@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/core/constants/app_constants.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
+import 'package:official_chatbox_application/core/utils/settings_methods.dart';
 import 'package:official_chatbox_application/features/presentation/pages/mobile_view/settings/user_details/account_owner_profile_tile.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_appbar_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/divider_common.dart';
@@ -48,7 +49,13 @@ class _SettingsPageState extends State<SettingsPage> {
                 itemBuilder: (context, index) {
                   final settings = settingsButtonsList[index];
                   return GestureDetector(
-                    onTap: () async {},
+                    onTap: () async {
+                      settingsInnerPageNavigationMethod(
+                        context: context,
+                        mounted: mounted,
+                        settings: settings,
+                      );
+                    },
                     child: CommonBlueGradientContainerWidget(
                       icon: settings.icon,
                       pageType: PageTypeEnum.settingsPage,
@@ -65,4 +72,3 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 }
-

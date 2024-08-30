@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -26,12 +25,9 @@ class CommonDBFunctions {
       TaskSnapshot taskSnapshot = await uploadTask;
       return await taskSnapshot.ref.getDownloadURL();
     } on FirebaseAuthException catch (e) {
-      log(
-        'Firebase Auth exception: $e',
-      );
+
       throw Exception("Error while saving file to storage: $e");
-    } catch (e, stackTrace) {
-      log('Error while saving file to storage: $e', stackTrace: stackTrace);
+    } catch (e) {
       throw Exception("Error while saving file to storage: $e");
     }
   }
@@ -41,7 +37,6 @@ class CommonDBFunctions {
     required String? currentUserId,
   }) async {
     try {
-      log("CurrentUser id:: $currentUserId");
       final blockedUserDoc = await fireStore
           .collection(usersCollection)
           .doc(receiverId)
@@ -51,7 +46,6 @@ class CommonDBFunctions {
 
       return blockedUserDoc.docs.isNotEmpty;
     } catch (e) {
-      log('Error checking blocked status: $e');
       return false;
     }
   }
@@ -105,12 +99,9 @@ class CommonDBFunctions {
         return null;
       }
     } on FirebaseException catch (e) {
-      log(
-        'Firebase Auth exception: $e',
-      );
+
       throw Exception("Error while fetching message data: $e");
-    } catch (e, stackTrace) {
-      log('Error while fetching message data: $e', stackTrace: stackTrace);
+    } catch (e) {
       throw Exception("Error while fetching message data: $e");
     }
   }
@@ -124,16 +115,12 @@ class CommonDBFunctions {
       if (documentSnapshot.exists) {
         return UserModel.fromJson(map: documentSnapshot.data()!);
       } else {
-        log('User not found with ID: $userId');
         return null;
       }
     } on FirebaseAuthException catch (e) {
-      log(
-        'Firebase Auth exception: $e',
-      );
+
       throw Exception("Error while fetching user data: $e");
     } catch (e, stackTrace) {
-      log('Error while fetching user data: $e', stackTrace: stackTrace);
       throw Exception("Error while fetching user data: $e");
     }
   }
@@ -148,12 +135,9 @@ class CommonDBFunctions {
             ),
           );
     } on FirebaseException catch (e) {
-      log(
-        'Firebase Auth exception: $e',
-      );
+
       throw Exception("Error while fetching user data: $e");
     } catch (e, stackTrace) {
-      log('Error while fetching user data: $e', stackTrace: stackTrace);
       throw Exception("Error while fetching user data: $e");
     }
   }
@@ -196,12 +180,9 @@ class CommonDBFunctions {
         }
       });
     } on FirebaseException catch (e) {
-      log(
-        'Firebase Auth exception: $e',
-      );
+
       throw Exception("Error while fetching user data: $e");
     } catch (e, stackTrace) {
-      log('Error while fetching user data: $e', stackTrace: stackTrace);
       throw Exception("Error while fetching user data: $e");
     }
   }
@@ -225,7 +206,6 @@ class CommonDBFunctions {
       String chatID = uids.fold("", (id, uid) => "$id$uid");
       return chatID;
     } catch (e) {
-      log(name: "Chat Id generate error: ", e.toString());
       throw Exception(e.toString());
     }
   }
@@ -252,6 +232,21 @@ class CommonDBFunctions {
       // If we get here, the file doesn't exist or there was an error
       return false;
     }
+  }
+
+  static void saveGroupMessageTime({required GroupModel? groupModel,required String? messageTime}) async {
+    if (groupModel?.groupMembers != null) {
+            for (var memberID in groupModel!.groupMembers!) {
+              await FirebaseFirestore.instance
+                  .collection(usersCollection)
+                  .doc(memberID)
+                  .collection(groupsCollection)
+                  .doc(groupModel.groupID)
+                  .update({
+                dbGroupLastMessageTime: messageTime,
+              });
+            }
+          }
   }
 
   // get all messages of a one to one chat as stream
@@ -315,12 +310,9 @@ class CommonDBFunctions {
         await messageDoc.reference.delete();
       }
     } on FirebaseException catch (e) {
-      log(
-        'Firebase exception deleteAllMessagesInDB: $e',
-      );
+
       throw Exception("Error while deleteAllMessagesInDB: $e");
     } catch (e, stackTrace) {
-      log('Error while deleteAllMessagesInDB : $e', stackTrace: stackTrace);
       throw Exception("Error while deleteAllMessagesInDB: $e");
     }
   }
@@ -330,7 +322,6 @@ class CommonDBFunctions {
     final currentUser = firebaseAuth.currentUser?.uid;
     try {
       if (currentUser == null) {
-        log("No current user found.");
         return Stream.value(null);
       }
       return fireStore
@@ -350,10 +341,8 @@ class CommonDBFunctions {
         return null;
       });
     } on FirebaseException catch (e) {
-      log("Firebase Auth exception on upload status: ${e.message}");
       return null;
     } catch (e, stackTrace) {
-      log("Error while uploading status: $e", stackTrace: stackTrace);
       return null;
     }
   }
@@ -399,9 +388,7 @@ class CommonDBFunctions {
         dbStatusContentList:
             updatedStatusList?.map((status) => status.toJson()).toList(),
       });
-      log("Old statuses deleted successfully.");
     } catch (e) {
-      log("Error while deleting old statuses: $e");
       null;
     }
   }
@@ -437,7 +424,6 @@ class CommonDBFunctions {
         return null;
       }
     } catch (e) {
-      log("Error on chatModel get");
       return null;
     }
   }
@@ -459,7 +445,6 @@ class CommonDBFunctions {
         }
       });
     } catch (e) {
-      log("Error on chatModel get");
       return null;
     }
   }
@@ -493,9 +478,7 @@ class CommonDBFunctions {
     required File wallpaperFile,
     required For forWhich,
   }) async {
-    log("Inside wallpaper function");
     final currentUserId = firebaseAuth.currentUser?.uid;
-    log("Curent : $currentUserId");
     if (currentUserId == null) return;
     if (chatModel != null && forWhich == For.notAll) {
       final wallpaperUrl = await saveUserFileToDataBaseStorage(
@@ -510,7 +493,6 @@ class CommonDBFunctions {
           .collection(chatsCollection)
           .doc(chatModel.chatID)
           .update(updatedChatModel.toJson());
-      log("Inside wallpaper chatmodel");
     } else if (groupModel != null && forWhich == For.notAll) {
       final wallpaperUrl = await saveUserFileToDataBaseStorage(
           ref: "WallPaper/$currentUserId${groupModel.groupID}",
@@ -524,7 +506,6 @@ class CommonDBFunctions {
           .collection(groupsCollection)
           .doc(groupModel.groupID)
           .update(updatedGroupModel.toJson());
-      log("Inside wallpaper groupmodel");
     } else {
       // For all
       final wallpaperUrl = await saveUserFileToDataBaseStorage(
@@ -546,7 +527,6 @@ class CommonDBFunctions {
       for (var doc in groupDocs.docs) {
         await doc.reference.update({dbGroupWallpaper: wallpaperUrl});
       }
-      log("Inside wallpaper all");
     }
   }
 }

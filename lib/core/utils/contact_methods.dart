@@ -7,13 +7,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
+import 'package:official_chatbox_application/core/service/dialog_helper.dart';
+import 'package:official_chatbox_application/core/utils/app_methods.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/contact_model/contact_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
+import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/contact/contact_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/message/message_bloc.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ContactMethods {
   static sendSelectedContactMessage(
@@ -67,10 +71,19 @@ class ContactMethods {
         if (contactList.first.contactId != null) {
           await FlutterContacts.openExternalView(contactList.first.contactId!);
         } else {
-          log("Contact ID is null for the matched contact.");
+          final userModel = await CommonDBFunctions.getOneUserDataFromDBFuture(
+            userId: receiverID,
+          );
+          if (userModel != null) {
+            //request permission and insert contact to contacts list
+            requestPermissionAndAddToContacts(userModel: userModel);
+          }
         }
       } else {
-        log("No contact matched the provided criteria.");
+        DialogHelper.showSnackBar(
+          title: "Not available",
+          contentText: "This contact not available in your device",
+        );
       }
     } catch (e) {
       log("Error: ${e.toString()}");
@@ -85,12 +98,19 @@ class ContactMethods {
     final userModel = await CommonDBFunctions.getOneUserDataFromDBFuture(
       userId: receiverID,
     );
+
+    if (userModel == null) {
+      DialogHelper.showSnackBar(
+        title: "User Not Found",
+        contentText: "Unable to find the user in the database.",
+      );
+      return;
+    }
+
     try {
       // Find the contact where the chatBoxUserId matches the userModel's id
       final contactList = contactBloc.state.contactList?.where((contact) {
-        log("Phone number userModel: ${userModel?.phoneNumber}");
-        log("Phone number contact: ${contact.userContactNumber}");
-        return contact.chatBoxUserId == userModel?.id;
+        return contact.chatBoxUserId == userModel.id;
       }).toList();
 
       if (contactList != null && contactList.isNotEmpty) {
@@ -98,13 +118,22 @@ class ContactMethods {
         if (contactList.first.contactId != null) {
           await FlutterContacts.openExternalEdit(contactList.first.contactId!);
         } else {
-          log("Contact ID is null for the matched contact.");
+          //request permission and insert contact to contacts list
+          requestPermissionAndAddToContacts(userModel: userModel);
         }
       } else {
-        log("No contact matched the provided criteria.");
+        DialogHelper.showSnackBar(
+          title: "Contact Not Available",
+          contentText: "This contact is not available on your device.",
+        );
       }
     } catch (e) {
-      log("Error: ${e.toString()}");
+      DialogHelper.showSnackBar(
+        title: "Error",
+        contentText:
+            "An error occurred while trying to edit or add the contact.",
+      );
+      print('Error in openEditContactInDevice: $e');
     }
   }
 
@@ -118,8 +147,33 @@ class ContactMethods {
           .collection(callsCollection)
           .get();
     } catch (e) {
-      log("Error from get contacts collection: ${e.toString()}");
       return null;
     }
+  }
+}
+
+void requestPermissionAndAddToContacts({
+  required UserModel userModel,
+}) async {
+  var permissionStatus = await AppMethods.requestContactsPermission();
+  if (permissionStatus.isGranted) {
+    await FlutterContacts.insertContact(
+      Contact(
+        displayName: userModel.userName!,
+        phones: [
+          Phone(userModel.phoneNumber!),
+        ],
+        name: Name(first: userModel.userName!),
+      ),
+    );
+    DialogHelper.showSnackBar(
+      title: "Contact Added",
+      contentText: "Contact has been added to your device.",
+    );
+  } else {
+    DialogHelper.showSnackBar(
+      title: "Permission Denied",
+      contentText: "Contacts permission is required to add a new contact.",
+    );
   }
 }

@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
@@ -29,14 +28,7 @@ class GroupHomePage extends StatelessWidget {
           return StreamBuilder<List<GroupModel>?>(
               stream: state.groupList,
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return commonAnimationWidget(
-                    context: context,
-                    isTextNeeded: false,
-                  );
-                }
                 if (snapshot.hasError) {
-                  log("Snap Error: ${snapshot.error.toString()}");
                   return commonErrorWidget(
                     message: "Something went wrong: ${snapshot.error}",
                   );
@@ -53,7 +45,6 @@ class GroupHomePage extends StatelessWidget {
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
                     final GroupModel group = snapshot.data![index];
-                    log("Last : ${group.lastMessage}");
                     return ChatListTileWidget(
                       isMutedChat: group.isMuted,
                       notificationCount: group.notificationCount,

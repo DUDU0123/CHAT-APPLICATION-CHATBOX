@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
@@ -77,7 +75,6 @@ Widget infoPageCommonGroupList({
           ),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
-              log("Some Error Occured ${snapshot.error} ${snapshot.stackTrace}");
               return commonErrorWidget(
                   message:
                       "Some Error Occured ${snapshot.error} ${snapshot.stackTrace}");

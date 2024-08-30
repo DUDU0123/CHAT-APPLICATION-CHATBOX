@@ -16,7 +16,7 @@ class ContactModel extends ContactEntity {
   factory ContactModel.fromJson(Contact contact) {
     return ContactModel(
       contactId: contact.id,
-      userContactName: contact.displayName ?? '',
+      userContactName: '${contact.name.first} ${contact.name.last}',
       userContactNumber:
           contact.phones.isNotEmpty ? contact.phones.first.number : null,
       isChatBoxUser: false,

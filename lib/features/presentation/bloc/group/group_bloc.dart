@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -35,7 +34,6 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
       Stream<List<GroupModel>>? groupList = groupRepository.getAllGroups();
       emit(GroupState(groupList: groupList));
     } catch (e) {
-      log("Get all groups Bloc error: ${e.toString()}");
       emit(GroupErrorState(message: e.toString()));
     }
   }
@@ -50,13 +48,11 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
         newGroupData: event.newGroupData,
       );
       Navigator.pop(event.context);
-      log(name: "Create", value.toString());
       emit(state.copyWith(
         groupList: state.groupList,
         value: value,
       ));
     } catch (e) {
-      log("Create group Bloc error: ${e.toString()}");
       emit(GroupErrorState(message: e.toString()));
     }
   }
@@ -69,10 +65,8 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
         groupImageFile: groupImageFile,
         updatedGroupData: event.updatedGroupData,
       );
-      log("Edit: $value");
       emit(state.copyWith(groupList: state.groupList));
     } catch (e) {
-      log("Update group Bloc error: ${e.toString()}");
       emit(GroupErrorState(message: e.toString()));
     }
   }
@@ -83,10 +77,8 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
       final value = await groupRepository.deleteAGroupOnlyForCurrentUser(
         groupID: event.groupID,
       );
-      log("Delete: $value");
       emit(state.copyWith(groupList: state.groupList));
     } catch (e) {
-      log("Delete group Bloc error: ${e.toString()}");
       emit(GroupErrorState(message: e.toString()));
     }
   }
@@ -97,7 +89,6 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
         Map<MembersGroupPermission, bool>.from(state.memberPermissions)
           ..[event.permission] = event.isEnabled;
     if (event.pageTypeEnum == PageTypeEnum.groupInfoPage) {
-      log("Editing members perm");
       final enabledPermissions = updatedPermissions.entries
           .where((entry) => entry.value)
           .map((entry) => entry.key)
@@ -105,7 +96,6 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
       final updatedGroupData =
           event.groupModel?.copyWith(membersPermissions: enabledPermissions);
       if (updatedGroupData != null) {
-        log("Editing members perm not null");
         add(UpdateGroupEvent(updatedGroupData: updatedGroupData));
       }
       emit(
@@ -123,7 +113,6 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
         Map<AdminsGroupPermission, bool>.from(state.adminPermissions)
           ..[event.permission] = event.isEnabled;
     if (event.pageTypeEnum == PageTypeEnum.groupInfoPage) {
-      log("Editing admin perm");
       final enabledPermissions = updatedPermissions.entries
           .where((entry) => entry.value)
           .map((entry) => entry.key)
@@ -131,7 +120,6 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
       final updatedGroupData =
           event.groupModel?.copyWith(adminsPermissions: enabledPermissions);
       if (updatedGroupData != null) {
-        log("Editing admin perm not null");
         add(UpdateGroupEvent(updatedGroupData: updatedGroupData));
       }
       emit(state.copyWith(adminPermissions: updatedPermissions));
@@ -145,7 +133,6 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
       emit(state.copyWith(
           groupList: state.groupList, groupPickedImageFile: event.pickedFile));
     } catch (e) {
-      log(" group image pick Bloc error: ${e.toString()}");
       emit(GroupErrorState(message: e.toString()));
     }
   }
@@ -183,7 +170,6 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
     try {
       await groupRepository.groupClearChatMethod(groupID: event.groupID);
     } catch (e) {
-      log(" group clear chat error: ${e.toString()}");
       emit(GroupErrorState(message: e.toString()));
     }
   }
@@ -204,7 +190,6 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
         ),
       );
     } catch (e) {
-      log(" group clear chat error: ${e.toString()}");
       emit(GroupErrorState(message: e.toString()));
     }
   }

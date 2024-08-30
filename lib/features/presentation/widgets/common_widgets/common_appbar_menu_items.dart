@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
@@ -31,6 +32,7 @@ PopupMenuButton<dynamic> commonAppBarMenuItemHoldWidget({
             context: context,
             menuText: "View contact",
             onTap: () async {
+              log("ksnkn");
               ContactMethods.openContactInDevice(
                 context: context,
                 receiverID: chatModel?.receiverID,
@@ -155,6 +157,7 @@ PopupMenuButton<dynamic> commonAppBarMenuItemHoldWidget({
                 context,
                 MaterialPageRoute(
                   builder: (context) => ChatInfoPage(
+                    rootContext: context,
                     chatModel: chatModel,
                     groupData: groupModel,
                     isGroup: isGroup,

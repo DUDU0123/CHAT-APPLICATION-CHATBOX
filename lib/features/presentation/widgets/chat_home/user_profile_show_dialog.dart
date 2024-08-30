@@ -89,6 +89,7 @@ Future<void> userProfileShowDialog({
                     context,
                     MaterialPageRoute(
                       builder: (context) => ChatInfoPage(
+                        rootContext: context,
                         isGroup: isGroup??false,
                         chatModel: chatModel,
                         groupData: groupModel,
