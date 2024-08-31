@@ -193,8 +193,8 @@ class _FileShowPageState extends State<FileShowPage> {
                       child: BlocListener<MessageBloc, MessageState>(
                         listener: (context, state) {
                           if (state is! MessageLoadingState) {
-                            Navigator.of(context)
-                                .pop();
+                            // Navigator.of(context)
+                            //     .pop();
                           }
                         },
                         child: IconButton(

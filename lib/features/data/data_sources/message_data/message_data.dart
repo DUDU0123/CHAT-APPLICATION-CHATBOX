@@ -152,15 +152,16 @@ class MessageData {
       if (chatId != null) {
         final ChatModel? chatModel =
             await CommonDBFunctions.getChatModelByChatID(chatModelId: chatId);
-
-        context.read<MessageBloc>().add(
-              SendNotifcationEvent(
-                chatModel: chatModel,
-                id: chatId,
-                messageToSend: message,
-                messageNotificationReceiverID: message.receiverID!,
-              ),
-            );
+        if (message.senderID != message.receiverID) {
+          context.read<MessageBloc>().add(
+                SendNotifcationEvent(
+                  chatModel: chatModel,
+                  id: chatId,
+                  messageToSend: message,
+                  messageNotificationReceiverID: message.receiverID!,
+                ),
+              );
+        }
       }
     } on FirebaseException catch (e) {
       throw Exception(e.message);
@@ -309,18 +310,18 @@ class MessageData {
           await batch.commit();
         } else {}
         // if (isGroup) {
-          // if (groupModel?.groupMembers != null) {
-          //   for (var memberID in groupModel!.groupMembers!) {
-          //     await FirebaseFirestore.instance
-          //         .collection(usersCollection)
-          //         .doc(memberID)
-          //         .collection(groupsCollection)
-          //         .doc(groupModel.groupID)
-          //         .update({
-          //       dbGroupLastMessageTime: message.messageTime,
-          //     });
-          //   }
-          // }
+        // if (groupModel?.groupMembers != null) {
+        //   for (var memberID in groupModel!.groupMembers!) {
+        //     await FirebaseFirestore.instance
+        //         .collection(usersCollection)
+        //         .doc(memberID)
+        //         .collection(groupsCollection)
+        //         .doc(groupModel.groupID)
+        //         .update({
+        //       dbGroupLastMessageTime: message.messageTime,
+        //     });
+        //   }
+        // }
         // }
         // Update sender's chat document
         await FirebaseFirestore.instance

@@ -269,4 +269,38 @@ class NotificationService {
       } catch (e) {}
     } else {}
   }
+  // background message on Tap navigation method
+  static Future<void> firebaseBackgroundMessagingHandler(
+    RemoteMessage remoteMessage,
+  ) async {
+    // Extract data from the notification
+    final Map<String, dynamic> data = remoteMessage.data;
+    String userName = data['userName'] ?? 'Unknown';
+    bool isGroup = data['isGroup'] == 'true';
+    String receiverID = data['receiverID'] ?? '';
+
+    ChatModel? chatModel;
+    GroupModel? groupModel;
+
+    if (data['chatModel'] != null) {
+      chatModel = ChatModel.fromJson(data['chatModel']);
+    }
+
+    if (isGroup && data['groupModel'] != null) {
+      groupModel = GroupModel.fromJson(map: data['groupModel']);
+    }
+
+    // Navigate to ChatRoomPage
+    navigatorKey.currentState?.push(
+      MaterialPageRoute(
+        builder: (context) => ChatRoomPage(
+          userName: userName,
+          isGroup: isGroup,
+          chatModel: chatModel,
+          groupModel: groupModel,
+          receiverID: receiverID,
+        ),
+      ),
+    );
+  }
 }

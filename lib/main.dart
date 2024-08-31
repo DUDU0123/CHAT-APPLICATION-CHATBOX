@@ -12,11 +12,6 @@ import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-Future<void> backgroundMessaging(
-  RemoteMessage remoteMessage,
-) async {
-  if (remoteMessage.notification != null) {}
-}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,9 +26,10 @@ Future<void> main() async {
   );
   await NotificationService.requestPermission();
   await NotificationService.localNotificationInit();
+  FirebaseMessaging.onBackgroundMessage(NotificationService.firebaseBackgroundMessagingHandler);
   ZegoUIKit().initLog().then((value) {
     ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI(
-      [ZegoUIKitSignalingPlugin()],
+      [ZegoUIKitSignalingPlugin(),],
     );
 
     runApp(
