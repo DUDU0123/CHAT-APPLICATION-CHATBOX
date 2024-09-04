@@ -66,6 +66,7 @@ class MessageData {
             .doc(messageId);
         batch.set(newDocReference, updatedMessageModel.toJson());
       }
+      log("Group notification sending before");
       context.read<MessageBloc>().add(
             SendGroupTopicNotifcationEvent(
               groupModel: groupData,

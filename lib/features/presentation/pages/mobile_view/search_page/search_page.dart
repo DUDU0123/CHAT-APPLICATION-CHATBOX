@@ -58,9 +58,9 @@ class _SearchPageState extends State<SearchPage> {
                 itemBuilder: (context, index) {
                   return ChatListTileWidget(
                     receiverID: snapshot.data![index].receiverID,
-                    userProfileImage:  snapshot.data![index].receiverProfileImage!,
+                    userProfileImage:  snapshot.data![index].receiverProfileImage,
                     chatModel: snapshot.data![index],
-                    userName: snapshot.data![index].receiverName!,
+                    userName: snapshot.data![index].receiverName??'',
                     isGroup: false,
                   );
                 },

@@ -20,6 +20,7 @@ Widget audioMessageWidget({
   required bool isGroup,
   required void Function({required MessageModel message}) onSwipeMethod,
 }) {
+ 
   audioPlayers[message.message]?.durationStream.listen((duration) {
     if (duration != null) {
       context

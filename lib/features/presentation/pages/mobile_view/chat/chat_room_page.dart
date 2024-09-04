@@ -74,6 +74,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             true)
         : null;
   }
+  
 
   @override
   void dispose() {
@@ -103,7 +104,6 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           receiverId: widget.receiverID ?? '',
           chatId: widget.chatModel?.chatID ?? "",
         ));
-
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),

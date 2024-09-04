@@ -60,12 +60,26 @@ class _AudioMessageContentShowWidgetState
                   ?.setUrl(widget.message.message ?? '');
 
               // Stop all other currently playing audio players
-              for (var player in widget.audioPlayers.values) {
-                if (player.playing &&
-                    player != widget.audioPlayers[widget.message.message]) {
-                  await player.pause();
-                }
+              // for (var player in widget.audioPlayers.values) {
+              //   if (player.playing &&
+              //       player != widget.audioPlayers[widget.message.message]) {
+              //     await player.pause();
+              //   }
+              // }
+              // Stop all other currently playing audio players
+            for (var player in widget.audioPlayers.values) {
+              if (player.playing &&
+                  player != widget.audioPlayers[widget.message.message]) {
+                await player.pause();
+                context.read<MessageBloc>().add(
+                  AudioPlayerPlayStateChangedEvent(
+                    widget.audioPlayers.keys
+                        .firstWhere((key) => player == widget.audioPlayers[key]),
+                    false,
+                  ),
+                );
               }
+            }
 
               final isPlaying =
                   widget.audioPlayers[widget.message.message]?.playing ?? false;

@@ -29,21 +29,28 @@ Widget messageListingWidget({
   GroupModel? groupModel,
   required FocusNode focusNode,
 }) {
-  
+
   return StreamBuilder<List<MessageModel>>(
     stream: state.messages,
     builder: (context, snapshot) {
       if (snapshot.data == null) {
         return zeroMeasureWidget;
       }
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-            scrollController.jumpTo(
-              scrollController.position.maxScrollExtent,
-            );
-          });
+
       final messages = snapshot.data!;
       List<Widget> messageWidgets = [];
       String? currentDate;
+
+      // Check if any audio is playing
+      bool isAnyAudioPlaying = audioPlayers.values.any((player) => player.playing);
+
+      if (!isAnyAudioPlaying) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          scrollController.jumpTo(
+            scrollController.position.maxScrollExtent,
+          );
+        });
+      }
 
       for (int i = 0; i < messages.length; i++) {
         final message = messages[i];
@@ -105,12 +112,15 @@ Widget messageListingWidget({
             },
             onTap: () {
               if (isSelected) {
-                context.read<MessageBloc>().add(UnSelectEvent(messageId: message.messageId));
+                context
+                    .read<MessageBloc>()
+                    .add(UnSelectEvent(messageId: message.messageId));
               }
             },
             child: BlocSelector<MessageBloc, MessageState, bool>(
               selector: (state) {
-                return state.selectedMessageIds?.contains(message.messageId)??false;
+                return state.selectedMessageIds?.contains(message.messageId) ??
+                    false;
               },
               builder: (context, state) {
                 return Container(

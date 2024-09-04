@@ -108,33 +108,75 @@ class NotificationService {
     } catch (e) {}
   }
 
-  // send notification for group
-  static Future<void> sendGroupTopicNotification({
+  // send notification for group using topic
+  // static Future<void> sendGroupTopicNotification({
+  //   required String groupName,
+  //   required String messageToSend,
+  //   required String groupid,
+  //   required GroupModel groupModel,
+  // }) async {
+  //   try {
+  //     log("inside notfication service group");
+  //     final String serverAccessTokenKey = await getAccessToken();
+  //     String endpointFirebaseCloudMessaging =
+  //         'https://fcm.googleapis.com/v1/projects/new-chat-box-social-app/messages:send';
+  //     final Map<String, dynamic> message = {
+  //       'message': {
+  //         'topic': 'group_$groupid',
+  //         'notification': {
+  //           'title': groupName,
+  //           'body': messageToSend,
+  //         },
+  //         'data': {
+  //           'userName': groupName,
+  //           'groupModel': jsonEncode(
+  //               groupModel.toJson()), // Convert GroupModel to JSON string
+  //           'isGroup': 'true',
+  //         },
+  //       }
+  //     };
+  //     log("inside notfication service group message: $message");
+  //     final http.Response response = await http.post(
+  //       Uri.parse(endpointFirebaseCloudMessaging),
+  //       headers: <String, String>{
+  //         'Content-Type': 'application/json',
+  //         'Authorization': 'Bearer $serverAccessTokenKey',
+  //       },
+  //       body: jsonEncode(message),
+  //     );
+  //     if (response.statusCode == 200) {
+  //     } else {}
+  //   } catch (e) {}
+  // }
+
+   static Future<void> sendGroupTopicNotification({
     required String groupName,
     required String messageToSend,
     required String groupid,
     required GroupModel groupModel,
+    required String receiverDeviceToken,
   }) async {
     try {
+      log("inside notfication service group");
       final String serverAccessTokenKey = await getAccessToken();
       String endpointFirebaseCloudMessaging =
           'https://fcm.googleapis.com/v1/projects/new-chat-box-social-app/messages:send';
       final Map<String, dynamic> message = {
         'message': {
-          'topic': 'group_$groupid',
+          'token': receiverDeviceToken,
           'notification': {
             'title': groupName,
             'body': messageToSend,
           },
           'data': {
             'userName': groupName,
-            'groupid': groupid,
             'groupModel': jsonEncode(
                 groupModel.toJson()), // Convert GroupModel to JSON string
             'isGroup': 'true',
           },
         }
       };
+      log("inside notfication service group message: $message");
       final http.Response response = await http.post(
         Uri.parse(endpointFirebaseCloudMessaging),
         headers: <String, String>{
@@ -147,6 +189,7 @@ class NotificationService {
       } else {}
     } catch (e) {}
   }
+
 
   // local notification init
   static localNotificationInit() {

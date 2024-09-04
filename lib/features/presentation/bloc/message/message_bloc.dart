@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
@@ -160,8 +161,8 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           message: event.message,
         );
         CommonDBFunctions.saveGroupMessageTime(
-            groupModel: event.groupModel, messageTime: event.message.messageTime
-          );
+            groupModel: event.groupModel,
+            messageTime: event.message.messageTime);
       } else {
         if (event.message.senderID != null &&
             event.message.receiverID != null &&
@@ -243,9 +244,9 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
             groupID: event.groupModel?.groupID,
             message: photoMessage,
           );
-         CommonDBFunctions.saveGroupMessageTime(
-            groupModel: event.groupModel, messageTime: photoMessage.messageTime
-          );
+          CommonDBFunctions.saveGroupMessageTime(
+              groupModel: event.groupModel,
+              messageTime: photoMessage.messageTime);
         } else {
           photoMessage = MessageModel(
             name: event.messageCaption,
@@ -329,8 +330,8 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
             message: videoMessage,
           );
           CommonDBFunctions.saveGroupMessageTime(
-            groupModel: event.groupModel, messageTime: videoMessage.messageTime
-          );
+              groupModel: event.groupModel,
+              messageTime: videoMessage.messageTime);
         } else {
           videoMessage = MessageModel(
             name: event.messageCaption,
@@ -446,8 +447,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
             message: message,
           );
           CommonDBFunctions.saveGroupMessageTime(
-            groupModel: event.groupModel, messageTime: message.messageTime
-          );
+              groupModel: event.groupModel, messageTime: message.messageTime);
         } else {
           message = MessageModel(
             messageId: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -650,8 +650,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           message: message,
         );
         CommonDBFunctions.saveGroupMessageTime(
-            groupModel: event.groupModel, messageTime: message.messageTime
-          );
+            groupModel: event.groupModel, messageTime: message.messageTime);
       } else {
         message = MessageModel(
           messageId: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -761,8 +760,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           message: message,
         );
         CommonDBFunctions.saveGroupMessageTime(
-            groupModel: event.groupModel, messageTime: message.messageTime
-          );
+            groupModel: event.groupModel, messageTime: message.messageTime);
       } else {
         message = MessageModel(
           messageId: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -972,13 +970,32 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   Future<FutureOr<void>> sendGroupTopicNotifcationEvent(
       SendGroupTopicNotifcationEvent event, Emitter<MessageState> emit) async {
     try {
+      log("Indide group notifcation send");
       String messageToSend = messageByType(message: event.messageToSend);
-      await NotificationService.sendGroupTopicNotification(
-        groupModel: event.groupModel,
-        groupName: event.groupModel.groupName!,
-        messageToSend: messageToSend,
-        groupid: event.groupModel.groupID!,
-      );
+      // await NotificationService.sendGroupTopicNotification(
+      //   groupModel: event.groupModel,
+      //   groupName: event.groupModel.groupName!,
+      //   messageToSend: messageToSend,
+      //   groupid: event.groupModel.groupID!,
+      // );
+      for (var memberID in event.groupModel.groupMembers!) {
+        if (memberID != event.messageToSend.senderID) {
+          final memberModel =
+              await CommonDBFunctions.getOneUserDataFromDBFuture(
+                  userId: memberID);
+          if (memberModel != null) {
+            if (memberModel.fcmToken != null) {
+              await NotificationService.sendGroupTopicNotification(
+                receiverDeviceToken: memberModel.fcmToken!,
+                groupModel: event.groupModel,
+                groupName: event.groupModel.groupName!,
+                messageToSend: messageToSend,
+                groupid: event.groupModel.groupID!,
+              );
+            }
+          }
+        }
+      }
     } catch (e) {
       emit(MessageErrorState(message: e.toString()));
     }
