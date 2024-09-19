@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 class UserEntity extends Equatable {
   final String? id;
   final String? userName;
+  final String? password;
   final String? phoneNumber;
   final String? contactName;
   final String? userEmailId;
@@ -24,6 +25,7 @@ class UserEntity extends Equatable {
   const UserEntity({
     this.id,
     this.userName,
+    this.password,
     this.phoneNumber,
     this.contactName,
     this.userEmailId,
@@ -58,6 +60,7 @@ class UserEntity extends Equatable {
       createdAt,
       tfaPin,
       isBlockedUser,
+      password,
       userGroupIdList,
       isDisabled,
       lastActiveTime,

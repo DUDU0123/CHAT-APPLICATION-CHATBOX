@@ -3,6 +3,10 @@ part of 'authentication_bloc.dart';
 class AuthenticationState extends Equatable {
   final Country? country;
   final bool isUserSignedIn;
+  final String? message;
+  final bool? isLoading;
+  final UserModel? user;
+  final bool? isUserCreated;
   Country selectedCountry = Country(
     phoneCode: "+91",
     countryCode: "IN",
@@ -16,22 +20,39 @@ class AuthenticationState extends Equatable {
     e164Key: "",
   );
   AuthenticationState({
+    this.message,
+    this.isUserCreated,
+    this.user,
+    this.isLoading,
     this.country,
     this.isUserSignedIn = false,
   });
   AuthenticationState copyWith({
     Country? country,
     bool? isUserSignedIn,
+    bool? isUserCreated,
+    String? message,
+    UserModel? user,
+    bool? isLoading,
   }) {
     return AuthenticationState(
-        country: country ?? this.country,
-        isUserSignedIn: isUserSignedIn ?? this.isUserSignedIn);
+      user: user ?? this.user,
+      isUserCreated: isUserCreated ?? this.isUserCreated,
+      country: country ?? this.country,
+      isUserSignedIn: isUserSignedIn ?? this.isUserSignedIn,
+      message: message ?? this.message,
+      isLoading: isLoading ?? this.isLoading,
+    );
   }
 
   @override
   List<Object> get props => [
         country ?? selectedCountry,
         isUserSignedIn,
+        isLoading ?? false,
+        isUserCreated ?? false,
+        message ?? '',
+        user ?? const UserModel(),
       ];
 }
 
@@ -44,28 +65,4 @@ class AuthenticationInitial extends AuthenticationState {
   List<Object> get props => [
         isUserSignedIn,
       ];
-}
-
-class AuthenticationLoadingState extends AuthenticationState {}
-
-class OtpSentState extends AuthenticationState {}
-
-class OtpReSentState extends AuthenticationState {}
-
-class AuthenticationSuccessState extends AuthenticationState {
-  final UserModel user;
-  AuthenticationSuccessState({
-    required this.user,
-  });
-  @override
-  List<Object> get props => [user];
-}
-
-class AuthenticationErrorState extends AuthenticationState {
-  final String message;
-  AuthenticationErrorState({
-    required this.message,
-  });
-  @override
-  List<Object> get props => [message];
 }

@@ -4,6 +4,7 @@ import 'package:official_chatbox_application/features/domain/entities/user_entit
 class UserModel extends UserEntity {
   const UserModel({
     super.id,
+    super.password,
     super.userName,
     super.userEmailId,
     super.phoneNumber,
@@ -27,6 +28,7 @@ class UserModel extends UserEntity {
 
   factory UserModel.fromJson({required Map<String, dynamic> map}) {
     return UserModel(
+        password: map[userDbPassword],
         id: map[userDbId],
         userName: map[userDbName] ?? 'chatbox user',
         userEmailId: map[userDbEmail] ?? '',
@@ -55,6 +57,7 @@ class UserModel extends UserEntity {
     return {
       userDbId: id,
       userDbName: userName,
+      userDbPassword: password,
       userDbEmail: userEmailId,
       userDbPhoneNumber: phoneNumber,
       userDbAbout: userAbout,
@@ -84,6 +87,7 @@ class UserModel extends UserEntity {
     String? userAbout,
     String? userProfileImage,
     bool? userNetworkStatus,
+    String? password,
     String? createdAt,
     String? tfaPin,
     bool? isBlockedUser,
@@ -107,6 +111,7 @@ class UserModel extends UserEntity {
       userProfileImage: userProfileImage ?? this.userProfileImage,
       userNetworkStatus: userNetworkStatus ?? this.userNetworkStatus,
       createdAt: createdAt ?? this.createdAt,
+      password: password ?? this.password,
       tfaPin: tfaPin ?? this.tfaPin,
       isBlockedUser: isBlockedUser ?? this.isBlockedUser,
       userGroupIdList: userGroupIdList ?? this.userGroupIdList,

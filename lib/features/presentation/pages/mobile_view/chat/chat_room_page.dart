@@ -12,7 +12,6 @@ import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/core/utils/emoji_select.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
-import 'package:official_chatbox_application/core/utils/snackbar.dart';
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
@@ -74,7 +73,6 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             true)
         : null;
   }
-  
 
   @override
   void dispose() {
@@ -176,7 +174,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                           context: context,
                           text: "You're no longer a member in this group")
                       : widget.chatModel != null
-                          ?FutureBuilder<Map<String, bool>>(
+                          ? FutureBuilder<Map<String, bool>>(
                               future: Future.wait([
                                 CommonDBFunctions.checkIfIsBlocked(
                                   receiverId: widget.chatModel?.receiverID,

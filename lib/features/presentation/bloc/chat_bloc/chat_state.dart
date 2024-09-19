@@ -2,6 +2,7 @@ part of 'chat_bloc.dart';
 
 class ChatState extends Equatable {
   final Stream<List<ChatModel>>? chatList;
+  final List<ChatModel>? searchedList;
   final File? pickedFile;
   final bool? isBlockedUser;
   final String? message;
@@ -10,6 +11,7 @@ class ChatState extends Equatable {
     this.pickedFile,
     this.isBlockedUser,
     this.message,
+    this.searchedList,
   });
 
   ChatState copyWith({
@@ -17,12 +19,14 @@ class ChatState extends Equatable {
     File? pickedFile,
     String? message,
     bool? isBlockedUser,
+    List<ChatModel>? searchedList,
   }) {
     return ChatState(
       chatList: chatList ?? this.chatList,
       pickedFile: pickedFile ?? this.pickedFile,
       message: message ?? this.message,
       isBlockedUser: isBlockedUser ?? this.isBlockedUser,
+      searchedList: searchedList ?? this.searchedList,
     );
   }
 
@@ -31,7 +35,7 @@ class ChatState extends Equatable {
         chatList ?? [],
         pickedFile ?? File(''),
         isBlockedUser ?? false,
-        message ?? ''
+        message ?? '', searchedList??[]
       ];
 }
 

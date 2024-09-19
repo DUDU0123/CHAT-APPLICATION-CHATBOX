@@ -1,6 +1,7 @@
 const userDbId = 'id';
 const userDbName = 'username';
 const userDbEmail = 'user_email';
+const userDbPassword = 'password';
 const userDbPhoneNumber = 'phone_number';
 const userDbAbout = 'user_about';
 const userDbProfileImage = 'user_profile_image';

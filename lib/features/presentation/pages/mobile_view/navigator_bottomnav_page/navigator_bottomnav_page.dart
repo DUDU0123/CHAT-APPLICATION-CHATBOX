@@ -7,7 +7,7 @@ import 'package:official_chatbox_application/core/utils/app_methods.dart';
 import 'package:official_chatbox_application/core/utils/call_methods.dart';
 import 'package:official_chatbox_application/core/utils/get_appbar_title.dart';
 import 'package:official_chatbox_application/core/utils/network_status_methods.dart';
-import 'package:official_chatbox_application/features/data/repositories/auth_repo_impl/authentication_repo_impl.dart';
+import 'package:official_chatbox_application/features/data/data_sources/auth_data/auth_data.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/group/group_bloc.dart';
@@ -32,7 +32,7 @@ class _NavigatorBottomnavPageState extends State<NavigatorBottomnavPage> {
     const ChatHomePage(),
     const GroupHomePage(),
     StatusHomePage(
-      currentUserId: AuthenticationRepoImpl(firebaseAuth: firebaseAuth)
+      currentUserId: AuthData(firebaseAuth: firebaseAuth)
           .getCurrentUserId(firebaseAuth.currentUser?.uid),
     ),
     const CallHomePage(),

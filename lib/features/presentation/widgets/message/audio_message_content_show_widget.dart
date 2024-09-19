@@ -58,14 +58,6 @@ class _AudioMessageContentShowWidgetState
                 widget.message.message!)) {
               await widget.audioPlayers[widget.message.message]
                   ?.setUrl(widget.message.message ?? '');
-
-              // Stop all other currently playing audio players
-              // for (var player in widget.audioPlayers.values) {
-              //   if (player.playing &&
-              //       player != widget.audioPlayers[widget.message.message]) {
-              //     await player.pause();
-              //   }
-              // }
               // Stop all other currently playing audio players
             for (var player in widget.audioPlayers.values) {
               if (player.playing &&

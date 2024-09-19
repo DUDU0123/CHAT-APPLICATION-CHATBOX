@@ -3,14 +3,11 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:official_chatbox_application/config/bloc_providers/all_bloc_providers.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
 import 'package:official_chatbox_application/features/data/models/blocked_user_model/blocked_user_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/domain/repositories/authentication_repo/authentication_repo.dart';
-import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_field_common.dart';
-import 'package:official_chatbox_application/features/presentation/widgets/dialog_widgets/normal_dialogbox_widget.dart';
 
 class UserData {
   final FirebaseFirestore firestore;
@@ -37,7 +34,6 @@ class UserData {
           )
           .toList();
     } on FirebaseAuthException catch (e) {
-
       throw Exception("Error while fetching all user: $e");
     } catch (e) {
       throw Exception("Error while fetching all users: $e");
@@ -53,10 +49,8 @@ class UserData {
             ),
           );
     } on FirebaseAuthException catch (e) {
-      
       throw Exception("Error while fetching user data: $e");
-    } catch (e, stackTrace) {
-     
+    } catch (e) {
       throw Exception("Error while fetching user data: $e");
     }
   }
@@ -73,10 +67,8 @@ class UserData {
         return null;
       }
     } on FirebaseAuthException catch (e) {
-      
       throw Exception("Error while fetching user data: $e");
-    } catch (e, stackTrace) {
-     
+    } catch (e) {
       throw Exception("Error while fetching user data: $e");
     }
   }
@@ -95,9 +87,8 @@ class UserData {
           .doc(userData.id)
           .set(userData.toJson());
     } on FirebaseAuthException catch (e) {
-      
       throw Exception("Error while saving user data: $e");
-    } catch (e, stackTrace) {
+    } catch (e) {
       throw Exception("Error while saving user data: $e");
     }
   }
@@ -122,11 +113,9 @@ class UserData {
 
       // Update chat details where this user is a receiver
       await updateChatsWithNewReceiverInfo(userData);
-
     } on FirebaseAuthException catch (e) {
-      
       throw Exception("Error while updating user data: $e");
-    } catch (e, stackTrace) {
+    } catch (e) {
       throw Exception("Error while updating user data: $e");
     }
   }
@@ -154,160 +143,9 @@ class UserData {
           });
         }
       }
-    } catch (e, stackTrace) {
-
+    } catch (e) {
       throw Exception("Error while updating chats with new receiver info: $e");
     }
-  }
-
-  // Method to delete user in DB
-  Future<void> deleteUserInFireStoreDB({required String userId}) async {
-    try {
-      await firestore.collection(usersCollection).doc(userId).delete();
-      final userDoc = firestore.collection(usersCollection).doc(userId);
-      final userChats = userDoc.collection(chatsCollection);
-      final userChatDocs = await userChats.get();
-      for (final chatDocument in userChatDocs.docs) {
-        if (chatDocument.exists) {
-          await chatDocument.reference.delete();
-        }
-      }
-      await userDoc.delete();
-      final allUsers = await firestore.collection(usersCollection).get();
-      for (final user in allUsers.docs) {
-        if (user.id != userId) {
-          final otherUserChats = firestore
-              .collection(usersCollection)
-              .doc(user.id)
-              .collection(chatsCollection)
-              .where(receiverId,
-                  isEqualTo:
-                      userId,); // Assuming 'receiverID' is the field to identify the chat with the deleting user
-
-          final otherUserChatDocs = await otherUserChats.get();
-          for (final chatDoc in otherUserChatDocs.docs) {
-            if (chatDoc.exists) {
-              await chatDoc.reference
-                  .delete(); // Delete the chat with the deleting user
-            }
-          }
-        }
-      }
-    } on FirebaseAuthException catch (e) {
-      
-      throw Exception("Error while deleting user data: $e");
-    } catch (e, stackTrace) {
-      throw Exception("Error while deleting user data: $e");
-    }
-  }
-
-  Future<void> deleteUserFilesInDB({required String fullPathToFile}) async {
-    try {
-      Reference fileReference = firebaseStorage.ref(fullPathToFile);
-      // Check if the file exists by attempting to get its metadata
-      await fileReference.getMetadata();
-
-      // If the file exists, proceed to delete it
-      await fileReference.delete();
-    } on FirebaseException catch (e) {
-      if (e.code == 'object-not-found') {
-        return;
-      } else {
-        return;
-      }
-    } catch (e) {
-      return;
-    }
-  }
-
-  Future<void> deleteUserAuthInDB({
-    required BuildContext context,
-    required String phoneNumber,
-  }) async {
-    try {
-      if (firebaseAuth.currentUser != null) {
-        await firebaseAuth.currentUser?.delete();
-        await authenticationRepo.setUserAuthStatus(isSignedIn: false);
-      } else {
-        return;
-      }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'requires-recent-login') {
-        await reAuthenticateUser(
-          phoneNumber: phoneNumber,
-          context: context,
-        );
-        await firebaseAuth.currentUser?.delete();
-        await authenticationRepo.setUserAuthStatus(isSignedIn: false);
-      }
-    } catch (e) {
-
-      throw Exception("Error while deleting user from auth: $e");
-    }
-  }
-
-  Future<void> reAuthenticateUser({
-    required String phoneNumber,
-    required BuildContext context,
-  }) async {
-    User? user = fireBaseAuth.currentUser;
-
-    try {
-      PhoneAuthCredential credential = await getPhoneAuthCredential(
-        context: context,
-        phoneNumber: phoneNumber,
-      );
-      await user?.reauthenticateWithCredential(credential);
-    } on FirebaseAuthException catch (e) {
-      throw Exception('Reauthentication error: $e');
-    } catch (e) {
-      throw Exception('No user is currently signed in');
-    }
-  }
-
-  Future<PhoneAuthCredential> getPhoneAuthCredential({
-    required String phoneNumber,
-    required BuildContext context,
-  }) async {
-    TextEditingController smsController = TextEditingController();
-    Completer<PhoneAuthCredential> completer = Completer();
-
-    await fireBaseAuth.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
-      verificationCompleted: (PhoneAuthCredential credential) {
-        completer.complete(credential);
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        completer.completeError(e);
-      },
-      codeSent: (String verificationId, int? resendToken) async {
-        // Prompt the user to enter the OTP
-        // String smsCode;
-        showDialog(
-          context: context,
-          builder: (context) => alertDialog(
-            context: context,
-            title: "Delete account confirmation",
-            content: TextFieldCommon(
-              keyboardType: TextInputType.number,
-              controller: smsController,
-              textAlign: TextAlign.center,
-            ),
-            onPressed: () {
-              PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                verificationId: verificationId,
-                smsCode: smsController.text,
-              );
-              completer.complete(credential);
-              Navigator.pop(context);
-            },
-            actionButtonName: "Submit",
-          ),
-        ); // Implement this function to get the OTP from the user
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {},
-    );
-    return completer.future;
   }
 
   // Method to save user file to database storage
@@ -320,9 +158,8 @@ class UserData {
       TaskSnapshot taskSnapshot = await uploadTask;
       return await taskSnapshot.ref.getDownloadURL();
     } on FirebaseAuthException catch (e) {
-      
       throw Exception("Error while saving file to storage: $e");
-    } catch (e, stackTrace) {
+    } catch (e) {
       throw Exception("Error while saving file to storage: $e");
     }
   }
@@ -342,13 +179,10 @@ class UserData {
           'profileImage': userProfileImage,
         });
         await updateChatsWithNewReceiverInfo(currentUser);
-      } else {
-      }
+      } else {}
     } on FirebaseAuthException catch (e) {
-      
       throw Exception("Error while saving profile image to database: $e");
-    } catch (e, stackTrace) {
-
+    } catch (e) {
       throw Exception("Error while saving profile image to database: $e");
     }
   }
@@ -379,10 +213,8 @@ class UserData {
 
       return true;
     } on FirebaseException catch (e) {
- 
       return false;
-    } catch (e, stackTrace) {
-
+    } catch (e) {
       return false;
     }
   }
@@ -401,9 +233,8 @@ class UserData {
           .delete();
       return true;
     } on FirebaseException catch (e) {
-
       return false;
-    } catch (e, stackTrace) {
+    } catch (e) {
       return false;
     }
   }
@@ -426,10 +257,8 @@ class UserData {
             .toList();
       });
     } on FirebaseException catch (e) {
-
       return null;
-    } catch (e, stackTrace) {
-
+    } catch (e) {
       return null;
     }
   }
@@ -446,9 +275,8 @@ class UserData {
       });
       return true;
     } on FirebaseException catch (e) {
-
       return false;
-    } catch (e, stackTrace) {
+    } catch (e) {
       return false;
     }
   }

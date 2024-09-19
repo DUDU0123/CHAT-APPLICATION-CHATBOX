@@ -72,6 +72,7 @@ class MessageData {
               groupModel: groupData,
               groupid: groupData.groupID!,
               messageToSend: message,
+              
             ),
           );
       await batch.commit();

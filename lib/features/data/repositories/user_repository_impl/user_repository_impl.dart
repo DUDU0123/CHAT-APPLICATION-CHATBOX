@@ -1,8 +1,6 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:official_chatbox_application/features/data/data_sources/user_data/user_data.dart';
 import 'package:official_chatbox_application/features/data/models/blocked_user_model/blocked_user_model.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
@@ -37,23 +35,6 @@ class UserRepositoryImpl extends UserRepository {
   Future<void> updateUserInDataBase(
       {required UserModel userModel, File? profileImage}) async {
     userData.updateUserInDB(userData: userModel, profileImage: profileImage);
-  }
-
-  @override
-  Future<void> deleteUserInDataBase({
-    required String userId,
-    String? fullPathToFile,
-    required BuildContext context,
-    required String phoneNumber,
-  }) async {
-    await userData.deleteUserInFireStoreDB(userId: userId);
-    if (fullPathToFile != null) {
-      await userData.deleteUserFilesInDB(fullPathToFile: fullPathToFile);
-    }
-    await userData.deleteUserAuthInDB(
-      context: context,
-      phoneNumber: phoneNumber,
-    );
   }
 
   @override

@@ -23,6 +23,7 @@ class _SearchPageState extends State<SearchPage> {
     context.read<ChatBloc>().add(GetAllChatsEvent());
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,28 +48,72 @@ class _SearchPageState extends State<SearchPage> {
       ),
       body: BlocBuilder<ChatBloc, ChatState>(
         builder: (context, state) {
-          return StreamBuilder<List<ChatModel>>(
-            stream: state.chatList,
-            builder: (context, snapshot) {
-              if (snapshot.data==null) {
-                return emptyShowWidget(context: context, text: "No data available");
-              }
-              return ListView.separated(
-                padding: EdgeInsets.symmetric(vertical: 10.h),
-                itemBuilder: (context, index) {
-                  return ChatListTileWidget(
-                    receiverID: snapshot.data![index].receiverID,
-                    userProfileImage:  snapshot.data![index].receiverProfileImage,
-                    chatModel: snapshot.data![index],
-                    userName: snapshot.data![index].receiverName??'',
-                    isGroup: false,
+          final isSearching =
+              state.searchedList != null && state.searchedList!.isNotEmpty;
+          // return StreamBuilder<List<ChatModel>>(
+          //     stream: state.chatList,
+          //     builder: (context, snapshot) {
+          //       if (snapshot.data == null) {
+          // return emptyShowWidget(
+          //     context: context, text: "No data available");
+          //       }
+          //       return ListView.separated(
+          //         padding: EdgeInsets.symmetric(vertical: 10.h),
+          //         itemBuilder: (context, index) {
+          //           return ChatListTileWidget(
+          //             receiverID: snapshot.data![index].receiverID,
+          //             userProfileImage:
+          //                 snapshot.data![index].receiverProfileImage,
+          //             chatModel: snapshot.data![index],
+          //             userName: snapshot.data![index].receiverName ?? '',
+          //             isGroup: false,
+          //           );
+          //         },
+          //         separatorBuilder: (context, index) => kHeight5,
+          //         itemCount: snapshot.data!.length,
+          //       );
+          //     });
+          if (isSearching) {
+            return ListView.separated(
+              padding: EdgeInsets.symmetric(vertical: 10.h),
+              itemBuilder: (context, index) {
+                return ChatListTileWidget(
+                  receiverID: state.searchedList![index].receiverID,
+                  userProfileImage:
+                      state.searchedList![index].receiverProfileImage,
+                  chatModel: state.searchedList![index],
+                  userName: state.searchedList![index].receiverName ?? '',
+                  isGroup: false,
+                );
+              },
+              separatorBuilder: (context, index) => kHeight5,
+              itemCount: state.searchedList!.length,
+            );
+          } else {
+            return StreamBuilder<List<ChatModel>>(
+                stream: state.chatList,
+                builder: (context, snapshot) {
+                  if (snapshot.data == null) {
+                    return emptyShowWidget(
+                        context: context, text: "No chats found");
+                  }
+                  return ListView.separated(
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                    itemBuilder: (context, index) {
+                      return ChatListTileWidget(
+                        receiverID: snapshot.data![index].receiverID,
+                        userProfileImage:
+                            snapshot.data![index].receiverProfileImage,
+                        chatModel: snapshot.data![index],
+                        userName: snapshot.data![index].receiverName ?? '',
+                        isGroup: false,
+                      );
+                    },
+                    separatorBuilder: (context, index) => kHeight5,
+                    itemCount: snapshot.data!.length,
                   );
-                },
-                separatorBuilder: (context, index) => kHeight5,
-                itemCount: snapshot.data!.length,
-              );
-            }
-          );
+                });
+          }
         },
       ),
     );

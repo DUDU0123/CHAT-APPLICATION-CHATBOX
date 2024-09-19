@@ -158,35 +158,30 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       emit(ChatErrorState(errormessage: e.toString()));
     }
   }
+  Future<void> chatSearchEvent(
+    ChatSearchEvent event, Emitter<ChatState> emit) async {
+  try {
+    // Debounce the search input
+    await Future.delayed(const Duration(milliseconds: 500));
+    final searchSnapshot = await fireStore
+        .collection(usersCollection)
+        .doc(firebaseAuth.currentUser?.uid)
+        .collection(chatsCollection)
+        .where(receiverNameInChatList, isGreaterThanOrEqualTo: event.searchInput)
+        .where(receiverNameInChatList, isLessThanOrEqualTo: event.searchInput + '\uf8ff')
+        .get();
 
-  FutureOr<void> chatSearchEvent(
-      ChatSearchEvent event, Emitter<ChatState> emit) {
-    final debouncedSearchStream = Rx.timer(
-      event.searchInput,
-      const Duration(milliseconds: 500),
-    ).flatMap((searchInput) {
-      final searchStream = fireStore
-          .collection(usersCollection)
-          .doc(firebaseAuth.currentUser?.uid)
-          .collection(chatsCollection)
-          .where(receiverNameInChatList, isGreaterThanOrEqualTo: searchInput)
-          .where(receiverNameInChatList, isLessThanOrEqualTo: searchInput + '\uf8ff')
-          .snapshots();
-
-      // Map the Firestore snapshots into a list of UserModel
-      final filteredUserStream = searchStream.map((snapshot) {
-        return snapshot.docs
-            .map((doc) => ChatModel.fromJson(doc.data()))
-            .toList();
-      });
-
-      return filteredUserStream;
-    });
-
-    emit(
-      state.copyWith(
-        chatList: debouncedSearchStream,
-      ),
-    );
+    // Convert Firestore snapshots into a list of ChatModel
+    final chatList = searchSnapshot.docs
+        .map((doc) => ChatModel.fromJson(doc.data()))
+        .toList();
+    emit(state.copyWith(
+      chatList: state.chatList,
+      searchedList: chatList
+    ));
+  } catch (e) {
+    emit(state.copyWith(searchedList: [], chatList: state.chatList));
   }
+}
+
 }

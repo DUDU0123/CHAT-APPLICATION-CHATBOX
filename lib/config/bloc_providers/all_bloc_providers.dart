@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:official_chatbox_application/features/data/data_sources/ai_data/ai_data.dart';
+import 'package:official_chatbox_application/features/data/data_sources/auth_data/auth_data.dart';
 import 'package:official_chatbox_application/features/data/data_sources/call_data/call_data.dart';
 import 'package:official_chatbox_application/features/data/data_sources/chat_data/chat_data.dart';
 import 'package:official_chatbox_application/features/data/data_sources/contact_data/contact_data.dart';
@@ -50,14 +51,14 @@ class AppBlocProvider {
         userRepository: UserRepositoryImpl(
           userData: UserData(
             authenticationRepo:
-                AuthenticationRepoImpl(firebaseAuth: firebaseAuth),
+                AuthenticationRepoImpl(authData: AuthData(firebaseAuth: firebaseAuth)),
             fireBaseAuth: firebaseAuth,
             firestore: fireStore,
             firebaseStorage: firebaseStorage,
           ),
         ),
         authenticationRepo: AuthenticationRepoImpl(
-          firebaseAuth: FirebaseAuth.instance,
+         authData: AuthData(firebaseAuth: firebaseAuth)
         ),
       )..add(CheckUserLoggedInEvent()),
     ),
@@ -92,7 +93,7 @@ class AppBlocProvider {
         userRepository: UserRepositoryImpl(
           userData: UserData(
             authenticationRepo: AuthenticationRepoImpl(
-              firebaseAuth: firebaseAuth,
+              authData: AuthData(firebaseAuth: firebaseAuth)
             ),
             fireBaseAuth: firebaseAuth,
             firestore: fireStore,

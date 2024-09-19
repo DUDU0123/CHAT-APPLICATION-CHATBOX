@@ -1,168 +1,38 @@
-import 'dart:developer';
-
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:official_chatbox_application/core/constants/app_constants.dart';
-import 'package:official_chatbox_application/core/service/dialog_helper.dart';
-import 'package:official_chatbox_application/core/utils/snackbar.dart';
+import 'package:official_chatbox_application/features/data/data_sources/auth_data/auth_data.dart';
+import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/domain/repositories/authentication_repo/authentication_repo.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-
 const userAuthStatusKey = "is_user_signedIn";
-
 class AuthenticationRepoImpl extends AuthenticationRepo {
-  final FirebaseAuth firebaseAuth;
+  final AuthData authData;
   AuthenticationRepoImpl({
-    required this.firebaseAuth,
+    required this.authData,
   });
-
-  static Future<bool> isConnected() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    return connectivityResult != ConnectivityResult.none;
-  }
-
   @override
-  Future<void> createAccountInChatBoxUsingPhoneNumber({
-    required BuildContext context,
-    required String phoneNumber,
-  }) async {
-    if (!await isConnected()) {
-      commonSnackBarWidget(
-          context: context,
-          contentText: "No internet connection. Please try again later.");
-      return;
-    }
-
-    try {
-      await firebaseAuth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        verificationCompleted: (PhoneAuthCredential phoneAuthCredential) async {
-          await firebaseAuth.signInWithCredential(phoneAuthCredential);
-        },
-        verificationFailed: (error) {
-          log(error.message.toString());
-          throw Exception(error.message);
-        },
-        codeSent: (verificationId, forceResendingToken) {
-          Navigator.pushNamed(
-            context,
-            "verify_number",
-            arguments: AuthOtpModel(
-              phoneNumber: phoneNumber,
-              verifyId: verificationId,
-              forceResendingToken: forceResendingToken,
-            ),
-          );
-        },
-        codeAutoRetrievalTimeout: (verificationId) {},
-      );
-    } on FirebaseAuthException catch (e) {
-      commonSnackBarWidget(context: context, contentText: e.toString());
-    } catch (e) {
-      log(e.toString());
-    }
-  }
-
-  String? getCurrentUserId(String? uid) {
-    return firebaseAuth.currentUser?.uid;
-  }
-
-  @override
-  Future<UserCredential> verifyOtp({
-    required BuildContext context,
-    required String verificationId,
-    required String otpCode,
-    required Function onSuccess,
-  }) async {
-    if (!await isConnected()) {
-      commonSnackBarWidget(
-          context: context,
-          contentText: "No internet connection. Please try again later.");
-      return Future.error("No internet connection.");
-    }
-
-    try {
-      PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationId,
-        smsCode: otpCode,
-      );
-      UserCredential value =
-          await firebaseAuth.signInWithCredential(credential);
-
-      // Set user authentication status in SharedPreferences
-      await setUserAuthStatus(isSignedIn: true);
-      onSuccess();
-      return value;
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'invalid-verification-code') {
-        commonSnackBarWidget(context: context, contentText: "Invalid code");
-      } else if (e.code == 'quota-exceeded') {
-        commonSnackBarWidget(
-            context: context, contentText: "Otp limit exceeded, try next day");
-      }
-      throw Exception(e.message);
-    } catch (e) {
-      throw Exception(e.toString());
-    }
+  Future<bool> createAccountInChatBoxUsingEmailAndPassword(
+      {required UserModel newUser}) async {
+    return authData.createAccountInChatBoxUsingEmailAndPassword(
+        newUser: newUser);
   }
 
   @override
   Future<bool> getUserAthStatus() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    return sharedPreferences.getBool(userAuthStatusKey) ?? false;
+    return authData.getUserAthStatus();
   }
 
   @override
   Future<void> setUserAuthStatus({required bool isSignedIn}) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    await sharedPreferences.setBool(userAuthStatusKey, isSignedIn);
+    return authData.setUserAuthStatus(isSignedIn: isSignedIn);
   }
 
   @override
-  Future<void> resentOtp({
-    required BuildContext context,
-    required String phoneNumber,
-    required int? forceResendingToken,
+  Future<bool> deleteUserInDataBase({
+    required String userId,
+    String? fullPathToFile,
   }) async {
-    if (!await isConnected()) {
-      DialogHelper.showDialogMethod(title: "Network error", contentText: "Please connect to a network");
-      return;
-    }
-
-    try {
-      await firebaseAuth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        forceResendingToken:
-            forceResendingToken, // Use the resending token here
-        verificationCompleted: (PhoneAuthCredential phoneAuthCredential) async {
-          await firebaseAuth.signInWithCredential(phoneAuthCredential);
-        },
-        verificationFailed: (error) {
-          throw Exception(error.message);
-        },
-        codeSent: (verificationId, forceResendingToken) {
-          forceResendingToken =
-              forceResendingToken; // Update the resending token
-          Navigator.pushNamed(
-            context,
-            "verify_number",
-            arguments: AuthOtpModel(
-              phoneNumber: phoneNumber,
-              verifyId: verificationId,
-              forceResendingToken: forceResendingToken,
-            ),
-          );
-        },
-        codeAutoRetrievalTimeout: (verificationId) {},
-      );
-    } on FirebaseAuthException catch (e) {
-      commonSnackBarWidget(
-        context: context,
-        contentText: e.toString(),
-      );
-    } catch (e) {
-      log(e.toString());
-    }
+  return  await authData.deleteUserAuthInDB(
+      userId: userId,
+      fullPathToFile: fullPathToFile,
+    );
   }
 }
+

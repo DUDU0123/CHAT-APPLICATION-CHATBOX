@@ -104,7 +104,7 @@ class _ChatHomePageState extends State<ChatHomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AIChatRoomPage(),
+              builder: (context) => const AIChatRoomPage(),
             ),
           );
         },

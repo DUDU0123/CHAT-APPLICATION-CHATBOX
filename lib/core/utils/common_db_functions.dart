@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,6 +17,28 @@ import 'package:official_chatbox_application/features/data/models/status_model/s
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 
 class CommonDBFunctions {
+  static Future<bool> saveUserDataToDB(
+      {required UserModel userData, File? profileImage}) async {
+    try {
+      if (profileImage != null) {
+        final userProfileImage = await saveUserFileToDataBaseStorage(
+            ref: "profile_images/${userData.id}", file: profileImage);
+        userData = userData.copyWith(userProfileImage: userProfileImage);
+      }
+      await fireStore
+          .collection(usersCollection)
+          .doc(userData.id)
+          .set(userData.toJson());
+      return true;
+    } on FirebaseAuthException catch (e) {
+      log("Error while saving user data: $e");
+      return false;
+    } catch (e) {
+      log("Error while saving user data: $e");
+      return false;
+    }
+  }
+
   static Future<String> saveUserFileToDataBaseStorage({
     required String ref,
     required File file,
@@ -25,11 +48,39 @@ class CommonDBFunctions {
       TaskSnapshot taskSnapshot = await uploadTask;
       return await taskSnapshot.ref.getDownloadURL();
     } on FirebaseAuthException catch (e) {
-
       throw Exception("Error while saving file to storage: $e");
     } catch (e) {
       throw Exception("Error while saving file to storage: $e");
     }
+  }
+
+  static Future<bool> isPhoneNumberAlreadyExists(
+      {required String phoneNumber}) async {
+    final normalizedNumber = normalizePhoneNumber(phoneNumber);
+
+    // Query Firestore to check if the phone number exists
+    final querySnapshot = await fireStore
+        .collection(usersCollection)
+        .where(userDbPhoneNumber, isEqualTo: normalizedNumber)
+        .get();
+
+    // Return true if any document exists, false otherwise
+    return querySnapshot.docs.isNotEmpty;
+  }
+
+  static String normalizePhoneNumber(String phoneNumber) {
+    // Remove all characters except digits and the plus sign
+    phoneNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+    if (phoneNumber.startsWith('+91') &&
+        phoneNumber.length > 3 &&
+        phoneNumber[3] != ' ') {
+      phoneNumber = '+91 ' + phoneNumber.substring(3);
+    }
+    if (phoneNumber.length == 10) {
+      phoneNumber = '+91 ' + phoneNumber;
+    }
+
+    return phoneNumber;
   }
 
   static Future<bool> checkIfIsBlocked({
@@ -54,7 +105,7 @@ class CommonDBFunctions {
     try {
       return fireStore
           .collection(usersCollection)
-          .doc(userId??firebaseAuth.currentUser?.uid)
+          .doc(userId ?? firebaseAuth.currentUser?.uid)
           .collection(blockedUsersCollection)
           .snapshots()
           .map((blockSnap) {
@@ -99,7 +150,6 @@ class CommonDBFunctions {
         return null;
       }
     } on FirebaseException catch (e) {
-
       throw Exception("Error while fetching message data: $e");
     } catch (e) {
       throw Exception("Error while fetching message data: $e");
@@ -118,7 +168,6 @@ class CommonDBFunctions {
         return null;
       }
     } on FirebaseAuthException catch (e) {
-
       throw Exception("Error while fetching user data: $e");
     } catch (e, stackTrace) {
       throw Exception("Error while fetching user data: $e");
@@ -135,7 +184,6 @@ class CommonDBFunctions {
             ),
           );
     } on FirebaseException catch (e) {
-
       throw Exception("Error while fetching user data: $e");
     } catch (e, stackTrace) {
       throw Exception("Error while fetching user data: $e");
@@ -180,7 +228,6 @@ class CommonDBFunctions {
         }
       });
     } on FirebaseException catch (e) {
-
       throw Exception("Error while fetching user data: $e");
     } catch (e, stackTrace) {
       throw Exception("Error while fetching user data: $e");
@@ -234,19 +281,20 @@ class CommonDBFunctions {
     }
   }
 
-  static void saveGroupMessageTime({required GroupModel? groupModel,required String? messageTime}) async {
+  static void saveGroupMessageTime(
+      {required GroupModel? groupModel, required String? messageTime}) async {
     if (groupModel?.groupMembers != null) {
-            for (var memberID in groupModel!.groupMembers!) {
-              await FirebaseFirestore.instance
-                  .collection(usersCollection)
-                  .doc(memberID)
-                  .collection(groupsCollection)
-                  .doc(groupModel.groupID)
-                  .update({
-                dbGroupLastMessageTime: messageTime,
-              });
-            }
-          }
+      for (var memberID in groupModel!.groupMembers!) {
+        await FirebaseFirestore.instance
+            .collection(usersCollection)
+            .doc(memberID)
+            .collection(groupsCollection)
+            .doc(groupModel.groupID)
+            .update({
+          dbGroupLastMessageTime: messageTime,
+        });
+      }
+    }
   }
 
   // get all messages of a one to one chat as stream
@@ -310,7 +358,6 @@ class CommonDBFunctions {
         await messageDoc.reference.delete();
       }
     } on FirebaseException catch (e) {
-
       throw Exception("Error while deleteAllMessagesInDB: $e");
     } catch (e, stackTrace) {
       throw Exception("Error while deleteAllMessagesInDB: $e");

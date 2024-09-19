@@ -6,7 +6,6 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:official_chatbox_application/core/constants/database_name_constants.dart';
-import 'package:official_chatbox_application/core/utils/app_methods.dart';
 import 'package:official_chatbox_application/core/utils/common_db_functions.dart';
 import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 import 'package:official_chatbox_application/features/domain/repositories/authentication_repo/authentication_repo.dart';
@@ -26,13 +25,86 @@ class AuthenticationBloc
     required this.userRepository,
     required this.firebaseAuth,
   }) : super(AuthenticationInitial(isUserSignedIn: false)) {
-    on<OtpSentEvent>(otpSentEvent);
-    on<CreateUserEvent>(verifyOtpAndcreateUserEvent);
+    on<CreateUserEvent>(createUserEvent);
     on<CheckUserLoggedInEvent>(checkUserLoggedInEvent);
     on<CountrySelectedEvent>(countrySelectedEvent);
-    on<ResendOtpEvent>(resendOtpEvent);
     on<UserPermanentDeleteEvent>(userPermanentDeleteEvent);
     add(CheckUserLoggedInEvent());
+  }
+
+  Future<FutureOr<void>> createUserEvent(
+      CreateUserEvent event, Emitter<AuthenticationState> emit) async {
+    try {
+      RegExp phoneRegExp =
+          RegExp(r'^\+?(\d{1,3})?[-. ]?(\(?\d{3}\)?)[-. ]?\d{3}[-. ]?\d{4}$');
+      RegExp emailRegExp =
+          RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+      RegExp passwordRegExp = RegExp(
+          r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$');
+
+      if (event.email.isNotEmpty &&
+          emailRegExp.hasMatch(event.email) &&
+          event.password.isNotEmpty &&
+          phoneRegExp.hasMatch(event.phoneNumberWithCountryCode)) {
+        final isNumberAlreadyExist =
+            await CommonDBFunctions.isPhoneNumberAlreadyExists(
+                phoneNumber: event.phoneNumberWithCountryCode);
+        if (!isNumberAlreadyExist) {
+          if (event.password.length >= 8 &&
+              passwordRegExp.hasMatch(event.password)) {
+            emit(state.copyWith(isLoading: true));
+            UserModel newUser = UserModel(
+                createdAt: DateTime.now().millisecondsSinceEpoch.toString(),
+                phoneNumber: event.phoneNumberWithCountryCode,
+                password: event.password,
+                userEmailId: event.email,
+                lastActiveTime: "Online",
+                privacySettings: const {
+                  userDbLastSeenOnline: 'Everyone',
+                  userDbProfilePhotoPrivacy: 'Everyone',
+                  userDbAboutPrivacy: 'Everyone',
+                  userDbStatusPrivacy: "Everyone",
+                });
+            final isCreated = await authenticationRepo
+                .createAccountInChatBoxUsingEmailAndPassword(newUser: newUser);
+            if (isCreated) {
+              emit(
+                state.copyWith(
+                  user: newUser,
+                  isUserCreated: isCreated,
+                  isLoading: false,
+                  message: null,
+                ),
+              );
+            } else {
+              emit(
+                state.copyWith(
+                  message: 'Entered credentials are not valid',
+                  isUserCreated: isCreated,
+                ),
+              );
+            }
+          } else {
+            emit(
+              state.copyWith(
+                message:
+                    'Password must be at least 8 characters long and include one uppercase letter, one lowercase letter, one number, and one special character',
+              ),
+            );
+          }
+        } else {
+          emit(
+            state.copyWith(
+              message: 'Number already exists',
+            ),
+          );
+        }
+      } else {
+        emit(state.copyWith(message: 'Enter valid data'));
+      }
+    } catch (e) {
+      emit(state.copyWith(message: e.toString()));
+    }
   }
 
   Future<FutureOr<void>> userPermanentDeleteEvent(
@@ -41,17 +113,10 @@ class AuthenticationBloc
       UserModel? currentUser = await userRepository.getOneUserDataFromDB(
           userId: firebaseAuth.currentUser!.uid);
       if (currentUser != null) {
-        if (event.phoneNumberWithCountryCode.toString().replaceAll(' ', '') ==
-            currentUser.phoneNumber) {
-          emit(AuthenticationLoadingState());
-          if (event.mounted) {
-            await userRepository.deleteUserInDataBase(
-              userId: currentUser.id!,
-              fullPathToFile: "$usersProfileImageFolder${currentUser.id}",
-              context: event.context,
-              phoneNumber: event.phoneNumberWithCountryCode,
-            );
-          }
+        emit(state.copyWith(isLoading: true));
+        final isDeleted = await authenticationRepo.deleteUserInDataBase(
+            userId: currentUser.id!);
+        if (isDeleted) {
           final bool userAuthStatus =
               await authenticationRepo.getUserAthStatus();
           log("Auth status after deletion: $userAuthStatus");
@@ -64,88 +129,21 @@ class AuthenticationBloc
               (route) => false,
             );
           }
-          emit(state.copyWith(isUserSignedIn: userAuthStatus));
+          emit(
+              state.copyWith(isUserSignedIn: userAuthStatus, isLoading: false));
         } else {
-          emit(AuthenticationErrorState(
-              message: "Entered phone number is not correct"));
+          emit(state.copyWith(message: "Unable to delete account"));
         }
       } else {
         log("User is null");
-        emit(AuthenticationErrorState(message: "User is null"));
+        emit(state.copyWith(message: "User is null"));
       }
     } catch (e) {
       emit(
-        AuthenticationErrorState(
+        state.copyWith(
           message: e.toString(),
         ),
       );
-    }
-  }
-
-  FutureOr<void> otpSentEvent(
-      OtpSentEvent event, Emitter<AuthenticationState> emit) {
-    try {
-      log(event.phoneNumberWithCountryCode.toString());
-      RegExp phoneRegExp =
-          RegExp(r'^\+?(\d{1,3})?[-. ]?(\(?\d{3}\)?)[-. ]?\d{3}[-. ]?\d{4}$');
-      if ((event.phoneNumberWithCountryCode != null &&
-          phoneRegExp.hasMatch(event.phoneNumberWithCountryCode!))) {
-        log("IF COndition inside try");
-        log("Has Match");
-        authenticationRepo.createAccountInChatBoxUsingPhoneNumber(
-            context: event.context,
-            phoneNumber: event.phoneNumberWithCountryCode!);
-        emit(OtpSentState());
-      } else {
-        log("Else COndition inside try");
-        emit(AuthenticationErrorState(message: "Enter valid phone number"));
-      }
-    } catch (e) {
-      log("Catch error");
-      emit(AuthenticationErrorState(message: e.toString()));
-    }
-  }
-
-  Future<FutureOr<void>> verifyOtpAndcreateUserEvent(
-      CreateUserEvent event, Emitter<AuthenticationState> emit) async {
-    emit(AuthenticationLoadingState());
-    try {
-      if (event.otpCode.length == 6) {
-        final userCredential = await authenticationRepo.verifyOtp(
-          context: event.context,
-          verificationId: event.verificationId,
-          otpCode: event.otpCode,
-          onSuccess: () {},
-        );
-        final userData = await CommonDBFunctions.getOneUserDataFromDBFuture(
-            userId: userCredential.user?.uid);
-        if (userData != null) {
-          if (userData.isDisabled != null) {
-            if (userData.isDisabled!) {
-              AppMethods.pop();
-            }
-          }
-        }
-        UserModel userModel = UserModel(
-            createdAt: DateTime.now().millisecondsSinceEpoch.toString(),
-            id: userCredential.user?.uid,
-            phoneNumber: userCredential.user?.phoneNumber,
-            lastActiveTime: "Online",
-            isDisabled: userData?.isDisabled,
-            privacySettings: const {
-              userDbLastSeenOnline: 'Everyone',
-              userDbProfilePhotoPrivacy: 'Everyone',
-              userDbAboutPrivacy: 'Everyone',
-              userDbStatusPrivacy: "Everyone",
-            });
-        userRepository.saveUserDataToDataBase(userModel: userModel);
-        emit(AuthenticationSuccessState(user: UserModel()));
-        debugPrint("Hi From Bloc Verify Otp: ${userCredential.user?.uid}");
-      } else {
-        emit(AuthenticationErrorState(message: "Enter correct Otp"));
-      }
-    } catch (e) {
-      emit(AuthenticationErrorState(message: e.toString()));
     }
   }
 
@@ -155,36 +153,13 @@ class AuthenticationBloc
       final bool userAuthStatus = await authenticationRepo.getUserAthStatus();
       // emit(AuthenticationInitial(isUserSignedIn: userAuthStatus));
       emit(AuthenticationState(isUserSignedIn: userAuthStatus));
-
     } catch (e) {
-      emit(AuthenticationErrorState(message: e.toString()));
+      emit(state.copyWith(message: e.toString()));
     }
   }
 
   FutureOr<void> countrySelectedEvent(
       CountrySelectedEvent event, Emitter<AuthenticationState> emit) {
     emit(AuthenticationState(country: event.selectedCountry));
-  }
-
-  FutureOr<void> resendOtpEvent(
-      ResendOtpEvent event, Emitter<AuthenticationState> emit) {
-    try {
-      RegExp phoneRegExp =
-          RegExp(r'^\+?(\d{1,3})?[-. ]?(\(?\d{3}\)?)[-. ]?\d{3}[-. ]?\d{4}$');
-      if ((event.phoneNumberWithCountryCode != null &&
-          phoneRegExp.hasMatch(event.phoneNumberWithCountryCode!))) {
-
-        authenticationRepo.resentOtp(
-          context: event.context,
-          phoneNumber: event.phoneNumberWithCountryCode!,
-          forceResendingToken: event.forceResendingToken,
-        );
-        emit(OtpReSentState());
-      } else {
-        emit(AuthenticationErrorState(message: "Enter valid phone number"));
-      }
-    } catch (e) {
-      emit(AuthenticationErrorState(message: e.toString()));
-    }
   }
 }

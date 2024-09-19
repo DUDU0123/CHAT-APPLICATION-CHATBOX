@@ -10,11 +10,8 @@ import 'package:official_chatbox_application/features/presentation/bloc/authenti
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_appbar_widget.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/common_button_container.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/common_widgets/text_widget_common.dart';
-
-import '../../../../widgets/common_widgets/phone_number_recieve_field.dart';
-
 class DeleteAccountPage extends StatefulWidget {
-  DeleteAccountPage({super.key});
+ const DeleteAccountPage({super.key});
 
   @override
   State<DeleteAccountPage> createState() => _DeleteAccountPageState();
@@ -35,51 +32,48 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
       ),
       body: BlocConsumer<AuthenticationBloc, AuthenticationState>(
           listener: (context, state) {
-        if (state is AuthenticationErrorState) {
-          commonSnackBarWidget(context: context, contentText: state.message);
+        if (state.message != null) {
+          if (state.message!.isNotEmpty) {
+            commonSnackBarWidget(context: context, contentText: state.message!);
+          }
         }
-      }, builder: (context, state) {
-        if (state is AuthenticationLoadingState) {
-          return commonAnimationWidget(
+        if (state.isLoading ?? false) {
+          showDialog(
             context: context,
-            lottie: settingsLottie,
-            text: "Deleting",
-            fontSize: 16.sp,
-            isTextNeeded: true,
+            builder: (context) {
+              return commonAnimationWidget(
+                context: context,
+                lottie: settingsLottie,
+                text: "Deleting",
+                fontSize: 16.sp,
+                isTextNeeded: true,
+              );
+            },
           );
         }
+      }, builder: (context, state) {
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
           child: SingleChildScrollView(
             child: Column(
               children: [
                 TextWidgetCommon(
+                  textAlign: TextAlign.center,
                   text:
-                      "To delete your account, confirm your country code and enter your phone number.",
+                      "If you delete this account, every information related to this account will be deleted and can't receover it. If you are sure to delete, click on Delete account button below.",
                   fontSize: 16.sp,
-                ),
-                kHeight15,
-                PhoneNumberRecieveField(
-                  phoneNumberController: phoneNumberController,
                 ),
                 kHeight15,
                 CommonButtonContainer(
                   horizontalMarginOfButton: 40,
-                  text: "Delete Number",
+                  text: "Delete account",
                   onTap: () {
                     final authBloc = context.read<AuthenticationBloc>();
-                    final String? countryCode =
-                        authBloc.state.country?.phoneCode;
-                    final mobileNumber = phoneNumberController.text.trim();
-                    final String phoneNumber =
-                        countryCode != null && countryCode.isNotEmpty
-                            ? "+$countryCode$mobileNumber"
-                            : "+91 $mobileNumber";
                     authBloc.add(
                       UserPermanentDeleteEvent(
-                          mounted: mounted,
-                          context: context,
-                          phoneNumberWithCountryCode: phoneNumber),
+                        mounted: mounted,
+                        context: context,
+                      ),
                     );
                   },
                 ),

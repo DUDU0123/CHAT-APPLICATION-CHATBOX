@@ -1,5 +1,4 @@
 part of 'authentication_bloc.dart';
-
 sealed class AuthenticationEvent extends Equatable {
   const AuthenticationEvent();
 
@@ -18,65 +17,38 @@ class CountrySelectedEvent extends AuthenticationEvent {
       ];
 }
 
-class OtpSentEvent extends AuthenticationEvent {
-  final String? phoneNumberWithCountryCode;
-  final BuildContext context;
-  const OtpSentEvent({
-    required this.phoneNumberWithCountryCode,
-    required this.context,
-  });
-  @override
-  List<Object> get props => [phoneNumberWithCountryCode ?? '+91', context];
-}
-
 class CreateUserEvent extends AuthenticationEvent {
   final BuildContext context;
-  final String otpCode;
-  final String verificationId;
-  final String phoneNumber;
+  final String email;
+  final String password;
+  final String phoneNumberWithCountryCode;
   const CreateUserEvent({
     required this.context,
-    required this.otpCode,
-    required this.verificationId,
-    required this.phoneNumber,
+    required this.email,
+    required this.password,
+    required this.phoneNumberWithCountryCode,
   });
   @override
   List<Object> get props => [
         context,
-        verificationId,
-        otpCode,
-        phoneNumber,
+        email,
+        password,
+        phoneNumberWithCountryCode,
       ];
 }
 
-class ResendOtpEvent extends AuthenticationEvent {
-  final String? phoneNumberWithCountryCode;
-  final BuildContext context;
-  final int? forceResendingToken;
-  const ResendOtpEvent({
-    this.phoneNumberWithCountryCode,
-    required this.context,
-    this.forceResendingToken,
-  });
-  @override
-  List<Object> get props =>
-      [phoneNumberWithCountryCode ?? "", context, forceResendingToken ?? 0];
-}
 
 class CheckUserLoggedInEvent extends AuthenticationEvent {}
 
 class UserPermanentDeleteEvent extends AuthenticationEvent {
-  final String phoneNumberWithCountryCode;
   final BuildContext context;
   final bool mounted;
   const UserPermanentDeleteEvent({
-    required this.phoneNumberWithCountryCode,
     required this.context,
     required this.mounted,
   });
   @override
   List<Object> get props => [
-        phoneNumberWithCountryCode,
         context,
         mounted,
       ];

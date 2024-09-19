@@ -1,21 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-
+import 'package:official_chatbox_application/features/data/models/user_model/user_model.dart';
 abstract class AuthenticationRepo {
-  Future<void> createAccountInChatBoxUsingPhoneNumber({
-    required BuildContext context,
-    required String phoneNumber,
+  Future<bool> createAccountInChatBoxUsingEmailAndPassword({
+    required UserModel newUser,
   });
-  Future<UserCredential> verifyOtp({
-    required BuildContext context,
-    required String verificationId,
-    required String otpCode,
-    required Function onSuccess,
-  });
-  Future<void> resentOtp({
-    required BuildContext context,
-    required String phoneNumber,
-    required int? forceResendingToken,
+  Future<bool> deleteUserInDataBase({
+    required String userId,
+    String? fullPathToFile,
   });
   Future<void> setUserAuthStatus({required bool isSignedIn});
   Future<bool> getUserAthStatus();

@@ -17,105 +17,118 @@ Widget callButtonsMethods({
   required bool isVideoCall,
   required String receiverTitle,
   required String? receiverImage,
+  bool? isSenderOrReceiverBlocked,
   required CallBloc callBloc,
   required ThemeData theme,
   required BuildContext context,
   Color? buttonIconColor,
 }) {
   if (chatModel != null) {
-    return ZegoSendCallInvitationButton(
-      onPressed: (code, message, p2) {
-        CallModel callModel = CallModel(
-          isGroupCall: false,
-          callStartTime: DateTime.now().toString(),
-          callType: isVideoCall ? CallType.video : CallType.audio,
-          callerId: firebaseAuth.currentUser?.uid,
-          chatModelId: chatModel.chatID,
-          callrecieversId: [chatModel.receiverID!],
-          callStatus: 'not_accepted',
-          receiverName: receiverTitle,
-          receiverImage: receiverImage,
-        );
-        callBloc.add(CallInfoSaveEvent(
-          callModel: callModel,
-          context: context,
-        ));
-      },
-      callID: chatModel.chatID,
-      icon: ButtonIcon(
-        icon: SvgPicture.asset(
-          isVideoCall ? videoCall : call,
-          width: isVideoCall ? 37.w : 30.w,
-          height: isVideoCall ? 37.h : 30.w,
-          colorFilter: ColorFilter.mode(
-            buttonIconColor ?? theme.colorScheme.onPrimary,
-            BlendMode.srcIn,
+    if (isSenderOrReceiverBlocked != null) {
+      if (!isSenderOrReceiverBlocked) {
+        return ZegoSendCallInvitationButton(
+          onPressed: (code, message, p2) {
+            CallModel callModel = CallModel(
+              isGroupCall: false,
+              callStartTime: DateTime.now().toString(),
+              callType: isVideoCall ? CallType.video : CallType.audio,
+              callerId: firebaseAuth.currentUser?.uid,
+              chatModelId: chatModel.chatID,
+              callrecieversId: [chatModel.receiverID!],
+              callStatus: 'not_accepted',
+              receiverName: receiverTitle,
+              receiverImage: receiverImage,
+            );
+            callBloc.add(CallInfoSaveEvent(
+              callModel: callModel,
+              context: context,
+            ));
+          },
+          callID: chatModel.chatID,
+          icon: ButtonIcon(
+            icon: SvgPicture.asset(
+              isVideoCall ? videoCall : call,
+              width: isVideoCall ? 37.w : 30.w,
+              height: isVideoCall ? 37.h : 30.w,
+              colorFilter: ColorFilter.mode(
+                buttonIconColor ?? theme.colorScheme.onPrimary,
+                BlendMode.srcIn,
+              ),
+            ),
+            backgroundColor: kTransparent,
           ),
-        ),
-        backgroundColor: kTransparent,
-      ),
-      buttonSize: Size(isVideoCall ? 37.w : 30.w, isVideoCall ? 37.w : 30.w),
-      iconSize: Size(isVideoCall ? 37.w : 30.w, isVideoCall ? 37.w : 30.w),
-      isVideoCall: isVideoCall ? true : false,
-      resourceID: "zegouikit_call",
-      invitees: [
-        ZegoUIKitUser(
-          id: chatModel.receiverID!,
-          name: chatModel.receiverName!,
-        ),
-      ],
-    );
+          buttonSize:
+              Size(isVideoCall ? 37.w : 30.w, isVideoCall ? 37.w : 30.w),
+          iconSize: Size(isVideoCall ? 37.w : 30.w, isVideoCall ? 37.w : 30.w),
+          isVideoCall: isVideoCall ? true : false,
+          resourceID: "zegouikit_call",
+          invitees: [
+            ZegoUIKitUser(
+              id: chatModel.receiverID!,
+              name: chatModel.receiverName!,
+            ),
+          ],
+        );
+      }
+    } else {
+      return zeroMeasureWidget;
+    }
+    return zeroMeasureWidget;
   } else if (groupModel != null) {
     final groupMembers = groupModel.groupMembers
         ?.where(
           (memberId) => memberId != firebaseAuth.currentUser?.uid,
         )
         .toList();
-    return ZegoSendCallInvitationButton(
-      onPressed: (code, message, p2) {
-        CallModel callModel = CallModel(
-          groupModelId: groupModel.groupID,
-          isGroupCall: true,
-          callStartTime: DateTime.now().toString(),
-          callType: isVideoCall ? CallType.video : CallType.audio,
-          callerId: firebaseAuth.currentUser?.uid,
-          chatModelId: groupModel.groupID,
-          callrecieversId: groupModel.groupMembers,
-          callStatus: 'not_accepted',
-          receiverImage: receiverImage,
-          receiverName: receiverTitle,
-        );
-        callBloc.add(CallInfoSaveEvent(
-          callModel: callModel,
-          context: context,
-        ));
-      },
-      callID: groupModel.groupID,
-      icon: ButtonIcon(
-        icon: SvgPicture.asset(
-          isVideoCall ? videoCall : call,
-          width: isVideoCall ? 37.w : 30.w,
-          height: isVideoCall ? 37.h : 30.w,
-          colorFilter: ColorFilter.mode(
-            buttonIconColor ?? theme.colorScheme.onPrimary,
-            BlendMode.srcIn,
+    if (groupMembers!.contains(firebaseAuth.currentUser?.uid)) {
+      return ZegoSendCallInvitationButton(
+        onPressed: (code, message, p2) {
+          CallModel callModel = CallModel(
+            groupModelId: groupModel.groupID,
+            isGroupCall: true,
+            callStartTime: DateTime.now().toString(),
+            callType: isVideoCall ? CallType.video : CallType.audio,
+            callerId: firebaseAuth.currentUser?.uid,
+            chatModelId: groupModel.groupID,
+            callrecieversId: groupModel.groupMembers,
+            callStatus: 'not_accepted',
+            receiverImage: receiverImage,
+            receiverName: receiverTitle,
+          );
+          callBloc.add(CallInfoSaveEvent(
+            callModel: callModel,
+            context: context,
+          ));
+        },
+        callID: groupModel.groupID,
+        icon: ButtonIcon(
+          icon: SvgPicture.asset(
+            isVideoCall ? videoCall : call,
+            width: isVideoCall ? 37.w : 30.w,
+            height: isVideoCall ? 37.h : 30.w,
+            colorFilter: ColorFilter.mode(
+              buttonIconColor ?? theme.colorScheme.onPrimary,
+              BlendMode.srcIn,
+            ),
           ),
+          backgroundColor: kTransparent,
         ),
-        backgroundColor: kTransparent,
-      ),
-      buttonSize: Size(isVideoCall ? 37.w : 30.w, isVideoCall ? 37.w : 30.w),
-      iconSize: Size(isVideoCall ? 37.w : 30.w, isVideoCall ? 37.w : 30.w),
-      isVideoCall: isVideoCall ? true : false,
-      resourceID: "zegouikit_call",
-      invitees: groupMembers != null
-          ? groupMembers
-              .map((member) => ZegoUIKitUser(
-                    id: member,
-                    name: groupModel.groupName ?? 'Group',
-                  ))
-              .toList()
-          : [],
-    );
+        buttonSize: Size(isVideoCall ? 37.w : 30.w, isVideoCall ? 37.w : 30.w),
+        iconSize: Size(isVideoCall ? 37.w : 30.w, isVideoCall ? 37.w : 30.w),
+        isVideoCall: isVideoCall ? true : false,
+        resourceID: "zegouikit_call",
+        invitees: groupMembers != null
+            ? groupMembers
+                .map((member) => ZegoUIKitUser(
+                      id: member,
+                      name: groupModel.groupName ?? 'Group',
+                    ))
+                .toList()
+            : [],
+      );
+    } else {
+      return zeroMeasureWidget;
+    }
   } else {
     return zeroMeasureWidget;
   }

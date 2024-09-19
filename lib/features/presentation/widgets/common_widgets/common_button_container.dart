@@ -11,11 +11,13 @@ class CommonButtonContainer extends StatelessWidget {
     super.key,
     required this.horizontalMarginOfButton,
     required this.text,
+    this.child,
     this.onTap,
   });
   final double horizontalMarginOfButton;
   final String text;
   final void Function()? onTap;
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +51,7 @@ class CommonButtonContainer extends StatelessWidget {
             ],
           ),
         ),
-        child: Center(
+        child: child?? Center(
           child: TextWidgetCommon(
             text: text,
             fontSize: theme.textTheme.labelSmall?.fontSize,
