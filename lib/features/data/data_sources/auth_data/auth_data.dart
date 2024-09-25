@@ -87,7 +87,7 @@ class AuthData {
           await chatDocument.reference.delete();
         }
       }
-       // Delete the user document after deleting the sub-collection documents
+      // Delete the user document after deleting the sub-collection documents
       await userDoc.delete();
       // Find and delete any chats where this user is the receiver in other users' chats
       final allUsers = await fireStore.collection(usersCollection).get();
@@ -105,8 +105,7 @@ class AuthData {
           final otherUserChatDocs = await otherUserChats.get();
           for (final chatDoc in otherUserChatDocs.docs) {
             if (chatDoc.exists) {
-              await chatDoc.reference
-                  .delete();
+              await chatDoc.reference.delete();
             }
           }
         }
@@ -204,23 +203,41 @@ class AuthData {
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context)
-                        .pop(false);
+                    Navigator.of(context).pop(false);
                   },
                   child: const Text('Cancel'),
                 ),
                 TextButton(
                   onPressed: () async {
+                    String email = emailController.text.trim();
+                    String password = passwordController.text.trim();
+                    if (email.isEmpty || password.isEmpty) {
+                      log('Email or password cannot be empty.');
+                      Navigator.of(context).pop(false);
+                      return;
+                    }
                     User? user = firebaseAuth.currentUser;
                     if (user != null) {
                       try {
+                        // Check if the provided data correct, if not return with false
+                        final currentUserData =
+                            await CommonDBFunctions.getOneUserDataFromDBFuture(
+                                userId: user.uid);
+                        if (email != currentUserData?.userEmailId ||
+                            password != currentUserData?.password) {
+                          Navigator.of(context).pop(false);
+                          return;
+                        }
+                        // Create credentials and try to reauthenticate
                         AuthCredential credential =
                             EmailAuthProvider.credential(
-                          email: emailController.text.trim(),
-                          password: passwordController.text.trim(),
+                          email: email,
+                          password: password,
                         );
+
                         await user.reauthenticateWithCredential(credential);
-                        Navigator.of(context).pop(true); // Reauthentication was successful
+                        Navigator.of(context)
+                            .pop(true); // Reauthentication was successful
                       } on FirebaseAuthException catch (e) {
                         log('Reauthentication failed: ${e.message}');
                         if (e.code == 'wrong-password') {
