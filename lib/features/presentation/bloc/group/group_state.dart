@@ -6,11 +6,13 @@ class GroupState extends Equatable {
   final Map<MembersGroupPermission, bool> memberPermissions;
   final Map<AdminsGroupPermission, bool> adminPermissions;
   final bool? value;
+  final bool? isLoading;final String? message;
 
   const GroupState({
     this.value = false,
     this.groupList,
-    this.groupPickedImageFile,
+    this.groupPickedImageFile,this.message,
+    this.isLoading,
     this.memberPermissions = const {
       MembersGroupPermission.editGroupSettings: false,
       MembersGroupPermission.sendMessages: false,
@@ -26,7 +28,8 @@ class GroupState extends Equatable {
   });
 
   GroupState copyWith({
-    Stream<List<GroupModel>>? groupList,
+    Stream<List<GroupModel>>? groupList,String? message,
+    bool? isLoading,
     File? groupPickedImageFile,
     Map<MembersGroupPermission, bool>? memberPermissions,
     Map<AdminsGroupPermission, bool>? adminPermissions,
@@ -34,6 +37,8 @@ class GroupState extends Equatable {
   }) {
     return GroupState(
       groupList: groupList ?? this.groupList,
+      message: message?? this.message,
+      isLoading: isLoading ?? this.isLoading,
       groupPickedImageFile: groupPickedImageFile ?? this.groupPickedImageFile,
       memberPermissions: memberPermissions ?? this.memberPermissions,
       adminPermissions: adminPermissions ?? this.adminPermissions,
@@ -46,24 +51,8 @@ class GroupState extends Equatable {
         groupList ?? [],
         groupPickedImageFile ?? '',
         memberPermissions,
-        adminPermissions,value??false
+        adminPermissions,value??false,isLoading??false,message??'',
       ];
 }
 
 final class GroupInitial extends GroupState {}
-
-class GroupLoadingState extends GroupState {
-  @override
-  List<Object> get props => [];
-}
-
-class GroupErrorState extends GroupState {
-  final String message;
-  const GroupErrorState({
-    required this.message,
-  });
-  @override
-  List<Object> get props => [
-        message,
-      ];
-}

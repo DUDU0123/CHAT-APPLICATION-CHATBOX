@@ -25,6 +25,7 @@ import 'package:official_chatbox_application/features/data/models/user_model/use
 import 'package:official_chatbox_application/features/domain/repositories/chat_repo/chat_repo.dart';
 import 'package:official_chatbox_application/features/domain/repositories/message_repo/message_repo.dart';
 import 'package:official_chatbox_application/features/presentation/widgets/chat_home/chat_tile_widgets.dart';
+import 'package:official_chatbox_application/main.dart';
 
 part 'message_event.dart';
 part 'message_state.dart';
@@ -281,6 +282,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           groupModel: event.groupModel,
           chatId: chatID,
         );
+        navigatorKey.currentState?.pop();
         emit(MessageState(
             messages: state.messages ?? messages, messagemodel: photoMessage));
       }
@@ -367,6 +369,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
           groupModel: event.groupModel,
           chatId: chatID,
         );
+         navigatorKey.currentState?.pop();
         emit(MessageState(
             messages: state.messages ?? messages, messagemodel: videoMessage));
       }

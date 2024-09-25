@@ -11,7 +11,9 @@ import 'package:official_chatbox_application/core/utils/common_db_functions.dart
 import 'package:official_chatbox_application/features/data/models/chat_model/chat_model.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/data/models/message_model/message_model.dart';
+import 'package:official_chatbox_application/features/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/message/message_bloc.dart';
+import 'package:official_chatbox_application/main.dart';
 
 class MessageData {
   final FirebaseFirestore firestore;
@@ -72,7 +74,6 @@ class MessageData {
               groupModel: groupData,
               groupid: groupData.groupID!,
               messageToSend: message,
-              
             ),
           );
       await batch.commit();

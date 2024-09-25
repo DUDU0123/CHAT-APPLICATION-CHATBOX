@@ -60,23 +60,25 @@ class AuthData {
   }
 
   String? getCurrentUserId(String? uid) {
+    // return current user id
     return firebaseAuth.currentUser?.uid;
   }
 
   Future<bool> getUserAthStatus() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    // return the authentication status of the user (is logged in or not)
     return sharedPreferences.getBool(userAuthStatusKey) ?? false;
   }
 
   Future<void> setUserAuthStatus({required bool isSignedIn}) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    // setting the user authentication status
     await sharedPreferences.setBool(userAuthStatusKey, isSignedIn);
   }
 
   // Method to delete user in DB
   Future<void> deleteUserInFireStoreDB({required String userId}) async {
     try {
-      await fireStore.collection(usersCollection).doc(userId).delete();
       final userDoc = fireStore.collection(usersCollection).doc(userId);
       final userChats = userDoc.collection(chatsCollection);
       final userChatDocs = await userChats.get();
@@ -85,7 +87,9 @@ class AuthData {
           await chatDocument.reference.delete();
         }
       }
+       // Delete the user document after deleting the sub-collection documents
       await userDoc.delete();
+      // Find and delete any chats where this user is the receiver in other users' chats
       final allUsers = await fireStore.collection(usersCollection).get();
       for (final user in allUsers.docs) {
         if (user.id != userId) {
@@ -96,13 +100,13 @@ class AuthData {
               .where(
                 receiverId,
                 isEqualTo: userId,
-              ); // Assuming 'receiverID' is the field to identify the chat with the deleting user
+              );
 
           final otherUserChatDocs = await otherUserChats.get();
           for (final chatDoc in otherUserChatDocs.docs) {
             if (chatDoc.exists) {
               await chatDoc.reference
-                  .delete(); // Delete the chat with the deleting user
+                  .delete();
             }
           }
         }

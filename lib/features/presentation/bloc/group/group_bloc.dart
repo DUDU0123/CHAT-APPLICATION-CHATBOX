@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:official_chatbox_application/core/enums/enums.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/domain/repositories/group_repo/group_repository.dart';
+import 'package:official_chatbox_application/main.dart';
 
 part 'group_event.dart';
 part 'group_state.dart';
@@ -29,31 +30,39 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
 
   FutureOr<void> getAllGroupsEvent(
       GetAllGroupsEvent event, Emitter<GroupState> emit) {
-    emit(GroupLoadingState());
+    emit(state.copyWith(isLoading: true));
     try {
       Stream<List<GroupModel>>? groupList = groupRepository.getAllGroups();
-      emit(GroupState(groupList: groupList));
+      emit(GroupState(
+        groupList: groupList,
+        isLoading: false,
+        message: null,
+      ));
     } catch (e) {
-      emit(GroupErrorState(message: e.toString()));
+      emit(state.copyWith(message: e.toString(), isLoading: false));
     }
   }
 
   Future<FutureOr<void>> createGroupEvent(
       CreateGroupEvent event, Emitter<GroupState> emit) async {
-    emit(GroupLoadingState());
+    
     try {
       final File? groupImageFile = event.groupProfileImage;
+      emit(state.copyWith(isLoading: true));
       final value = await groupRepository.createGroup(
         groupImageFile: groupImageFile,
         newGroupData: event.newGroupData,
       );
-      Navigator.pop(event.context);
+      Navigator.pop(navigatorKey.currentContext!);
+      Navigator.pop(navigatorKey.currentContext!);
       emit(state.copyWith(
         groupList: state.groupList,
         value: value,
+        isLoading: false,
+        message: null,
       ));
     } catch (e) {
-      emit(GroupErrorState(message: e.toString()));
+      emit(state.copyWith(message: e.toString(), isLoading: false));
     }
   }
 
@@ -65,9 +74,13 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
         groupImageFile: groupImageFile,
         updatedGroupData: event.updatedGroupData,
       );
-      emit(state.copyWith(groupList: state.groupList));
+      emit(state.copyWith(
+        groupList: state.groupList,
+        isLoading: false,
+        message: null,
+      ));
     } catch (e) {
-      emit(GroupErrorState(message: e.toString()));
+      emit(state.copyWith(message: e.toString()));
     }
   }
 
@@ -77,9 +90,13 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
       final value = await groupRepository.deleteAGroupOnlyForCurrentUser(
         groupID: event.groupID,
       );
-      emit(state.copyWith(groupList: state.groupList));
+      emit(state.copyWith(
+        groupList: state.groupList,
+        isLoading: false,
+        message: null,
+      ));
     } catch (e) {
-      emit(GroupErrorState(message: e.toString()));
+      emit(state.copyWith(message: e.toString()));
     }
   }
 
@@ -131,9 +148,12 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
       GroupImagePickEvent event, Emitter<GroupState> emit) async {
     try {
       emit(state.copyWith(
-          groupList: state.groupList, groupPickedImageFile: event.pickedFile));
+        groupList: state.groupList,
+        groupPickedImageFile: event.pickedFile,
+        message: null,
+      ));
     } catch (e) {
-      emit(GroupErrorState(message: e.toString()));
+      emit(state.copyWith(message: e.toString()));
     }
   }
 
@@ -170,7 +190,7 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
     try {
       await groupRepository.groupClearChatMethod(groupID: event.groupID);
     } catch (e) {
-      emit(GroupErrorState(message: e.toString()));
+      emit(state.copyWith(message: e.toString()));
     }
   }
 
@@ -187,10 +207,12 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
           adminPermissions: state.adminPermissions,
           groupPickedImageFile: state.groupPickedImageFile,
           memberPermissions: state.memberPermissions,
+          isLoading: false,
+          message: null,
         ),
       );
     } catch (e) {
-      emit(GroupErrorState(message: e.toString()));
+      emit(state.copyWith(message: e.toString()));
     }
   }
 }

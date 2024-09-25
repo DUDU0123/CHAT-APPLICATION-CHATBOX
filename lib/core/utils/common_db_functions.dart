@@ -67,6 +67,18 @@ class CommonDBFunctions {
     // Return true if any document exists, false otherwise
     return querySnapshot.docs.isNotEmpty;
   }
+  static Future<bool> isEmailAlreadyExists(
+      {required String email}) async {
+
+    // Query Firestore to check if the email id exists
+    final querySnapshot = await fireStore
+        .collection(usersCollection)
+        .where(userDbPhoneNumber, isEqualTo: email)
+        .get();
+
+    // Return true if any document exists, false otherwise
+    return querySnapshot.docs.isNotEmpty;
+  }
 
   static String normalizePhoneNumber(String phoneNumber) {
     // Remove all characters except digits and the plus sign

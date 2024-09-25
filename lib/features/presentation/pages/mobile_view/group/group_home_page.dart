@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:official_chatbox_application/core/constants/height_width.dart';
+import 'package:official_chatbox_application/core/service/dialog_helper.dart';
 import 'package:official_chatbox_application/core/utils/small_common_widgets.dart';
 import 'package:official_chatbox_application/features/data/models/group_model/group_model.dart';
 import 'package:official_chatbox_application/features/presentation/bloc/group/group_bloc.dart';
@@ -12,14 +13,17 @@ class GroupHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<GroupBloc, GroupState>(
-        builder: (context, state) {
-          if (state is GroupErrorState) {
-            return commonErrorWidget(
-              message: state.message,
-            );
+      body: BlocConsumer<GroupBloc, GroupState>(
+        listener: (context, state) {
+          if (state.message != null) {
+            if (state.message!.isNotEmpty) {
+              DialogHelper.showSnackBar(
+                  title: "Info", contentText: state.message!);
+            }
           }
-          if (state is GroupLoadingState) {
+        },
+        builder: (context, state) {
+          if (state.isLoading ?? false) {
             return commonAnimationWidget(
               context: context,
               isTextNeeded: false,
@@ -37,7 +41,8 @@ class GroupHomePage extends StatelessWidget {
                     snapshot.data == null ||
                     snapshot.data!.isEmpty) {
                   return emptyShowWidget(
-                    text: "No groups",context: context,
+                    text: "No groups",
+                    context: context,
                   );
                 }
                 return ListView.separated(

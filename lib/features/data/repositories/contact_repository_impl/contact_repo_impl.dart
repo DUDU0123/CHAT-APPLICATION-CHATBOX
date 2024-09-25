@@ -33,19 +33,15 @@ class ContactRepoImpl extends ContactRepository {
       // Fetch users from Firestore by normalized phone numbers
       final userSnapshots =
           await Future.wait(phoneNumbers.map((normalizedPhone) {
-        log('Normalized phone from contacts: $normalizedPhone'); // Log normalized phone number
         return firebaseFirestore
             .collection(usersCollection)
             .where(userDbPhoneNumber, isEqualTo: normalizedPhone)
             .get();
       }));
 
-      print("snapshots: ${userSnapshots.first.docs}");
-
       // Create a map of normalized phone numbers to Firestore data
       final userMap = <String, Map<String, dynamic>>{};
       for (var snapshot in userSnapshots) {
-        print("User snap: ${snapshot.docs}");
         if (snapshot.docs.isNotEmpty) {
           var userData = snapshot.docs.first.data();
 

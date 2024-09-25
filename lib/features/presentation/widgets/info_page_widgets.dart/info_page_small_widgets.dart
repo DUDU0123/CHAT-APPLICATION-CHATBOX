@@ -193,59 +193,86 @@ Widget infoPageActionIconsBlueGradient({
   required String? receiverImage,
   required CallBloc callBloc,
 }) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      Container(
-        height: 80,
-        padding: EdgeInsets.symmetric(
-          horizontal: 20.w,
-        ),
-        decoration: gradientButtonDecoration(),
-        child: Column(
+  return FutureBuilder<Map<String, bool>>(
+      future: chatModel != null
+          ? Future.wait([
+              CommonDBFunctions.checkIfIsBlocked(
+                receiverId: chatModel.receiverID,
+                currentUserId: firebaseAuth.currentUser?.uid,
+              ),
+              CommonDBFunctions.checkIfIsBlocked(
+                receiverId: firebaseAuth.currentUser?.uid,
+                currentUserId: chatModel.receiverID,
+              ),
+            ]).then((results) {
+              return {
+                "isReceiverBlocked":
+                    results[0], // True if receiver blocked the sender
+                "isSenderBlocked":
+                    results[1], // True if sender is blocked by the receiver
+              };
+            })
+          : null,
+      builder: (context, snapshot) {
+        final isReceiverBlocked = snapshot.data?['isReceiverBlocked'] ?? false;
+        final isSenderBlocked = snapshot.data?['isSenderBlocked'] ?? false;
+        return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            callButtonsMethods(
-              chatModel: chatModel,
-              groupModel: groupModel,
-              isVideoCall: false,
-              receiverTitle: receiverTitle,
-              receiverImage: receiverImage,
-              callBloc: callBloc,
-              theme: Theme.of(context),
-              context: context,
-              buttonIconColor: kWhite
+            Container(
+              height: chatModel!=null?(isSenderBlocked || isReceiverBlocked)?0:80:80,
+              padding: EdgeInsets.symmetric(
+                horizontal: 20.w,
+              ),
+              decoration: gradientButtonDecoration(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  callButtonsMethods(
+                      isSenderOrReceiverBlocked:
+                          (isSenderBlocked || isReceiverBlocked),
+                      chatModel: chatModel,
+                      groupModel: groupModel,
+                      isVideoCall: false,
+                      receiverTitle: receiverTitle,
+                      receiverImage: receiverImage,
+                      callBloc: callBloc,
+                      theme: Theme.of(context),
+                      context: context,
+                      buttonIconColor: kWhite),
+                  gradientButtonText(subtitle: "Audio")
+                ],
+              ),
             ),
-            gradientButtonText(subtitle: "Audio")
-          ],
-        ),
-      ),
-      kWidth10,
-      Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: 20.w,
-        ),
-        height: 80,
-        decoration: gradientButtonDecoration(),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            callButtonsMethods(
-              buttonIconColor: kWhite,
-              chatModel: chatModel,
-              groupModel: groupModel,
-              isVideoCall: true,
-              receiverTitle: receiverTitle,
-              receiverImage: receiverImage,
-              callBloc: callBloc,
-              theme: Theme.of(context),
-              context: context,
+            kWidth10,
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 20.w,
+              ),
+              height: chatModel!=null?(isSenderBlocked || isReceiverBlocked)?0:80:80,
+              decoration: gradientButtonDecoration(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  callButtonsMethods(
+                    isSenderOrReceiverBlocked:
+                        (isSenderBlocked || isReceiverBlocked),
+                    buttonIconColor: kWhite,
+                    chatModel: chatModel,
+                    groupModel: groupModel,
+                    isVideoCall: true,
+                    receiverTitle: receiverTitle,
+                    receiverImage: receiverImage,
+                    callBloc: callBloc,
+                    theme: Theme.of(context),
+                    context: context,
+                  ),
+                  gradientButtonText(subtitle: "Video")
+                ],
+              ),
             ),
-            gradientButtonText(subtitle: "Video")
+            kWidth10,
           ],
-        ),
-      ),
-      kWidth10,
-    ],
-  );
+        );
+      });
 }

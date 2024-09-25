@@ -40,7 +40,7 @@ class AuthenticationBloc
       RegExp emailRegExp =
           RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
       RegExp passwordRegExp = RegExp(
-          r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$');
+          r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&#]{8,}$');
 
       if (event.email.isNotEmpty &&
           emailRegExp.hasMatch(event.email) &&
@@ -50,9 +50,8 @@ class AuthenticationBloc
             await CommonDBFunctions.isPhoneNumberAlreadyExists(
                 phoneNumber: event.phoneNumberWithCountryCode);
         if (!isNumberAlreadyExist) {
-          if (event.password.length >= 8 &&
-              passwordRegExp.hasMatch(event.password)) {
-            emit(state.copyWith(isLoading: true));
+          if (passwordRegExp.hasMatch(event.password)) {
+                emit(state.copyWith(isLoading: true));
             UserModel newUser = UserModel(
                 createdAt: DateTime.now().millisecondsSinceEpoch.toString(),
                 phoneNumber: event.phoneNumberWithCountryCode,
@@ -81,12 +80,14 @@ class AuthenticationBloc
                 state.copyWith(
                   message: 'Entered credentials are not valid',
                   isUserCreated: isCreated,
+                  isLoading: false,
                 ),
               );
             }
           } else {
             emit(
               state.copyWith(
+                isLoading: false,
                 message:
                     'Password must be at least 8 characters long and include one uppercase letter, one lowercase letter, one number, and one special character',
               ),
@@ -95,15 +96,16 @@ class AuthenticationBloc
         } else {
           emit(
             state.copyWith(
+              isLoading: false,
               message: 'Number already exists',
             ),
           );
         }
       } else {
-        emit(state.copyWith(message: 'Enter valid data'));
+        emit(state.copyWith(message: 'Enter valid data', isLoading: false));
       }
     } catch (e) {
-      emit(state.copyWith(message: e.toString()));
+      emit(state.copyWith(message: e.toString(), isLoading: false));
     }
   }
 
@@ -151,7 +153,6 @@ class AuthenticationBloc
       CheckUserLoggedInEvent event, Emitter<AuthenticationState> emit) async {
     try {
       final bool userAuthStatus = await authenticationRepo.getUserAthStatus();
-      // emit(AuthenticationInitial(isUserSignedIn: userAuthStatus));
       emit(AuthenticationState(isUserSignedIn: userAuthStatus));
     } catch (e) {
       emit(state.copyWith(message: e.toString()));

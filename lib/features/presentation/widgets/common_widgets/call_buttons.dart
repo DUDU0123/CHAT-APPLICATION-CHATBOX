@@ -80,7 +80,7 @@ Widget callButtonsMethods({
           (memberId) => memberId != firebaseAuth.currentUser?.uid,
         )
         .toList();
-    if (groupMembers!.contains(firebaseAuth.currentUser?.uid)) {
+    // if (groupMembers!.contains(firebaseAuth.currentUser?.uid)) {
       return ZegoSendCallInvitationButton(
         onPressed: (code, message, p2) {
           CallModel callModel = CallModel(
@@ -126,9 +126,9 @@ Widget callButtonsMethods({
                 .toList()
             : [],
       );
-    } else {
-      return zeroMeasureWidget;
-    }
+    // } else {
+    //   return zeroMeasureWidget;
+    // }
   } else {
     return zeroMeasureWidget;
   }

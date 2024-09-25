@@ -301,7 +301,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       final isShowableAbout =
           await PrivacyMethods.isShowableAbout(receiverID: event.receiverID);
       final isShowableStatus =
-          await PrivacyMethods.isShowableAbout(receiverID: event.receiverID);
+          await PrivacyMethods.isShowableStatus(receiverID: event.receiverID);
       final updatedPrivacySettings =
           Map<String, Map<String, bool?>>.from(state.userPrivacySettings ?? {});
       updatedPrivacySettings[event.receiverID ?? ''] = {
