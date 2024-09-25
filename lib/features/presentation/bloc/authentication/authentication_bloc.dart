@@ -134,11 +134,11 @@ class AuthenticationBloc
           emit(
               state.copyWith(isUserSignedIn: userAuthStatus, isLoading: false));
         } else {
-          emit(state.copyWith(message: "Unable to delete account"));
+          emit(state.copyWith(message: "Unable to delete account", isLoading: false));
         }
       } else {
         log("User is null");
-        emit(state.copyWith(message: "User is null"));
+        emit(state.copyWith(message: "User is null", isLoading: false));
       }
     } catch (e) {
       emit(
